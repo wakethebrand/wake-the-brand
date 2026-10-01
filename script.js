@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         appId: "1:765483574565:web:c898771abb393cf11526cc"
     };
 
+    // Adres e-mail, na który mają przychodzić powiadomienia z formularza kontaktowego
+    const CONTACT_RECEIVER_EMAIL = "kontakt@wakethebrand.pl";
+
     // Lista adresów e-mail, które mają uprawnienia Administratora (Właściciela)
     const ADMIN_EMAILS = [
         'mateuszbugecik@gmail.com',
@@ -391,7 +394,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Pomocnicza funkcja zapisu dokumentu klienta (Firebase + kopia lokalna)
     async function saveClientData(clientId, dataObj) {
         saveLocalData(dataObj);
         if (firebaseReady && db && clientId) {
@@ -405,7 +407,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 6. FORMULARZ KONTAKTOWY (kontakt.html -> kolekcja contact_leads)
+    // 6. FORMULARZ KONTAKTOWY (Zapis do Firebase + E-mail na kontakt@wakethebrand.pl)
     // =========================================================
     const topicPills = document.querySelectorAll('.topic-pill');
     const contactForm = document.getElementById('contactForm');
@@ -437,13 +439,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             topicPills.forEach(pill => {
                 if (pill.classList.contains('active')) activeTopics.push(pill.innerText);
             });
+            const topicsStr = activeTopics.join(', ') || 'Ogólne';
 
+            formFeedback.style.color = '#d4ff00';
+            formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
+
+            // 1. Zapis do bazy Firebase (widoczne w admin.html -> Zapytania z Kontaktu)
             if (firebaseReady && db) {
                 try {
                     await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), {
                         name,
                         email,
-                        topics: activeTopics.join(', ') || 'Ogólne',
+                        topics: topicsStr,
                         message: msgVal,
                         createdAt: getCurrentTimeStr(),
                         timestamp: Date.now()
@@ -453,8 +460,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
+            // 2. Równoczesna wysyłka powiadomienia e-mail na kontakt@wakethebrand.pl
+            try {
+                await fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        _subject: `⚡ Nowe zapytanie ze strony Wake The Brand od: ${name}`,
+                        Imie_lub_Firma: name,
+                        Kontakt_Klienta: email,
+                        Wybrane_Tematy: topicsStr,
+                        Wiadomosc: msgVal,
+                        _template: 'table'
+                    })
+                });
+            } catch (mailErr) {
+                console.warn('Powiadomienie e-mail (FormSubmit):', mailErr);
+            }
+
             formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = `Dzięki, ${name}! Twoje zgłoszenie zostało zapisane w bazie Wake The Brand ⚡ Odpowiemy w ciągu 24h!`;
+            formFeedback.innerText = `Dzięki, ${name}! Wiadomość została wysłana na ${CONTACT_RECEIVER_EMAIL} oraz zapisana w bazie ⚡ Odpowiemy w ciągu 24h!`;
             contactForm.reset();
         });
     }
@@ -557,7 +585,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     loginFeedback.innerText = 'Błędny e-mail lub hasło (upewnij się, że masz już założone konto w zakładce obok).';
                 }
             } else {
-                // Fallback lokalny
                 if (ADMIN_EMAILS.includes(email)) {
                     window.location.href = 'admin.html';
                 } else {
@@ -936,7 +963,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderAdminUI(selectedAdminClientData);
 
         if (firebaseReady && db) {
-            // Wczytaj listę wszystkich klientów z kolekcji 'clients' w Firebase
             const clientsCol = fbFns.collection(db, 'clients');
             fbFns.onSnapshot(clientsCol, async (colSnap) => {
                 if (colSnap.empty) {
@@ -967,7 +993,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
-            // Nasłuchuj zgłoszeń z formularza kontaktowego (kolekcja 'contact_leads')
             if (adminLeadsList) {
                 const leadsCol = fbFns.collection(db, 'contact_leads');
                 fbFns.onSnapshot(leadsCol, (leadsSnap) => {
