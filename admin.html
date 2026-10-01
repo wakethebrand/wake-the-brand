@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administratora (HQ) | Wake The Brand</title>
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Wspólny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- GÓRNY PASEK ADMINA -->
+    <header class="dash-topbar">
+        <div class="dash-topbar-left">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+            <span class="dash-badge admin-badge">⚙️ Panel Administratora (Firebase Cloud)</span>
+        </div>
+        <div class="dash-topbar-right">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 0.82rem; color: var(--text-muted);">Aktywny klient:</span>
+                <select id="adminClientSelector" class="admin-select" style="width: auto; padding: 0.45rem 1rem; font-size: 0.85rem;">
+                    <option value="demo_client">Wczytywanie klientów z bazy...</option>
+                </select>
+            </div>
+            <a href="panel-klienta.html" class="btn btn-outline btn-sm">👁️ Widok Klienta</a>
+            <button type="button" class="btn btn-sm btn-client" id="adminLogoutBtn">Wyloguj</button>
+        </div>
+    </header>
+
+    <!-- GŁÓWNY UKŁAD PANELU ADMINA -->
+    <div class="dashboard-layout">
+        
+        <!-- BOCZNY PASEK NAWIGACJI -->
+        <aside class="dash-sidebar">
+            <div>
+                <div class="sidebar-section-label">Zarządzanie Klientem</div>
+                <nav class="dash-nav">
+                    <button type="button" class="dash-nav-btn active" data-tab="admin-tab-status">
+                        <span>🎛️</span> Status & Postęp Klienta
+                    </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-tasks">
+                        <span>✅</span> Zarządzaj Zadaniami
+                    </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-finances">
+                        <span>🧾</span> Wystaw Rozliczenie
+                    </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-chat">
+                        <span>💬</span> Odpisz na Czacie
+                    </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-leads">
+                        <span>📬</span> Zapytania z Kontaktu
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Status połączenia z Firebase -->
+            <div class="sidebar-help-box glass-card">
+                <strong>☁️ Baza: wake-the-brand</strong>
+                <p id="firebaseStatusText" style="margin-bottom: 0.8rem;">Łączenie z chmurą Firebase...</p>
+                <button type="button" class="btn btn-outline btn-sm btn-full" id="resetDemoDataBtn">Resetuj dane klienta</button>
+            </div>
+        </aside>
+
+        <!-- GŁÓWNA ZAWARTOŚĆ ADMINA -->
+        <main class="dash-main">
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 1: STATUS, PAKIET I POSTĘP
+                 ========================================== -->
+            <section class="dash-tab-content active" id="admin-tab-status">
+                <div class="dash-section-title">
+                    <span class="section-tag">Centrum Sterowania (Na żywo w Firebase)</span>
+                    <h2>Edytuj główne wskaźniki wybranego klienta</h2>
+                    <p>Wybierz klienta z listy na górze paska i zmień poniższe wartości – u klienta zaktualizują się w ułamku sekundy.</p>
+                </div>
+
+                <div class="dash-two-cols">
+                    <form class="glass-card" id="adminStatusForm">
+                        <div class="form-group">
+                            <label for="adminClientName">Nazwa marki / klienta</label>
+                            <input type="text" id="adminClientName" required value="Marka Klienta">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminPackageName">Aktywny Pakiet Klienta</label>
+                            <input type="text" id="adminPackageName" required value="Podwójny Shot ⚡">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminProgressSlider">Procent wykonania prac w tym miesiącu: <strong id="adminProgressVal">65%</strong></label>
+                            <input type="range" id="adminProgressSlider" min="0" max="100" step="5" value="65" style="width: 100%; accent-color: var(--accent-lime);">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminCurrentCost">Koszt obsługi w bieżącym okresie</label>
+                            <input type="text" id="adminCurrentCost" required value="2 100 zł">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminPaymentStatus">Status płatności bieżącej</label>
+                            <select id="adminPaymentStatus" class="admin-select">
+                                <option value="● Opłacone">● Opłacone (Zielony)</option>
+                                <option value="⏳ Oczekuje na płatność">⏳ Oczekuje na płatność</option>
+                                <option value="🧾 Wysłano rachunek / Useme">🧾 Wysłano rachunek / Useme</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminAdBudget">Budżet reklamowy Ads</label>
+                            <input type="text" id="adminAdBudget" required value="1 000 zł">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Zapisz w bazie Firebase ⚡</button>
+                        <div class="form-feedback" id="adminStatusFeedback"></div>
+                    </form>
+
+                    <div class="glass-card">
+                        <h3>☁️ Jak zarządzać wieloma klientami?</h3>
+                        <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0.8rem 0 1.5rem;">
+                            Twój panel jest już podpięty pod projekt <strong>wake-the-brand</strong> w Google Firebase:
+                        </p>
+                        <ul class="service-list">
+                            <li>Gdy nowy klient zarejestruje się na <strong>logowanie.html</strong>, automatycznie pojawi się na rozwijanej liście <strong>„Aktywny klient”</strong> w prawym górnym rogu.</li>
+                            <li>Wybierasz klienta z listy i dodajesz mu zadania, koszty oraz piszesz z nim na czacie.</li>
+                            <li>W zakładce <strong>„Zapytania z Kontaktu”</strong> znajdziesz też wszystkie wiadomości od osób, które napisały przez formularz bez zakładania konta!</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 2: ZARZĄDZANIE ZADANIAMI
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-tasks">
+                <div class="dash-section-title">
+                    <span class="section-tag">Lista Zadań („Co już zrobiliśmy”)</span>
+                    <h2>Dodawaj i aktualizuj zadania dla wybranego klienta</h2>
+                </div>
+
+                <div class="dash-two-cols">
+                    <form class="glass-card" id="adminAddTaskForm">
+                        <h3 style="margin-bottom: 1.2rem;">➕ Dodaj nowe zadanie</h3>
+                        <div class="form-group">
+                            <label for="newTaskTitle">Nazwa zadania / wykonanej pracy</label>
+                            <input type="text" id="newTaskTitle" required placeholder="np. Montaż 2 Rolek promocyjnych (Reels)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newTaskCategory">Kategoria / Obszar</label>
+                            <input type="text" id="newTaskCategory" required placeholder="np. Social Media / Strona WWW / Branding">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newTaskStatus">Status zadania</label>
+                            <select id="newTaskStatus" class="admin-select">
+                                <option value="done">✓ Zrobione (Ukończone)</option>
+                                <option value="progress">⏳ W trakcie realizacji</option>
+                                <option value="todo">📋 Zaplanowane w kolejce</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Dodaj zadanie do bazy →</button>
+                    </form>
+
+                    <div class="glass-card">
+                        <h3 style="margin-bottom: 1.2rem;">📋 Aktualna lista zadań klienta</h3>
+                        <ul class="dash-task-list" id="adminTaskList"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 3: ROZLICZENIA I KOSZTY
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-finances">
+                <div class="dash-section-title">
+                    <span class="section-tag">Finanse Klienta</span>
+                    <h2>Dodaj pozycję kosztową lub rozliczenie</h2>
+                </div>
+
+                <div class="dash-two-cols">
+                    <form class="glass-card" id="adminAddFinanceForm">
+                        <h3 style="margin-bottom: 1.2rem;">🧾 Dodaj nowe rozliczenie</h3>
+                        <div class="form-group">
+                            <label for="finPeriod">Okres lub nazwa etapu</label>
+                            <input type="text" id="finPeriod" required placeholder="np. Październik 2026 / Projekt Strony WWW">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finScope">Zakres prac</label>
+                            <input type="text" id="finScope" required placeholder="np. Pakiet Podwójny Shot + Kampania Ads">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finDocType">Forma rozliczenia</label>
+                            <select id="finDocType" class="admin-select">
+                                <option value="Rachunek (0% VAT)">Rachunek (0% VAT)</option>
+                                <option value="Faktura VAT 23% (Useme)">Faktura VAT 23% (przez Useme)</option>
+                                <option value="Umowa o dzieło">Umowa o dzieło</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finAmount">Kwota (np. 2 100 zł)</label>
+                            <input type="text" id="finAmount" required placeholder="np. 2 100 zł">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finStatus">Status płatności</label>
+                            <select id="finStatus" class="admin-select">
+                                <option value="Opłacone ✓">Opłacone ✓</option>
+                                <option value="Do zapłaty ⏳">Do zapłaty ⏳</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Zapisz w tabeli klienta ⚡</button>
+                    </form>
+
+                    <div class="glass-card">
+                        <h3 style="margin-bottom: 1.2rem;">📊 Obecne pozycje w tabeli klienta</h3>
+                        <ul class="dash-task-list" id="adminFinanceList"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 4: CZAT Z KLIENTEM
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-chat">
+                <div class="dash-section-title">
+                    <span class="section-tag">Komunikator 1:1 (Czas rzeczywisty)</span>
+                    <h2>Odpisz wybranemu klientowi jako Wake The Brand ⚡</h2>
+                </div>
+
+                <div class="chat-container glass-card">
+                    <div class="chat-messages" id="adminChatBox"></div>
+
+                    <form class="chat-input-row" id="adminChatForm">
+                        <input type="text" id="adminChatInput" required placeholder="Wpisz odpowiedź dla klienta jako Wake The Brand...">
+                        <button type="submit" class="btn btn-primary">Wyślij jako Admin ⚡</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 5: ZAPYTANIA Z FORMULARZA KONTAKTOWEGO
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-leads">
+                <div class="dash-section-title">
+                    <span class="section-tag">Skrzynka Odbiorcza Formularza</span>
+                    <h2>Wiadomości wysłane przez podstronę Kontakt</h2>
+                    <p>Tutaj trafiają wszystkie zapytania od osób, które wypełniły formularz na stronie kontakt.html.</p>
+                </div>
+
+                <div class="glass-card">
+                    <ul class="dash-task-list" id="adminLeadsList">
+                        <li class="dash-task-item"><span>Brak nowych zgłoszeń lub wczytywanie z bazy...</span></li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Wspólny plik JS (z wbudowanym Firebase) -->
+    <script src="script.js"></script>
+</body>
+</html>

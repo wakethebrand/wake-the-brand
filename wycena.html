@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Wyceny | Wake The Brand</title>
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Wspólny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAWIGACJA -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html">Start</a>
+                <a href="uslugi.html">Usługi</a>
+                <a href="koncepty.html">Nasza Wizja</a>
+                <a href="wycena.html" class="active">Wycena</a>
+                <a href="kontakt.html">Kontakt</a>
+                <div class="nav-actions">
+                    <a href="logowanie.html" class="btn btn-sm btn-client">🔒 Strefa Klienta</a>
+                </div>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- NAGŁÓWEK PODSTRONY -->
+    <section class="page-header">
+        <div class="glow glow-1"></div>
+        <div class="container">
+            <span class="section-tag">Zero ukrytych kosztów</span>
+            <h1>Skonfiguruj własny <span class="gradient-text">pakiet budzący markę</span></h1>
+            <p>U nas nie musisz czekać tydzień na wycenę mailową. Zaznacz elementy poniżej, zobacz koszt na żywo i przypisz pakiet do swojego konta w Strefie Klienta.</p>
+        </div>
+    </section>
+
+    <!-- INTERAKTYWNY KALKULATOR Z PARAGONEM -->
+    <section class="section" style="padding-top: 1.5rem;">
+        <div class="container">
+            <div class="calculator-box glass-card">
+                
+                <!-- Lewa kolumna: Opcje -->
+                <div class="calc-left">
+                    <div class="billing-toggle-box">
+                        <span>Tryb współpracy:</span>
+                        <div class="billing-btns">
+                            <button type="button" class="billing-btn active" data-discount="1">Elastyczny (1 miesiąc)</button>
+                            <button type="button" class="billing-btn" data-discount="0.85">Pakiet 3 miesiące (-15%)</button>
+                        </div>
+                    </div>
+
+                    <div class="calc-options">
+                        <label class="calc-option">
+                            <input type="checkbox" class="service-checkbox" data-name="Social Media & Rolki" value="1200" checked>
+                            <span class="custom-check"></span>
+                            <div class="opt-text">
+                                <strong>Prowadzenie Social Media & Reels</strong>
+                                <span>8 postów, 4 dynamiczne Rolki, grafiki, opisy i harmonogram</span>
+                            </div>
+                            <span class="opt-price">1200 zł</span>
+                        </label>
+
+                        <label class="calc-option">
+                            <input type="checkbox" class="service-checkbox" data-name="Kampanie Meta / Google Ads" value="1000">
+                            <span class="custom-check"></span>
+                            <div class="opt-text">
+                                <strong>Kampanie Płatne (Meta / Google Ads)</strong>
+                                <span>Konfiguracja reklam, kreacje, targetowanie i optymalizacja</span>
+                            </div>
+                            <span class="opt-price">1000 zł</span>
+                        </label>
+
+                        <label class="calc-option">
+                            <input type="checkbox" class="service-checkbox" data-name="Branding & Kreacja Graficzna" value="900">
+                            <span class="custom-check"></span>
+                            <div class="opt-text">
+                                <strong>Identyfikacja Wizualna & Grafika</strong>
+                                <span>Projekt logo, dobór barw, szablony i materiały promocyjne</span>
+                            </div>
+                            <span class="opt-price">900 zł</span>
+                        </label>
+
+                        <label class="calc-option">
+                            <input type="checkbox" class="service-checkbox" data-name="Nowoczesna Strona WWW" value="1800">
+                            <span class="custom-check"></span>
+                            <div class="opt-text">
+                                <strong>Nowoczesna Strona WWW (Jednorazowo)</strong>
+                                <span>Indywidualny kod HTML/CSS/JS, pełna responsywność i szybkość</span>
+                            </div>
+                            <span class="opt-price">1800 zł</span>
+                        </label>
+                    </div>
+
+                    <div class="slider-group">
+                        <label for="adBudget">Planowany budżet mediowy na kliknięcia w reklamy (opcjonalnie): <strong id="budgetValue">1000 zł</strong></label>
+                        <input type="range" id="adBudget" min="0" max="10000" step="500" value="1000">
+                    </div>
+                </div>
+
+                <!-- Prawa kolumna: Podsumowanie (Paragon) -->
+                <div class="calc-right">
+                    <div class="summary-box">
+                        <span class="receipt-title">🧾 Twój skonfigurowany zestaw:</span>
+                        <ul class="receipt-list" id="receiptList">
+                            <!-- Pozycje generowane na żywo przez script.js -->
+                        </ul>
+                        <hr>
+                        <span>Szacowana inwestycja w nasze prace:</span>
+                        <div class="total-price"><span id="totalPrice">1200</span> PLN</div>
+                        <p class="summary-note">+ budżet na reklamy (<span id="summaryBudget">1000</span> zł)</p>
+                        <hr>
+                        <ul class="summary-perks">
+                            <li>✓ Wliczony rabat „Pierwszy Partner (-30%)”</li>
+                            <li>✓ Dostęp 24/7 do Panelu Klienta i czatu</li>
+                            <li>✓ Rozliczenie: Rachunek / Umowa / Faktura VAT</li>
+                        </ul>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button type="button" class="btn btn-primary btn-full" id="transferToPanelBtn">Zapisz wycenę i załóż konto 🔒</button>
+                            <button type="button" class="btn btn-outline btn-full" id="transferQuoteBtn">Wyślij zapytanie bez konta →</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- JAK SIĘ ROZLICZAMY (BEZ ZAREJESTROWANEJ FIRMY - 100% LEGALNIE DLA B2B) -->
+    <section class="section bg-darker">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Elastyczne i wygodne formalności</span>
+                <h2>Jak wygląda rozliczenie i księgowanie kosztów?</h2>
+                <p>Działamy jako zwinne, niezależne studio kreatywne. Dopasowujemy formę dokumentu księgowego do tego, jak rozlicza się Twoja firma:</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🧾</div>
+                    <h3>1. Prosty Rachunek (0% VAT)</h3>
+                    <p>Idealny dla firm niebędących płatnikami VAT lub szukających niższej ceny końcowej. Otrzymujesz imienny rachunek, który w 100% wrzucasz w koszty uzyskania przychodu swojej działalności.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏢</div>
+                    <h3>2. Faktura VAT 23% (przez Useme)</h3>
+                    <p>Potrzebujesz pełnej Faktury VAT 23% od polskiej spółki? Wystawiamy ją za pośrednictwem bezpiecznego operatora rozliczeń Useme. Ty opłacasz jedną fakturę, a my zajmujemy się resztą.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📝</div>
+                    <h3>3. Umowa o Dzieło + Prawa Autorskie</h3>
+                    <p>Przy projektach jednorazowych (np. kodowanie strony WWW lub tworzenie logo) możemy podpisać bezpośrednią, prostą umowę online z pełnym przekazaniem praw autorskich do wykonanych prac.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ZA CO PŁACISZ, A ZA CO NIE -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Czysty układ</span>
+                <h2>Gdzie trafia każda Twoja złotówka?</h2>
+            </div>
+
+            <div class="makeover-grid">
+                <div class="service-card">
+                    <h3>✅ Za co płacisz w Wake The Brand:</h3>
+                    <ul class="service-list" style="border: none; padding-top: 0.5rem;">
+                        <li>Czas poświęcony na projektowanie, montaż wideo i pisanie kodu</li>
+                        <li>Dostęp do dedykowanego Panelu Klienta i komunikatora 24/7</li>
+                        <li>Przygotowanie strategii oraz analizę Twojej konkurencji</li>
+                        <li>Szybkie poprawki i bezpośredni kontakt z twórcą projektu</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <h3>❌ Za co u nas NIE dopłacasz:</h3>
+                    <ul class="service-list" style="border: none; padding-top: 0.5rem;">
+                        <li>0 zł za wynajem drogiego biurowca i ekspresów do kawy</li>
+                        <li>0 zł za prowizje dla handlowców i pośredników (Account Managerów)</li>
+                        <li>0 zł za założenie i utrzymanie konta w Strefie Klienta</li>
+                        <li>0 zł ukrytych opłat startowych przy rozpoczęciu współpracy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STOPKA -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+                    <p>Zdalne studio kreatywno-marketingowe. Budzimy uśpione marki za pomocą nowoczesnych stron WWW, brandingu i kampanii Social Media.</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Nawigacja</h4>
+                    <a href="index.html">Start</a>
+                    <a href="uslugi.html">Usługi i Pakiety</a>
+                    <a href="koncepty.html">Nasza Wizja</a>
+                    <a href="wycena.html">Kalkulator Wyceny</a>
+                    <a href="kontakt.html">Kontakt</a>
+                </div>
+                <div class="footer-nav">
+                    <h4>Strefa Klienta & Prawo</h4>
+                    <a href="logowanie.html">🔒 Logowanie / Rejestracja</a>
+                    <a href="polityka.html">Regulamin Serwisu</a>
+                    <a href="polityka.html#prywatnosc">Polityka Prywatności (RODO)</a>
+                    <button type="button" class="footer-link-btn" id="openCookiesBtn">🍪 Ustawienia Cookies</button>
+                </div>
+                <div class="footer-cta">
+                    <h4>Obudź swoją markę</h4>
+                    <p>Skonfiguruj pakiet lub załóż konto w panelu i napisz do nas bezpośrednio na czacie.</p>
+                    <a href="logowanie.html" class="btn btn-primary btn-sm">Załóż konto klienta →</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Wake The Brand. Wszystkie prawa zastrzeżone.</span>
+                <span>100% Remote Studio • Stworzone z pasją i dużą ilością kofeiny ☕</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BANER COOKIES -->
+    <div class="cookie-banner hidden" id="cookieBanner">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <strong>🍪 Szanujemy Twoją prywatność i cenimy konkrety</strong>
+                <p>Używamy plików cookies oraz pamięci przeglądarki (localStorage), aby zapewnić poprawne działanie Strefy Klienta, zapamiętać Twoją wycenę z kalkulatora oraz – za Twoją zgodą – analizować ruch na stronie. Szczegóły znajdziesz w <a href="polityka.html#cookies">Polityce Cookies</a>.</p>
+            </div>
+            <div class="cookie-btns">
+                <button type="button" class="btn btn-outline btn-sm" id="cookieEssentialBtn">Tylko niezbędne</button>
+                <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptAllBtn">Akceptuję wszystkie ⚡</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

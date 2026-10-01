@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt Online | Wake The Brand</title>
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Wspólny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAWIGACJA -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html">Start</a>
+                <a href="uslugi.html">Usługi</a>
+                <a href="koncepty.html">Nasza Wizja</a>
+                <a href="wycena.html">Wycena</a>
+                <a href="kontakt.html" class="active">Kontakt</a>
+                <div class="nav-actions">
+                    <a href="logowanie.html" class="btn btn-sm btn-client">🔒 Strefa Klienta</a>
+                </div>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- NAGŁÓWEK PODSTRONY -->
+    <section class="page-header">
+        <div class="glow glow-2"></div>
+        <div class="container">
+            <span class="section-tag">100% Zdalna Komunikacja</span>
+            <h1>Czas obudzić <span class="gradient-text">Twoją markę</span></h1>
+            <p>Nie musisz nigdzie jechać ani brać wolnego w pracy. Napisz do nas przez formularz poniżej lub załóż bezpłatne konto w Strefie Klienta, aby porozmawiać na wewnętrznym czacie.</p>
+        </div>
+    </section>
+
+    <!-- SEKCJA KONTAKTOWA -->
+    <section class="section" style="padding-top: 2rem;">
+        <div class="container contact-grid">
+            
+            <!-- Lewa kolumna: Informacje i szybki skrót do Panelu -->
+            <div class="contact-info">
+                <h2>Wybierz najwygodniejszą drogę kontaktu</h2>
+                <p>Odpisujemy maksymalnie w ciągu 24 godzin. Pierwsza rozmowa i wstępna propozycja dla Twojej marki są zawsze w 100% darmowe i niezobowiązujące.</p>
+                
+                <div class="contact-cards-list">
+                    <div class="mini-contact-card">
+                        <span class="mini-icon">💬</span>
+                        <div>
+                            <strong>Najszybsza opcja: Czat w Panelu Klienta</strong>
+                            <span>Załóż konto w 30 sekund i pisz z nami bezpośrednio 1:1</span>
+                        </div>
+                    </div>
+                    <div class="mini-contact-card">
+                        <span class="mini-icon">📧</span>
+                        <div>
+                            <strong>Bezpośredni E-mail</strong>
+                            <span>hello@wakethebrand.pl</span>
+                        </div>
+                    </div>
+                    <div class="mini-contact-card">
+                        <span class="mini-icon">📱</span>
+                        <div>
+                            <strong>Telefon / WhatsApp / SMS</strong>
+                            <span>+48 500 000 000 (Pon–Pt, 9:00–19:00)</span>
+                        </div>
+                    </div>
+                    <div class="mini-contact-card">
+                        <span class="mini-icon">🌐</span>
+                        <div>
+                            <strong>Tryb pracy studia</strong>
+                            <span>100% Zdalnie (Obsługujemy firmy z całej Polski)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boks zachęcający do rejestracji zamiast zwykłego maila -->
+                <div class="glass-card" style="margin-top: 2rem; padding: 1.6rem;">
+                    <h4 style="margin-bottom: 0.4rem;">💡 Wolisz od razu widzieć swój panel?</h4>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">Zamiast pisać zwykłego maila, możesz od razu utworzyć bezpłatne konto klienta i korzystać z wewnętrznego komunikatora.</p>
+                    <a href="logowanie.html" class="btn btn-outline btn-sm">Przejdź do rejestracji w Strefie Klienta 🔒</a>
+                </div>
+            </div>
+
+            <!-- Prawa kolumna: Formularz Kontaktowy -->
+            <form class="contact-form glass-card" id="contactForm">
+                <div class="form-group">
+                    <label>W jakim obszarze potrzebujesz wsparcia? (możesz wybrać kilka):</label>
+                    <div class="topic-pills" id="topicPills">
+                        <button type="button" class="topic-pill active">Darmowy Koncept</button>
+                        <button type="button" class="topic-pill">Nowa Strona WWW</button>
+                        <button type="button" class="topic-pill">Social Media & Rolki</button>
+                        <button type="button" class="topic-pill">Logo & Branding</button>
+                        <button type="button" class="topic-pill">Kampanie Ads</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Twoje imię / Nazwa firmy lub projektu</label>
+                    <input type="text" id="name" required placeholder="np. Tomek / Marka XYZ">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Twój adres e-mail lub numer telefonu</label>
+                    <input type="text" id="email" required placeholder="kontakt@twojamarka.pl lub 500 000 000">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Wiadomość / Wybrany pakiet</label>
+                    <textarea id="message" rows="5" required placeholder="Cześć! Chciałbym odświeżyć wizerunek swojej marki w internecie..."></textarea>
+                </div>
+
+                <!-- Checkbox zgody RODO / Polityki Prywatności -->
+                <label class="legal-check">
+                    <input type="checkbox" id="contactConsent" required>
+                    <span>Akceptuję <a href="polityka.html#prywatnosc">Politykę Prywatności</a> i wyrażam zgodę na kontakt w celu przedstawienia oferty współpracy.</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary btn-full">Wyślij wiadomość i odbierz pomysł ⚡</button>
+                <div class="form-feedback" id="formFeedback"></div>
+            </form>
+
+        </div>
+    </section>
+
+    <!-- CO DZIEJE SIĘ PO WYSŁANIU FORMULARZA -->
+    <section class="section bg-darker">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">100% Konkretów</span>
+                <h2>Co wydarzy się po kliknięciu „Wyślij”?</h2>
+                <p>Szanujemy Twój czas – nasz proces od pierwszego kontaktu jest szybki i przejrzysty.</p>
+            </div>
+
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="step-num">Krok 1</div>
+                    <h3>Analiza Twojego zgłoszenia</h3>
+                    <p>Sprawdzamy Twoją obecną stronę WWW lub profile w Social Mediach i szukamy elementów, które można szybko ulepszyć.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">Krok 2</div>
+                    <h3>Konkretna propozycja w 24h</h3>
+                    <p>Wracamy do Ciebie z wstępnym pomysłem, wyceną oraz zaproszeniem do Twojego indywidualnego Panelu Klienta.</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">Krok 3</div>
+                    <h3>Start prac online</h3>
+                    <p>Gdy zaakceptujesz plan, od razu widzisz pierwsze zadania, postępy prac i koszty na swoim koncie w Strefie Klienta.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STOPKA -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+                    <p>Zdalne studio kreatywno-marketingowe. Budzimy uśpione marki za pomocą nowoczesnych stron WWW, brandingu i kampanii Social Media.</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Nawigacja</h4>
+                    <a href="index.html">Start</a>
+                    <a href="uslugi.html">Usługi i Pakiety</a>
+                    <a href="koncepty.html">Nasza Wizja</a>
+                    <a href="wycena.html">Kalkulator Wyceny</a>
+                    <a href="kontakt.html">Kontakt</a>
+                </div>
+                <div class="footer-nav">
+                    <h4>Strefa Klienta & Prawo</h4>
+                    <a href="logowanie.html">🔒 Logowanie / Rejestracja</a>
+                    <a href="polityka.html">Regulamin Serwisu</a>
+                    <a href="polityka.html#prywatnosc">Polityka Prywatności (RODO)</a>
+                    <button type="button" class="footer-link-btn" id="openCookiesBtn">🍪 Ustawienia Cookies</button>
+                </div>
+                <div class="footer-cta">
+                    <h4>Obudź swoją markę</h4>
+                    <p>Skonfiguruj pakiet lub załóż konto w panelu i napisz do nas bezpośrednio na czacie.</p>
+                    <a href="logowanie.html" class="btn btn-primary btn-sm">Załóż konto klienta →</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Wake The Brand. Wszystkie prawa zastrzeżone.</span>
+                <span>100% Remote Studio • Stworzone z pasją i dużą ilością kofeiny ☕</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BANER COOKIES -->
+    <div class="cookie-banner hidden" id="cookieBanner">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <strong>🍪 Szanujemy Twoją prywatność i cenimy konkrety</strong>
+                <p>Używamy plików cookies oraz pamięci przeglądarki (localStorage), aby zapewnić poprawne działanie Strefy Klienta, zapamiętać Twoją wycenę z kalkulatora oraz – za Twoją zgodą – analizować ruch na stronie. Szczegóły znajdziesz w <a href="polityka.html#cookies">Polityce Cookies</a>.</p>
+            </div>
+            <div class="cookie-btns">
+                <button type="button" class="btn btn-outline btn-sm" id="cookieEssentialBtn">Tylko niezbędne</button>
+                <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptAllBtn">Akceptuję wszystkie ⚡</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

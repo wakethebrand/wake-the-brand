@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Klienta | Wake The Brand</title>
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Wspólny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- GÓRNY PASEK PANELU (TOPBAR) -->
+    <header class="dash-topbar">
+        <div class="dash-topbar-left">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+            <span class="dash-badge">Strefa Klienta Online</span>
+        </div>
+        <div class="dash-topbar-right">
+            <div class="user-pill">
+                <span class="status-dot"></span>
+                <span id="clientTopName">Marka Klienta (Konto Aktywne)</span>
+            </div>
+            <a href="index.html" class="btn btn-outline btn-sm" id="logoutBtn">Wyloguj się</a>
+        </div>
+    </header>
+
+    <!-- GŁÓWNY UKŁAD PANELU -->
+    <div class="dashboard-layout">
+        
+        <!-- BOCZNA NAWIGACJA (SIDEBAR) -->
+        <aside class="dash-sidebar">
+            <div class="sidebar-section-label">Menu Klienta</div>
+            <nav class="dash-nav">
+                <button type="button" class="dash-nav-btn active" data-tab="tab-overview">
+                    <span>📊</span> Przegląd & Postęp
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="tab-tasks">
+                    <span>✅</span> Co już zrobiliśmy
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="tab-finances">
+                    <span>🧾</span> Koszty & Rozliczenia
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="tab-chat">
+                    <span>💬</span> Wiadomości (Czat 1:1)
+                </button>
+                <button type="button" class="dash-nav-btn" data-tab="tab-files">
+                    <span>📁</span> Pliki do akceptacji
+                </button>
+            </nav>
+
+            <div class="sidebar-help-box glass-card">
+                <strong>⚡ Twój Opiekun Projektu</strong>
+                <p>Zespół Wake The Brand</p>
+                <span class="online-status">● Dostępny online (czas odp. &lt; 2h)</span>
+            </div>
+        </aside>
+
+        <!-- GŁÓWNA ZAWARTOŚĆ PANELU -->
+        <main class="dash-main">
+
+            <!-- ==========================================
+                 ZAKŁADKA 1: PRZEGLĄD & POSTĘP PRAC
+                 ========================================== -->
+            <section class="dash-tab-content active" id="tab-overview">
+                <div class="dash-welcome">
+                    <div>
+                        <span class="section-tag">Panel zarządzania marką</span>
+                        <h1 id="clientWelcomeTitle">Cześć! Oto aktualny status Twojej marki ⚡</h1>
+                        <p>Tutaj śledzisz na żywo wszystkie działania, koszty oraz wiadomości bez potrzeby spotkań.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm switch-to-chat-btn">Napisz szybką wiadomość 💬</button>
+                </div>
+
+                <!-- 4 KARTY KPI -->
+                <div class="dash-kpi-grid">
+                    <div class="dash-kpi-card glass-card">
+                        <span class="kpi-label">Aktywny Pakiet</span>
+                        <div class="kpi-val" id="clientActivePackage">Podwójny Shot ⚡</div>
+                        <span class="kpi-sub">Rabat Pierwszy Partner (-30%) aktywny</span>
+                    </div>
+
+                    <div class="dash-kpi-card glass-card">
+                        <span class="kpi-label">Postęp prac w tym miesiącu</span>
+                        <div class="kpi-val"><span id="clientProgressPercent">65</span>%</div>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="clientProgressBar" style="width: 65%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="dash-kpi-card glass-card">
+                        <span class="kpi-label">Koszt obsługi (bieżący okres)</span>
+                        <div class="kpi-val" id="clientCurrentCost">2 100 zł</div>
+                        <span class="kpi-sub status-paid" id="clientPaymentStatus">● Opłacone</span>
+                    </div>
+
+                    <div class="dash-kpi-card glass-card">
+                        <span class="kpi-label">Budżet reklamowy (Ads)</span>
+                        <div class="kpi-val" id="clientAdBudget">1 000 zł</div>
+                        <span class="kpi-sub">Kampania aktywna i optymalizowana</span>
+                    </div>
+                </div>
+
+                <!-- SKRÓT OSTATNICH DZIAŁAŃ + OSTATNIA WIADOMOŚĆ -->
+                <div class="dash-two-cols">
+                    <div class="glass-card">
+                        <div class="card-header-row">
+                            <h3>Ostatnio zrealizowane zadania</h3>
+                            <button type="button" class="text-link-btn" data-go-tab="tab-tasks">Zobacz wszystkie →</button>
+                        </div>
+                        <ul class="dash-task-list" id="overviewTaskList">
+                            <!-- Generowane z danych przez script.js -->
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header-row">
+                            <h3>Ostatnia wiadomość od Wake The Brand</h3>
+                            <button type="button" class="text-link-btn" data-go-tab="tab-chat">Otwórz czat →</button>
+                        </div>
+                        <div class="latest-msg-preview" id="latestMsgPreview">
+                            <strong>Wake The Brand ⚡</strong>
+                            <p>„Cześć! Wrzuciliśmy do zakładki Pliki nową koncepcję grafik oraz układ strony głównej. Daj znać na czacie, jak Ci się podoba!”</p>
+                            <span class="msg-time">Dzisiaj, 11:40</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA 2: CO JUŻ ZROBILIŚMY (ZADANIA)
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="tab-tasks">
+                <div class="dash-section-title">
+                    <span class="section-tag">Pełna transparentność</span>
+                    <h2>Harmonogram i lista wykonanych prac</h2>
+                    <p>Każde zadanie aktualizujemy na bieżąco – dokładnie widzisz, za co płacisz.</p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="task-legend">
+                        <span class="badge-status done">✓ Zrobione</span>
+                        <span class="badge-status progress">⏳ W trakcie realizacji</span>
+                        <span class="badge-status todo">📋 Zaplanowane</span>
+                    </div>
+                    <ul class="dash-task-list full-task-list" id="clientFullTaskList">
+                        <!-- Wypełniane dynamicznie przez script.js -->
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA 3: KOSZTY & ROZLICZENIA
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="tab-finances">
+                <div class="dash-section-title">
+                    <span class="section-tag">Finanse pod kontrolą</span>
+                    <h2>Zestawienie kosztów i historia rozliczeń</h2>
+                    <p>Przejrzyste podsumowanie Twojego pakietu oraz wybranej formy dokumentu księgowego (Rachunek / Umowa / Faktura VAT przez Useme).</p>
+                </div>
+
+                <div class="comparison-table-wrapper glass-card">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Okres / Projekt</th>
+                                <th>Zakres prac</th>
+                                <th>Forma rozliczenia</th>
+                                <th>Kwota</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientFinanceTable">
+                            <!-- Wypełniane dynamicznie przez script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA 4: WIADOMOŚCI (CZAT WEWNĘTRZNY 1:1)
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="tab-chat">
+                <div class="dash-section-title">
+                    <span class="section-tag">Komunikator 1:1</span>
+                    <h2>Czat bezpośredni z Wake The Brand</h2>
+                    <p>Napisz swoje uwagi, prześlij link do materiałów lub zadaj pytanie – cała historia rozmowy zostaje tutaj.</p>
+                </div>
+
+                <div class="chat-container glass-card">
+                    <div class="chat-messages" id="clientChatBox">
+                        <!-- Wiadomości wczytywane przez script.js -->
+                    </div>
+
+                    <form class="chat-input-row" id="clientChatForm">
+                        <input type="text" id="clientChatInput" required placeholder="Napisz wiadomość do Wake The Brand...">
+                        <button type="submit" class="btn btn-primary">Wyślij ⚡</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA 5: PLIKI I MATERIAŁY DO AKCEPTACJI
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="tab-files">
+                <div class="dash-section-title">
+                    <span class="section-tag">Materiały projektowe</span>
+                    <h2>Pliki i kreacje gotowe do Twojej akceptacji</h2>
+                    <p>Sprawdź przygotowane materiały i kliknij „Akceptuję”, abyśmy mogli przejść do publikacji.</p>
+                </div>
+
+                <div class="services-grid" id="clientFilesGrid">
+                    <div class="service-card">
+                        <div class="service-icon">🎨</div>
+                        <h3>Koncepcja Wizualna & Logo</h3>
+                        <p>Zestaw kolorystyczny marki, typografia oraz 3 warianty kreacji przewodniej (Key Visual).</p>
+                        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-primary btn-sm approve-file-btn">Akceptuję projekt ✓</button>
+                            <button type="button" class="btn btn-outline btn-sm switch-to-chat-btn">Zgłoś poprawki na czacie</button>
+                        </div>
+                    </div>
+
+                    <div class="service-card">
+                        <div class="service-icon">🎬</div>
+                        <h3>Paczka Rolek (Reels #1 – #4)</h3>
+                        <p>Zmontowane wideo z dynamicznymi napisami i muzyką, gotowe do publikacji na Instagramie i TikToku.</p>
+                        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-primary btn-sm approve-file-btn">Akceptuję projekt ✓</button>
+                            <button type="button" class="btn btn-outline btn-sm switch-to-chat-btn">Zgłoś poprawki na czacie</button>
+                        </div>
+                    </div>
+
+                    <div class="service-card">
+                        <div class="service-icon">💻</div>
+                        <h3>Makieta Strony WWW (RWD)</h3>
+                        <p>Interaktywny podgląd nowej strony głównej oraz sekcji wyceny dla Twoich klientów.</p>
+                        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-primary btn-sm approve-file-btn">Akceptuję projekt ✓</button>
+                            <button type="button" class="btn btn-outline btn-sm switch-to-chat-btn">Zgłoś poprawki na czacie</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Wspólny plik JS -->
+    <script src="script.js"></script>
+</body>
+</html>

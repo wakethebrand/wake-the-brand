@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wake The Brand | Zdalne Studio Kreatywno-Marketingowe</title>
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Wspólny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAWIGACJA (Wspólna dla wszystkich podstron) -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" class="active">Start</a>
+                <a href="uslugi.html">Usługi</a>
+                <a href="koncepty.html">Nasza Wizja</a>
+                <a href="wycena.html">Wycena</a>
+                <a href="kontakt.html">Kontakt</a>
+                <div class="nav-actions">
+                    <a href="logowanie.html" class="btn btn-sm btn-client">🔒 Strefa Klienta</a>
+                </div>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SEKCJA HERO -->
+    <section class="hero">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="container hero-grid">
+            <div class="hero-text">
+                <span class="badge">🌐 100% Zdalne Studio Kreatywne</span>
+                <h1>Twoja marka śpi? <span class="gradient-text">Obudzimy ją online.</span></h1>
+                <p>Nie tracimy Twojego czasu na dojazdy i nudne nasiadówki w biurze. Projektujemy nowoczesne strony WWW, wyrazisty branding i kampanie Social Media, a cały postęp prac, koszty i czat masz pod ręką 24/7 w swoim **Panelu Klienta**.</p>
+                <div class="hero-btns">
+                    <a href="wycena.html" class="btn btn-primary">Oblicz koszt pakietu ⚡</a>
+                    <a href="logowanie.html" class="btn btn-outline">Zobacz Strefę Klienta</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="glass-card pulse-card">
+                    <div class="metric-header">
+                        <span class="status-dot"></span> Program Startowy: Pierwsi Partnerzy
+                    </div>
+                    <div class="metric-value">-30%</div>
+                    <div class="metric-label">Szukamy 3 ambitnych marek, z którymi zbudujemy nasze flagowe portfolio. Otrzymujesz pełne zaangażowanie, dostęp do panelu online i niższą stawkę na start.</div>
+                    <div class="slots-box">
+                        <div class="slot-title">Dostępne miejsca w programie:</div>
+                        <div class="slots-bar">
+                            <span class="slot active">Slot #1 Wolny</span>
+                            <span class="slot active">Slot #2 Wolny</span>
+                            <span class="slot active">Slot #3 Wolny</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PŁYNĄCY PASEK (MARQUEE) -->
+    <div class="marquee-bar">
+        <div class="marquee-track">
+            <span>⚡ WAKE THE BRAND</span>
+            <span>• 100% WSPÓŁPRACA ZDALNA</span>
+            <span>• DEDYKOWANY PANEL KLIENTA 24/7</span>
+            <span>• NOWOCZESNE STRONY WWW</span>
+            <span>• DYNAMICZNE ROLKI & SOCIAL MEDIA</span>
+            <span>• WYRAZISTY BRANDING</span>
+            <span>⚡ WAKE THE BRAND</span>
+            <span>• 100% WSPÓŁPRACA ZDALNA</span>
+            <span>• DEDYKOWANY PANEL KLIENTA 24/7</span>
+            <span>• NOWOCZESNE STRONY WWW</span>
+            <span>• DYNAMICZNE ROLKI & SOCIAL MEDIA</span>
+            <span>• WYRAZISTY BRANDING</span>
+        </div>
+    </div>
+
+    <!-- INTERAKTYWNY SYMULATOR: UŚPIONA VS OBUDZONA MARKA -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Zobacz różnicę na żywo</span>
+                <h2>Co oznacza „Obudzenie Marki”?</h2>
+                <p>Przełącz widok poniżej i zobacz, jak zmieniamy obecność Twojego biznesu w internecie.</p>
+                
+                <div class="wake-toggle-wrapper">
+                    <button type="button" class="wake-btn active" id="btnSleep">😴 Uśpiona Marka (Przed)</button>
+                    <button type="button" class="wake-btn" id="btnAwake">⚡ Obudzona Marka (Z nami)</button>
+                </div>
+            </div>
+
+            <div class="wake-comparison-box glass-card" id="wakeDisplay">
+                <!-- Stan 1: Uśpiona -->
+                <div class="wake-state" id="stateSleep">
+                    <div class="state-badge sleep-badge">Typowy problem większości firm</div>
+                    <h3>Niewidoczna oferta i chaos w komunikacji</h3>
+                    <div class="state-grid">
+                        <div class="state-item">
+                            <strong>📉 Strona sprzed dekady (lub jej brak)</strong>
+                            <p>Rozjeżdża się na telefonach, ładuje wieki i nie ma konkretnego przycisku, który zamienia odwiedzającego w klienta.</p>
+                        </div>
+                        <div class="state-item">
+                            <strong>🥱 Martwe Social Media</strong>
+                            <p>Przypadkowe posty wrzucane raz na miesiąc, brak wideo (Reels/TikTok) i estetyka, która zlewa się z setką innych firm.</p>
+                        </div>
+                        <div class="state-item">
+                            <strong>📬 Chaos na mailach i Messengerze</strong>
+                            <p>Brak wiedzy, na jakim etapie są prace marketingowe, zgubione pliki i tygodnie czekania na prostą odpowiedź.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stan 2: Obudzona -->
+                <div class="wake-state hidden" id="stateAwake">
+                    <div class="state-badge awake-badge">Standard Wake The Brand ⚡</div>
+                    <h3>Nowoczesny wizerunek i pełna kontrola w Panelu Klienta</h3>
+                    <div class="state-grid">
+                        <div class="state-item awake-border">
+                            <strong>🚀 Szybka, konwertująca strona WWW</strong>
+                            <p>Zaprojektowana od podstaw pod Twój styl, z interaktywnymi elementami i jasną ścieżką prowadzącą do zakupu lub kontaktu.</p>
+                        </div>
+                        <div class="state-item awake-border">
+                            <strong>🔥 Wideo i kreacje z charakterem</strong>
+                            <p>Dynamiczny montaż Rolek, wyrazisty branding i spójna komunikacja, która przyciąga uwagę w pierwszych 2 sekundach.</p>
+                        </div>
+                        <div class="state-item awake-border">
+                            <strong>💻 Twój prywatny Panel Klienta Online</strong>
+                            <p>Logujesz się jednym kliknięciem: widzisz na żywo listę zrobionych zadań, przejrzyste koszty i piszesz z nami na wewnętrznym czacie.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JAK DZIAŁA NASZ SYSTEM ZDALNY + PANEL KLIENTA -->
+    <section class="section bg-darker">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Zero spotkań dla samego spotykania</span>
+                <h2>Twój marketing pod kontrolą w Strefie Klienta</h2>
+                <p>Zamiast tracić godziny w korkach, dajemy Ci dostęp do autorskiego panelu online. Zobacz, co zyskujesz po założeniu konta:</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Postęp prac na żywo</h3>
+                    <p>W każdej chwili widzisz, co jest już gotowe (np. projekt logo, kodowanie podstrony, montaż rolki), a nad czym właśnie pracujemy.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💬</div>
+                    <h3>Wewnętrzny komunikator</h3>
+                    <p>Koniec z szukaniem wątków na poczcie czy SMS-ach. W panelu masz bezpośredni czat 1:1 z nami – cała historia ustaleń w jednym miejscu.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🧾</div>
+                    <h3>Przejrzyste koszty i budżet</h3>
+                    <p>Masz pełen wgląd w aktualne rozliczenia, wybrane pakiety oraz status płatności – zero ukrytych dopłat i niespodzianek.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">⚡</div>
+                    <h3>Szybka akceptacja materiałów</h3>
+                    <p>Podsyłamy Ci linki do gotowych grafik, wideo lub testowej wersji strony WWW, a Ty jednym kliknięciem dajesz zielone światło.</p>
+                </div>
+            </div>
+
+            <div class="cta-banner glass-card">
+                <div>
+                    <h3>Chcesz zobaczyć, jak wygląda praca od środka?</h3>
+                    <p>Załóż bezpłatne konto w Strefie Klienta lub zaloguj się na konto demonstracyjne.</p>
+                </div>
+                <a href="logowanie.html" class="btn btn-primary">Przejdź do Strefy Klienta 🔒</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FILARY PODEJŚCIA -->
+    <section class="pillars-bar">
+        <div class="container pillars-grid">
+            <div class="pillar-item">
+                <h2>100<span>%</span></h2>
+                <p>Zdalnie – obsługujemy całą Polskę</p>
+            </div>
+            <div class="pillar-item">
+                <h2>24<span>/7</span></h2>
+                <p>Dostęp do Twojego Panelu Klienta</p>
+            </div>
+            <div class="pillar-item">
+                <h2>0<span>zł</span></h2>
+                <p>Za założenie konta i wstępną wycenę</p>
+            </div>
+            <div class="pillar-item">
+                <h2>Flex</h2>
+                <p>Elastyczne rozliczenia bez długich umów</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ AKORDEON -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Masz pytania?</span>
+                <h2>Gramy w otwarte karty</h2>
+                <p>Sprawdź odpowiedzi na najczęstsze pytania o współpracę zdalną, start projektu i rozliczenia.</p>
+            </div>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        <span>Jak wygląda współpraca w 100% zdalna? Czy musimy się spotykać?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Nie musimy! Szanujemy Twój czas. Cały proces – od zebrania wytycznych, przez akceptację projektów, aż po codzienny kontakt – odbywa się przez nasz Panel Klienta, wewnętrzny czat lub krótkie rozmowy online/telefoniczne wtedy, gdy masz na to chwilę.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        <span>Dopiero startujecie jako studio – dlaczego warto Wam zaufać?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Bo u nas nie jesteś jednym z setki klientów wrzuconym do korporacyjnej maszyny. Tworzymy nasze flagowe portfolio, dlatego Twój projekt traktujemy priorytetowo. Dajemy Ci świeże pomysły, bezpośredni kontakt z wykonawcą oraz 30% niższą stawkę w programie „Pierwsi Partnerzy”.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        <span>Jak wygląda kwestia rozliczenia i wrzucenia usług w koszty firmy?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Działamy w elastycznym modelu niezależnego studia. W zależności od Twoich potrzeb rozliczamy się na podstawie rachunku (który normalnie księgujesz w kosztach), bezpośredniej umowy lub pełnej Faktury VAT 23% wystawianej za pośrednictwem platformy rozliczeniowej Useme.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question">
+                        <span>Czy założenie konta w Strefie Klienta do czegoś mnie zobowiązuje?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutnie do niczego. Rejestracja w panelu jest całkowicie darmowa – pozwala Ci napisać do nas na wewnętrznym czacie, przesłać wytyczne i zobaczyć, jak wygodnie zarządzamy projektami.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STOPKA (Z linkami do Regulaminów i Cookies) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+                    <p>Zdalne studio kreatywno-marketingowe. Budzimy uśpione marki za pomocą nowoczesnych stron WWW, brandingu i kampanii Social Media.</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Nawigacja</h4>
+                    <a href="index.html">Start</a>
+                    <a href="uslugi.html">Usługi i Pakiety</a>
+                    <a href="koncepty.html">Nasza Wizja</a>
+                    <a href="wycena.html">Kalkulator Wyceny</a>
+                    <a href="kontakt.html">Kontakt</a>
+                </div>
+                <div class="footer-nav">
+                    <h4>Strefa Klienta & Prawo</h4>
+                    <a href="logowanie.html">🔒 Logowanie / Rejestracja</a>
+                    <a href="polityka.html">Regulamin Serwisu</a>
+                    <a href="polityka.html#prywatnosc">Polityka Prywatności (RODO)</a>
+                    <button type="button" class="footer-link-btn" id="openCookiesBtn">🍪 Ustawienia Cookies</button>
+                </div>
+                <div class="footer-cta">
+                    <h4>Obudź swoją markę</h4>
+                    <p>Skonfiguruj pakiet lub załóż konto w panelu i napisz do nas bezpośrednio na czacie.</p>
+                    <a href="logowanie.html" class="btn btn-primary btn-sm">Załóż konto klienta →</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Wake The Brand. Wszystkie prawa zastrzeżone.</span>
+                <span>100% Remote Studio • Stworzone z pasją i dużą ilością kofeiny ☕</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BANER COOKIES (Gotowy pod obsługę w JS) -->
+    <div class="cookie-banner hidden" id="cookieBanner">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <strong>🍪 Szanujemy Twoją prywatność i cenimy konkrety</strong>
+                <p>Używamy plików cookies oraz pamięci przeglądarki (localStorage), aby zapewnić poprawne działanie Strefy Klienta, zapamiętać Twoją wycenę z kalkulatora oraz – za Twoją zgodą – analizować ruch na stronie. Szczegóły znajdziesz w <a href="polityka.html#cookies">Polityce Cookies</a>.</p>
+            </div>
+            <div class="cookie-btns">
+                <button type="button" class="btn btn-outline btn-sm" id="cookieEssentialBtn">Tylko niezbędne</button>
+                <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptAllBtn">Akceptuję wszystkie ⚡</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wspólny plik JS -->
+    <script src="script.js"></script>
+</body>
+</html>
