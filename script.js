@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Główny mail, na który przychodzą wiadomości z formularza kontaktowego (kontakt.html)
     const CONTACT_RECEIVER_EMAIL = "kontakt@wakethebrand.pl";
 
-    // Twoje adresy e-mail z uprawnieniami Administratora (Właściciela)
+    // Główne adresy e-mail Właściciela (mają zawsze uprawnienia Administratora)
     const ADMIN_EMAILS = [
         'kontakt@wakethebrand.pl',
         'contact@wakethebrand.pl',
@@ -27,9 +27,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Domyślny szablon danych dla nowego klienta
     const defaultClientData = {
-        clientName: 'Marka Klienta (Konto Aktywne)',
+        clientName: 'Marka Klienta (Konto Testowe)',
         userName: 'Klient',
-        email: 'kontakt@wakethebrand.pl',
+        email: 'klient@twojamarka.pl',
+        isAdminRole: false,
+        isBlocked: false,
+        createdAt: 'Październik 2026',
         packageName: 'Podwójny Shot ⚡',
         progressPercent: 65,
         currentCost: '2 100 zł',
@@ -59,6 +62,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const hours = String(now.getHours()).padStart(2, '0');
         const mins = String(now.getMinutes()).padStart(2, '0');
         return `${day}.${month}, ${hours}:${mins}`;
+    }
+
+    function isOwnerEmail(email) {
+        if (!email) return false;
+        return ADMIN_EMAILS.includes(email.trim().toLowerCase());
     }
 
     function getLocalData() {
@@ -344,6 +352,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================================
     const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
     const dashTabContents = document.querySelectorAll('.dash-tab-content');
+    const activeClientBanner = document.getElementById('activeClientBanner');
+    const backToAccountsBtn = document.getElementById('backToAccountsBtn');
 
     function activateDashTab(targetId) {
         dashNavBtns.forEach(b => {
@@ -354,6 +364,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             sec.classList.toggle('hidden', !isMatch);
             sec.classList.toggle('active', isMatch);
         });
+
+        // Pokazuj baner wybranego klienta tylko w zakładkach edycji konkretnego klienta
+        if (activeClientBanner) {
+            const clientEditTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-finances', 'admin-tab-chat'];
+            if (clientEditTabs.includes(targetId)) {
+                activeClientBanner.classList.remove('hidden');
+            } else {
+                activeClientBanner.classList.add('hidden');
+            }
+        }
     }
 
     dashNavBtns.forEach(btn => {
@@ -361,6 +381,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             activateDashTab(btn.getAttribute('data-tab'));
         });
     });
+
+    if (backToAccountsBtn) {
+        backToAccountsBtn.addEventListener('click', () => {
+            activateDashTab('admin-tab-accounts');
+        });
+    }
 
     document.querySelectorAll('[data-go-tab]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -381,6 +407,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let db = null;
     let fbFns = {};
     let firebaseReady = false;
+    let currentLoggedInAdminEmail = localStorage.getItem('wtb_admin_email') || CONTACT_RECEIVER_EMAIL;
 
     try {
         const appMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
@@ -402,6 +429,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             statusEl.style.color = '#d4ff00';
             statusEl.innerText = '● Połączono z chmurą Firebase (Live)';
         }
+
+        fbFns.onAuthStateChanged(auth, (user) => {
+            if (user && user.email) {
+                currentLoggedInAdminEmail = user.email;
+                localStorage.setItem('wtb_admin_email', user.email);
+            }
+            const adminEmailLabel = document.getElementById('loggedInAdminEmail');
+            if (adminEmailLabel) {
+                adminEmailLabel.innerText = currentLoggedInAdminEmail;
+            }
+        });
     } catch (err) {
         console.warn('Praca w trybie lokalnym (brak połączenia z CDN Firebase):', err);
         const statusEl = document.getElementById('firebaseStatusText');
@@ -470,7 +508,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 timestamp: Date.now()
             };
 
-            // A) Zapis lokalny + dopisanie do wiadomości na czacie Admina
             saveLocalLead(leadObj);
             const localPortal = getLocalData();
             localPortal.messages = localPortal.messages || [];
@@ -482,17 +519,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             saveLocalData(localPortal);
 
-            // B) Zapis do bazy Firebase (kolekcja contact_leads oraz czat demo_client)
             if (firebaseReady && db) {
                 try {
                     await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj);
                     await saveClientData('demo_client', localPortal);
                 } catch (err) {
-                    console.error('Błąd zapisu formularza w Firebase (sprawdź zakładkę Rules):', err);
+                    console.error('Błąd zapisu formularza w Firebase:', err);
                 }
             }
 
-            // C) Wysyłka powiadomienia e-mail prosto na kontakt@wakethebrand.pl
             if (window.location.protocol !== 'file:') {
                 try {
                     await fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
@@ -603,13 +638,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             loginFeedback.style.color = '#d4ff00';
             loginFeedback.innerText = 'Weryfikacja danych w bazie Firebase... ⏳';
 
-            if (firebaseReady && auth) {
+            if (firebaseReady && auth && db) {
                 try {
                     const userCred = await fbFns.signInWithEmailAndPassword(auth, email, password);
-                    localStorage.setItem('wtb_active_uid', userCred.user.uid);
+                    const uid = userCred.user.uid;
+                    localStorage.setItem('wtb_active_uid', uid);
 
-                    if (ADMIN_EMAILS.includes(email)) {
-                        loginFeedback.innerText = 'Zalogowano jako Administrator! Otwieram HQ... ⚡';
+                    // Sprawdź dokument użytkownika w Firestore (czy ma nadaną rolę Admina lub czy konto jest zablokowane)
+                    let userDocData = null;
+                    try {
+                        const snap = await fbFns.getDoc(fbFns.doc(db, 'clients', uid));
+                        if (snap.exists()) userDocData = snap.data();
+                    } catch (e) {}
+
+                    if (userDocData && userDocData.isBlocked) {
+                        await fbFns.signOut(auth);
+                        loginFeedback.style.color = '#fca5a5';
+                        loginFeedback.innerText = '⛔ To konto zostało zawieszone przez Administratora. Skontaktuj się z kontakt@wakethebrand.pl.';
+                        return;
+                    }
+
+                    const hasAdminRights = isOwnerEmail(email) || (userDocData && userDocData.isAdminRole === true);
+
+                    if (hasAdminRights) {
+                        localStorage.setItem('wtb_admin_email', email);
+                        loginFeedback.innerText = 'Zalogowano jako Administrator! Otwieram Centrum Dowodzenia... ⚡';
                         setTimeout(() => { window.location.href = 'admin.html'; }, 500);
                     } else {
                         loginFeedback.innerText = 'Logowanie pomyślne! Otwieram Twój Panel Klienta... ⚡';
@@ -620,7 +673,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     loginFeedback.innerText = 'Błędny e-mail lub hasło (upewnij się, że masz już założone konto w zakładce „Załóż darmowe konto”).';
                 }
             } else {
-                if (ADMIN_EMAILS.includes(email)) {
+                if (isOwnerEmail(email)) {
                     window.location.href = 'admin.html';
                 } else {
                     window.location.href = 'panel-klienta.html';
@@ -642,10 +695,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             registerFeedback.style.color = '#d4ff00';
             registerFeedback.innerText = 'Tworzenie bezpiecznego konta w chmurze Firebase... ⏳';
 
+            const isInitialAdmin = isOwnerEmail(email);
+
             const newClientDoc = JSON.parse(JSON.stringify(defaultClientData));
             newClientDoc.userName = name;
             newClientDoc.clientName = `${brand} (${name})`;
             newClientDoc.email = email;
+            newClientDoc.isAdminRole = isInitialAdmin;
+            newClientDoc.isBlocked = false;
+            newClientDoc.createdAt = getCurrentTimeStr();
             newClientDoc.packageName = pkg;
             newClientDoc.progressPercent = 15;
 
@@ -674,7 +732,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     await saveClientData(uid, newClientDoc);
 
-                    if (ADMIN_EMAILS.includes(email)) {
+                    if (isInitialAdmin) {
+                        localStorage.setItem('wtb_admin_email', email);
                         registerFeedback.innerText = 'Konto Administratora utworzone! Przekierowuję do HQ... ⚡';
                         setTimeout(() => { window.location.href = 'admin.html'; }, 600);
                     } else {
@@ -879,10 +938,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 9. PANEL ADMINISTRATORA (admin.html)
+    // 9. PANEL ADMINISTRATORA (admin.html – CENTRUM KONT + AUTORYZACJA HASŁEM)
     // =========================================================
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
+    const bannerClientName = document.getElementById('bannerClientName');
     const adminClientName = document.getElementById('adminClientName');
     const adminPackageName = document.getElementById('adminPackageName');
     const adminProgressSlider = document.getElementById('adminProgressSlider');
@@ -891,6 +951,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminPaymentStatus = document.getElementById('adminPaymentStatus');
     const adminAdBudget = document.getElementById('adminAdBudget');
     const adminStatusFeedback = document.getElementById('adminStatusFeedback');
+
+    const adminAccountsList = document.getElementById('adminAccountsList');
+    const adminAccountSearch = document.getElementById('adminAccountSearch');
+    const adminRoleFilter = document.getElementById('adminRoleFilter');
+    const adminAccountActionFeedback = document.getElementById('adminAccountActionFeedback');
+
+    const statTotalAccounts = document.getElementById('statTotalAccounts');
+    const statClientAccounts = document.getElementById('statClientAccounts');
+    const statAdminAccounts = document.getElementById('statAdminAccounts');
+    const statTotalLeads = document.getElementById('statTotalLeads');
 
     const adminAddTaskForm = document.getElementById('adminAddTaskForm');
     const adminTaskList = document.getElementById('adminTaskList');
@@ -902,11 +972,292 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminLeadsList = document.getElementById('adminLeadsList');
     const resetDemoDataBtn = document.getElementById('resetDemoDataBtn');
 
+    // Elementy Modala Bezpieczeństwa (Potwierdzenie Hasłem Admina)
+    const adminSecurityModal = document.getElementById('adminSecurityModal');
+    const closeSecurityModal = document.getElementById('closeSecurityModal');
+    const cancelSecurityBtn = document.getElementById('cancelSecurityBtn');
+    const adminSecurityForm = document.getElementById('adminSecurityForm');
+    const confirmAdminPassInput = document.getElementById('confirmAdminPassInput');
+    const confirmAdminEmailLabel = document.getElementById('confirmAdminEmailLabel');
+    const securityModalTitle = document.getElementById('securityModalTitle');
+    const securityModalDesc = document.getElementById('securityModalDesc');
+    const securityModalFeedback = document.getElementById('securityModalFeedback');
+
+    let allAccountsCache = [];
     let selectedAdminClientId = 'demo_client';
     let selectedAdminClientData = getLocalData();
     let unsubscribeAdminClient = null;
+    let pendingSecurityAction = null;
+
+    // Funkcja otwierająca modal wymagający hasła obecnego Admina
+    function openSecurityPrompt({ title, description, onConfirm }) {
+        if (!adminSecurityModal) return;
+        securityModalTitle.innerText = title;
+        securityModalDesc.innerText = description;
+        if (confirmAdminEmailLabel) {
+            confirmAdminEmailLabel.innerText = currentLoggedInAdminEmail;
+        }
+        confirmAdminPassInput.value = '';
+        securityModalFeedback.innerText = '';
+        pendingSecurityAction = onConfirm;
+        adminSecurityModal.classList.add('open');
+        confirmAdminPassInput.focus();
+    }
+
+    function closeSecurityPrompt() {
+        if (adminSecurityModal) adminSecurityModal.classList.remove('open');
+        pendingSecurityAction = null;
+    }
+
+    if (closeSecurityModal) closeSecurityModal.addEventListener('click', closeSecurityPrompt);
+    if (cancelSecurityBtn) cancelSecurityBtn.addEventListener('click', closeSecurityPrompt);
+
+    if (adminSecurityForm) {
+        adminSecurityForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const enteredPass = confirmAdminPassInput.value;
+            if (!enteredPass || !pendingSecurityAction) return;
+
+            securityModalFeedback.style.color = '#d4ff00';
+            securityModalFeedback.innerText = 'Weryfikacja hasła Administratora... ⏳';
+
+            try {
+                if (firebaseReady && auth) {
+                    const emailToVerify = (auth.currentUser && auth.currentUser.email)
+                        ? auth.currentUser.email
+                        : currentLoggedInAdminEmail;
+
+                    await fbFns.signInWithEmailAndPassword(auth, emailToVerify, enteredPass);
+                }
+
+                await pendingSecurityAction();
+                closeSecurityPrompt();
+            } catch (err) {
+                securityModalFeedback.style.color = '#fca5a5';
+                securityModalFeedback.innerText = '❌ Błędne hasło Administratora! Operacja została odrzucona.';
+            }
+        });
+    }
+
+    // Renderowanie listy wszystkich kont w zakładce "👥 Wszystkie Konta"
+    function renderAllAccountsList() {
+        if (!adminAccountsList) return;
+
+        const searchQuery = (adminAccountSearch ? adminAccountSearch.value : '').trim().toLowerCase();
+        const roleFilter = adminRoleFilter ? adminRoleFilter.value : 'all';
+
+        let totalCount = allAccountsCache.length;
+        let adminsCount = 0;
+        let clientsCount = 0;
+
+        allAccountsCache.forEach(acc => {
+            const isAccAdmin = isOwnerEmail(acc.email) || acc.isAdminRole === true;
+            if (isAccAdmin) adminsCount++;
+            else clientsCount++;
+        });
+
+        if (statTotalAccounts) statTotalAccounts.innerText = totalCount;
+        if (statAdminAccounts) statAdminAccounts.innerText = adminsCount;
+        if (statClientAccounts) statClientAccounts.innerText = clientsCount;
+
+        const filtered = allAccountsCache.filter(acc => {
+            const isAccAdmin = isOwnerEmail(acc.email) || acc.isAdminRole === true;
+            const isBlocked = acc.isBlocked === true;
+
+            if (roleFilter === 'admin' && !isAccAdmin) return false;
+            if (roleFilter === 'client' && isAccAdmin) return false;
+            if (roleFilter === 'blocked' && !isBlocked) return false;
+
+            if (searchQuery) {
+                const haystack = `${acc.clientName || ''} ${acc.userName || ''} ${acc.email || ''} ${acc.packageName || ''}`.toLowerCase();
+                if (!haystack.includes(searchQuery)) return false;
+            }
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            adminAccountsList.innerHTML = `
+                <div class="account-card-row">
+                    <span style="color: var(--text-muted);">Brak kont spełniających kryteria wyszukiwania.</span>
+                </div>
+            `;
+            return;
+        }
+
+        adminAccountsList.innerHTML = filtered.map(acc => {
+            const isAccAdmin = isOwnerEmail(acc.email) || acc.isAdminRole === true;
+            const isProtectedOwner = isOwnerEmail(acc.email);
+            const isBlocked = acc.isBlocked === true;
+            const isSelected = acc.id === selectedAdminClientId;
+
+            const roleBadge = isAccAdmin
+                ? '<span class="role-pill admin-role">👑 Administrator</span>'
+                : '<span class="role-pill client-role">👤 Klient</span>';
+
+            const blockedBadge = isBlocked
+                ? '<span class="role-pill blocked-role">⛔ Zablokowane</span>'
+                : '';
+
+            const toggleRoleBtnText = isAccAdmin ? '👤 Odbierz Admina' : '👑 Nadaj Admina';
+            const toggleBlockBtnText = isBlocked ? '🔓 Odblokuj' : '⛔ Zablokuj';
+
+            return `
+                <div class="account-card-row ${isSelected ? 'selected-account' : ''}">
+                    <div class="account-main-info">
+                        <div class="account-title-line">
+                            <strong style="font-size: 1.05rem;">${acc.clientName || 'Bez nazwy'}</strong>
+                            ${roleBadge}
+                            ${blockedBadge}
+                        </div>
+                        <div class="account-meta-line">
+                            <span>📧 ${acc.email || 'Brak e-maila'}</span>
+                            <span>📦 ${acc.packageName || 'Brak pakietu'}</span>
+                            <span>📊 Postęp: <strong>${acc.progressPercent ?? 0}%</strong></span>
+                            <span>🧾 ${acc.currentCost || '0 zł'} (${acc.paymentStatus || 'Status'})</span>
+                        </div>
+                    </div>
+
+                    <div class="account-actions">
+                        <button type="button" class="btn-mini btn-manage" data-manage-uid="${acc.id}">
+                            🎛️ Otwórz panel klienta →
+                        </button>
+                        ${!isProtectedOwner ? `
+                            <button type="button" class="btn-mini" data-toggle-admin="${acc.id}">
+                                ${toggleRoleBtnText}
+                            </button>
+                            <button type="button" class="btn-mini" data-toggle-block="${acc.id}">
+                                ${toggleBlockBtnText}
+                            </button>
+                        ` : `
+                            <span style="font-size: 0.75rem; color: var(--text-muted); padding: 0 0.4rem;">Główne konto właściciela</span>
+                        `}
+                        <button type="button" class="btn-mini" data-reset-pass="${acc.email || ''}">
+                            🔑 Reset hasła
+                        </button>
+                        ${!isProtectedOwner && acc.id !== 'demo_client' ? `
+                            <button type="button" class="btn-mini btn-danger" data-delete-uid="${acc.id}">
+                                🗑️ Usuń
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // 1. Kliknięcie "Otwórz panel klienta" -> wybiera konto i przechodzi do jego zakładki Status & Postęp
+        adminAccountsList.querySelectorAll('[data-manage-uid]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uid = btn.getAttribute('data-manage-uid');
+                if (adminClientSelector) adminClientSelector.value = uid;
+                subscribeToSelectedClient(uid);
+                activateDashTab('admin-tab-status');
+            });
+        });
+
+        // 2. Kliknięcie "Nadaj Admina / Odbierz Admina" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
+        adminAccountsList.querySelectorAll('[data-toggle-admin]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uid = btn.getAttribute('data-toggle-admin');
+                const targetAcc = allAccountsCache.find(a => a.id === uid);
+                if (!targetAcc) return;
+
+                const newAdminState = !targetAcc.isAdminRole;
+                const roleName = newAdminState ? 'ADMINISTRATOR (pełny dostęp do HQ)' : 'KLIENT (zwykłe konto)';
+
+                openSecurityPrompt({
+                    title: newAdminState ? '👑 Nadaj uprawnienia Admina' : '👤 Odbierz uprawnienia Admina',
+                    description: `Czy na pewno chcesz zmienić uprawnienia konta „${targetAcc.clientName}” (${targetAcc.email}) na: ${roleName}? Potwierdź swoim hasłem Administratora.`,
+                    onConfirm: async () => {
+                        targetAcc.isAdminRole = newAdminState;
+                        await saveClientData(uid, targetAcc);
+                        if (adminAccountActionFeedback) {
+                            adminAccountActionFeedback.style.color = '#d4ff00';
+                            adminAccountActionFeedback.innerText = `✅ Zaktualizowano uprawnienia konta ${targetAcc.clientName} na: ${roleName}!`;
+                        }
+                        renderAllAccountsList();
+                    }
+                });
+            });
+        });
+
+        // 3. Kliknięcie "Zablokuj / Odblokuj" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
+        adminAccountsList.querySelectorAll('[data-toggle-block]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uid = btn.getAttribute('data-toggle-block');
+                const targetAcc = allAccountsCache.find(a => a.id === uid);
+                if (!targetAcc) return;
+
+                const newBlockedState = !targetAcc.isBlocked;
+
+                openSecurityPrompt({
+                    title: newBlockedState ? '⛔ Zablokuj dostęp do konta' : '🔓 Odblokuj konto klienta',
+                    description: `Czy na pewno chcesz ${newBlockedState ? 'ZABLOKOWAĆ' : 'ODBLOKOWAĆ'} konto „${targetAcc.clientName}” (${targetAcc.email})? Potwierdź swoim hasłem Administratora.`,
+                    onConfirm: async () => {
+                        targetAcc.isBlocked = newBlockedState;
+                        await saveClientData(uid, targetAcc);
+                        if (adminAccountActionFeedback) {
+                            adminAccountActionFeedback.style.color = '#d4ff00';
+                            adminAccountActionFeedback.innerText = `✅ Konto ${targetAcc.clientName} zostało ${newBlockedState ? 'zablokowane' : 'odblokowane'}.`;
+                        }
+                        renderAllAccountsList();
+                    }
+                });
+            });
+        });
+
+        // 4. Kliknięcie "Reset hasła" -> Wysyła maila resetującego przez Firebase Auth
+        adminAccountsList.querySelectorAll('[data-reset-pass]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const targetEmail = btn.getAttribute('data-reset-pass');
+                if (!targetEmail || !firebaseReady || !auth) return;
+                try {
+                    await fbFns.sendPasswordResetEmail(auth, targetEmail);
+                    if (adminAccountActionFeedback) {
+                        adminAccountActionFeedback.style.color = '#d4ff00';
+                        adminAccountActionFeedback.innerText = `🔑 Wysłano link do resetowania hasła na adres: ${targetEmail}`;
+                    }
+                } catch (e) {
+                    if (adminAccountActionFeedback) {
+                        adminAccountActionFeedback.style.color = '#fca5a5';
+                        adminAccountActionFeedback.innerText = `Nie udało się wysłać linku na ${targetEmail} (konto może być tylko demonstracyjne).`;
+                    }
+                }
+            });
+        });
+
+        // 5. Kliknięcie "Usuń konto" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
+        adminAccountsList.querySelectorAll('[data-delete-uid]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const uid = btn.getAttribute('data-delete-uid');
+                const targetAcc = allAccountsCache.find(a => a.id === uid);
+                if (!targetAcc) return;
+
+                openSecurityPrompt({
+                    title: '🗑️ Trwałe usunięcie konta z bazy',
+                    description: `Czy na pewno chcesz bezpowrotnie usunąć profil „${targetAcc.clientName}” (${targetAcc.email}) wraz z jego zadaniami i historią czatu? Potwierdź hasłem Administratora.`,
+                    onConfirm: async () => {
+                        if (firebaseReady && db) {
+                            await fbFns.deleteDoc(fbFns.doc(db, 'clients', uid));
+                        }
+                        if (adminAccountActionFeedback) {
+                            adminAccountActionFeedback.style.color = '#d4ff00';
+                            adminAccountActionFeedback.innerText = `🗑️ Usunięto konto ${targetAcc.clientName} z bazy danych.`;
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    if (adminAccountSearch) {
+        adminAccountSearch.addEventListener('input', renderAllAccountsList);
+    }
+    if (adminRoleFilter) {
+        adminRoleFilter.addEventListener('change', renderAllAccountsList);
+    }
 
     function renderLeadsListUI(leadsArray) {
+        if (statTotalLeads) statTotalLeads.innerText = leadsArray ? leadsArray.length : 0;
         if (!adminLeadsList) return;
         if (!leadsArray || leadsArray.length === 0) {
             adminLeadsList.innerHTML = '<li class="dash-task-item"><span>Brak zapytań z formularza kontaktowego.</span></li>';
@@ -943,6 +1294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!adminStatusForm) return;
         selectedAdminClientData = data;
 
+        if (bannerClientName) bannerClientName.innerText = `${data.clientName || 'Konto'} (${data.email || 'brak e-maila'})`;
         adminClientName.value = data.clientName || '';
         adminPackageName.value = data.packageName || '';
         adminProgressSlider.value = data.progressPercent ?? 50;
@@ -960,11 +1312,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <small>${t.category}</small>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        ${statusBadgeHTML(t.status)}
+                        <button type="button" class="btn-mini" data-cycle-task="${index}" title="Kliknij, aby zmienić status">
+                            ${statusBadgeHTML(t.status)}
+                        </button>
                         <button type="button" class="admin-action-btn" data-del-task="${index}">Usuń</button>
                     </div>
                 </li>
             `).join('');
+
+            // Szybkie przełączanie statusu zadania po kliknięciu (todo -> progress -> done)
+            adminTaskList.querySelectorAll('[data-cycle-task]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const idx = parseInt(btn.getAttribute('data-cycle-task'), 10);
+                    const currentStatus = selectedAdminClientData.tasks[idx].status;
+                    const nextStatus = currentStatus === 'todo' ? 'progress' : (currentStatus === 'progress' ? 'done' : 'todo');
+                    selectedAdminClientData.tasks[idx].status = nextStatus;
+                    renderAdminUI(selectedAdminClientData);
+                    await saveClientData(selectedAdminClientId, selectedAdminClientData);
+                });
+            });
 
             adminTaskList.querySelectorAll('[data-del-task]').forEach(btn => {
                 btn.addEventListener('click', async () => {
@@ -1013,6 +1379,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function subscribeToSelectedClient(clientId) {
         selectedAdminClientId = clientId;
         localStorage.setItem('wtb_active_uid', clientId);
+        renderAllAccountsList();
 
         if (unsubscribeAdminClient) {
             unsubscribeAdminClient();
@@ -1033,6 +1400,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (adminStatusForm) {
+        allAccountsCache = [{ id: 'demo_client', ...selectedAdminClientData }];
+        renderAllAccountsList();
         renderAdminUI(selectedAdminClientData);
         renderLeadsListUI(getLocalLeads());
 
@@ -1044,11 +1413,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
+                allAccountsCache = [];
                 if (adminClientSelector) {
                     const currentVal = adminClientSelector.value;
                     adminClientSelector.innerHTML = '';
                     colSnap.forEach(docSnap => {
                         const d = docSnap.data();
+                        allAccountsCache.push({ id: docSnap.id, ...d });
+
                         const opt = document.createElement('option');
                         opt.value = docSnap.id;
                         opt.innerText = `${d.clientName || docSnap.id} (${d.packageName || 'Pakiet'})`;
@@ -1059,6 +1431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     adminClientSelector.value = exists ? currentVal : adminClientSelector.options[0].value;
                     subscribeToSelectedClient(adminClientSelector.value);
                 }
+                renderAllAccountsList();
             }, (err) => {
                 console.warn('Brak uprawnień odczytu kolekcji clients (ustaw Rules w Firestore):', err);
             });
