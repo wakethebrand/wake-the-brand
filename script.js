@@ -12,24 +12,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         appId: "1:765483574565:web:c898771abb393cf11526cc"
     };
 
-    // Adres e-mail, na który mają przychodzić powiadomienia z formularza kontaktowego
+    // Główny mail, na który przychodzą wiadomości z formularza kontaktowego (kontakt.html)
     const CONTACT_RECEIVER_EMAIL = "kontakt@wakethebrand.pl";
 
-    // Lista adresów e-mail, które mają uprawnienia Administratora (Właściciela)
+    // Twoje adresy e-mail z uprawnieniami Administratora (Właściciela)
     const ADMIN_EMAILS = [
-        'mateuszbugecik@gmail.com',
-        'admin@wakethebrand.pl',
         'kontakt@wakethebrand.pl',
-        'hello@wakethebrand.pl'
+        'contact@wakethebrand.pl',
+        'mateuszbugecik@gmail.com'
     ];
 
     const STORAGE_KEY = 'wtb_portal_data_v1';
+    const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
 
-    // Domyślny szablon danych dla nowego klienta / trybu Demo
+    // Domyślny szablon danych dla nowego klienta
     const defaultClientData = {
         clientName: 'Marka Klienta (Konto Aktywne)',
         userName: 'Klient',
-        email: 'demo@klient.pl',
+        email: 'kontakt@wakethebrand.pl',
         packageName: 'Podwójny Shot ⚡',
         progressPercent: 65,
         currentCost: '2 100 zł',
@@ -76,6 +76,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function saveLocalData(data) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getLocalLeads() {
+        const raw = localStorage.getItem(LEADS_STORAGE_KEY);
+        if (!raw) return [];
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveLocalLead(leadObj) {
+        const current = getLocalLeads();
+        current.unshift(leadObj);
+        localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(current));
     }
 
     // =========================================================
@@ -407,7 +423,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 6. FORMULARZ KONTAKTOWY (Zapis do Firebase + E-mail na kontakt@wakethebrand.pl)
+    // 6. FORMULARZ KONTAKTOWY (Zapis do Firebase + Wysyłka na kontakt@wakethebrand.pl)
     // =========================================================
     const topicPills = document.querySelectorAll('.topic-pill');
     const contactForm = document.getElementById('contactForm');
@@ -444,45 +460,64 @@ document.addEventListener('DOMContentLoaded', async () => {
             formFeedback.style.color = '#d4ff00';
             formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
 
-            // 1. Zapis do bazy Firebase (widoczne w admin.html -> Zapytania z Kontaktu)
+            const leadObj = {
+                id: 'lead_' + Date.now(),
+                name,
+                email,
+                topics: topicsStr,
+                message: msgVal,
+                createdAt: getCurrentTimeStr(),
+                timestamp: Date.now()
+            };
+
+            // A) Zapis lokalny + dopisanie do wiadomości na czacie Admina
+            saveLocalLead(leadObj);
+            const localPortal = getLocalData();
+            localPortal.messages = localPortal.messages || [];
+            localPortal.messages.push({
+                sender: 'client',
+                author: `📬 Formularz: ${name} (${email})`,
+                text: `[Temat: ${topicsStr}] ${msgVal}`,
+                time: getCurrentTimeStr()
+            });
+            saveLocalData(localPortal);
+
+            // B) Zapis do bazy Firebase (kolekcja contact_leads oraz czat demo_client)
             if (firebaseReady && db) {
                 try {
-                    await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), {
-                        name,
-                        email,
-                        topics: topicsStr,
-                        message: msgVal,
-                        createdAt: getCurrentTimeStr(),
-                        timestamp: Date.now()
-                    });
+                    await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj);
+                    await saveClientData('demo_client', localPortal);
                 } catch (err) {
-                    console.error('Błąd zapisu formularza do Firebase:', err);
+                    console.error('Błąd zapisu formularza w Firebase (sprawdź zakładkę Rules):', err);
                 }
             }
 
-            // 2. Równoczesna wysyłka powiadomienia e-mail na kontakt@wakethebrand.pl
-            try {
-                await fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        _subject: `⚡ Nowe zapytanie ze strony Wake The Brand od: ${name}`,
-                        Imie_lub_Firma: name,
-                        Kontakt_Klienta: email,
-                        Wybrane_Tematy: topicsStr,
-                        Wiadomosc: msgVal,
-                        _template: 'table'
-                    })
-                });
-            } catch (mailErr) {
-                console.warn('Powiadomienie e-mail (FormSubmit):', mailErr);
+            // C) Wysyłka powiadomienia e-mail prosto na kontakt@wakethebrand.pl
+            if (window.location.protocol !== 'file:') {
+                try {
+                    await fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            _subject: `⚡ Nowe zapytanie Wake The Brand od: ${name}`,
+                            _replyto: email,
+                            Imie_lub_Firma: name,
+                            Kontakt_Klienta: email,
+                            Wybrane_Tematy: topicsStr,
+                            Wiadomosc: msgVal,
+                            _template: 'table'
+                        })
+                    });
+                } catch (mailErr) {
+                    console.warn('Powiadomienie e-mail (FormSubmit):', mailErr);
+                }
             }
 
             formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = `Dzięki, ${name}! Wiadomość została wysłana na ${CONTACT_RECEIVER_EMAIL} oraz zapisana w bazie ⚡ Odpowiemy w ciągu 24h!`;
+            formFeedback.innerText = `Dzięki, ${name}! Twoje zgłoszenie zostało zapisane w bazie i wysłane na ${CONTACT_RECEIVER_EMAIL} ⚡ Odpowiemy w ciągu 24h!`;
             contactForm.reset();
         });
     }
@@ -582,7 +617,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } catch (err) {
                     loginFeedback.style.color = '#fca5a5';
-                    loginFeedback.innerText = 'Błędny e-mail lub hasło (upewnij się, że masz już założone konto w zakładce obok).';
+                    loginFeedback.innerText = 'Błędny e-mail lub hasło (upewnij się, że masz już założone konto w zakładce „Załóż darmowe konto”).';
                 }
             } else {
                 if (ADMIN_EMAILS.includes(email)) {
@@ -661,7 +696,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Wylogowanie (Klient & Admin)
     const logoutBtn = document.getElementById('logoutBtn');
     const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 
@@ -679,7 +713,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 8. PANEL KLIENTA (panel-klienta.html – NASŁUCH NA ŻYWO Z FIREBASE)
+    // 8. PANEL KLIENTA (panel-klienta.html)
     // =========================================================
     const clientTopName = document.getElementById('clientTopName');
     const clientWelcomeTitle = document.getElementById('clientWelcomeTitle');
@@ -787,16 +821,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     currentClientId = user.uid;
                     localStorage.setItem('wtb_active_uid', user.uid);
                 }
-                const docRef = fbFns.doc(db, 'clients', currentClientId);
-                const snap = await fbFns.getDoc(docRef);
-                if (!snap.exists()) {
-                    await fbFns.setDoc(docRef, currentClientCache);
-                }
-                fbFns.onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        renderClientUI(docSnap.data());
+                try {
+                    const docRef = fbFns.doc(db, 'clients', currentClientId);
+                    const snap = await fbFns.getDoc(docRef);
+                    if (!snap.exists()) {
+                        await fbFns.setDoc(docRef, currentClientCache);
                     }
-                });
+                    fbFns.onSnapshot(docRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            renderClientUI(docSnap.data());
+                        }
+                    });
+                } catch (e) {
+                    console.warn('Brak dostępu do Firestore (sprawdź zakładkę Rules):', e);
+                }
             });
         }
     }
@@ -841,7 +879,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 9. PANEL ADMINISTRATORA (admin.html – ZARZĄDZANIE KLIENTAMI W FIREBASE)
+    // 9. PANEL ADMINISTRATORA (admin.html)
     // =========================================================
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
@@ -867,6 +905,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedAdminClientId = 'demo_client';
     let selectedAdminClientData = getLocalData();
     let unsubscribeAdminClient = null;
+
+    function renderLeadsListUI(leadsArray) {
+        if (!adminLeadsList) return;
+        if (!leadsArray || leadsArray.length === 0) {
+            adminLeadsList.innerHTML = '<li class="dash-task-item"><span>Brak zapytań z formularza kontaktowego.</span></li>';
+            return;
+        }
+        adminLeadsList.innerHTML = leadsArray.map(lead => `
+            <li class="dash-task-item" style="align-items: flex-start;">
+                <div class="task-meta">
+                    <strong>${lead.name} (${lead.email}) • <span style="color: var(--accent-lime);">${lead.topics}</span></strong>
+                    <p style="margin: 0.4rem 0; color: #d1d5db;">${lead.message}</p>
+                    <small>Wysłano: ${lead.createdAt}</small>
+                </div>
+                <button type="button" class="admin-action-btn" data-del-lead="${lead.id}">Usuń</button>
+            </li>
+        `).join('');
+
+        adminLeadsList.querySelectorAll('[data-del-lead]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const leadId = btn.getAttribute('data-del-lead');
+                const localFiltered = getLocalLeads().filter(l => l.id !== leadId);
+                localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(localFiltered));
+                renderLeadsListUI(localFiltered);
+
+                if (firebaseReady && db) {
+                    try {
+                        await fbFns.deleteDoc(fbFns.doc(db, 'contact_leads', leadId));
+                    } catch (e) {}
+                }
+            });
+        });
+    }
 
     function renderAdminUI(data) {
         if (!adminStatusForm) return;
@@ -953,6 +1024,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (snap.exists()) {
                     renderAdminUI(snap.data());
                 }
+            }, () => {
+                renderAdminUI(getLocalData());
             });
         } else {
             renderAdminUI(getLocalData());
@@ -961,6 +1034,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (adminStatusForm) {
         renderAdminUI(selectedAdminClientData);
+        renderLeadsListUI(getLocalLeads());
 
         if (firebaseReady && db) {
             const clientsCol = fbFns.collection(db, 'clients');
@@ -985,6 +1059,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     adminClientSelector.value = exists ? currentVal : adminClientSelector.options[0].value;
                     subscribeToSelectedClient(adminClientSelector.value);
                 }
+            }, (err) => {
+                console.warn('Brak uprawnień odczytu kolekcji clients (ustaw Rules w Firestore):', err);
             });
 
             if (adminClientSelector) {
@@ -997,30 +1073,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const leadsCol = fbFns.collection(db, 'contact_leads');
                 fbFns.onSnapshot(leadsCol, (leadsSnap) => {
                     if (leadsSnap.empty) {
-                        adminLeadsList.innerHTML = '<li class="dash-task-item"><span>Brak zapytań z formularza kontaktowego.</span></li>';
+                        renderLeadsListUI(getLocalLeads());
                         return;
                     }
                     const leadsArr = [];
                     leadsSnap.forEach(l => leadsArr.push({ id: l.id, ...l.data() }));
                     leadsArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                    adminLeadsList.innerHTML = leadsArr.map(lead => `
-                        <li class="dash-task-item" style="align-items: flex-start;">
-                            <div class="task-meta">
-                                <strong>${lead.name} (${lead.email}) • <span style="color: var(--accent-lime);">${lead.topics}</span></strong>
-                                <p style="margin: 0.4rem 0; color: #d1d5db;">${lead.message}</p>
-                                <small>Wysłano: ${lead.createdAt}</small>
-                            </div>
-                            <button type="button" class="admin-action-btn" data-del-lead="${lead.id}">Usuń</button>
-                        </li>
-                    `).join('');
-
-                    adminLeadsList.querySelectorAll('[data-del-lead]').forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            const leadId = btn.getAttribute('data-del-lead');
-                            await fbFns.deleteDoc(fbFns.doc(db, 'contact_leads', leadId));
-                        });
-                    });
+                    renderLeadsListUI(leadsArr);
+                }, () => {
+                    renderLeadsListUI(getLocalLeads());
                 });
             }
         }
@@ -1044,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
             adminStatusFeedback.style.color = '#d4ff00';
-            adminStatusFeedback.innerText = 'Zapisano w chmurze Firebase! Widok klienta został zaktualizowany ⚡';
+            adminStatusFeedback.innerText = 'Zapisano! Widok klienta został zaktualizowany ⚡';
             setTimeout(() => { adminStatusFeedback.innerText = ''; }, 4000);
         });
     }
