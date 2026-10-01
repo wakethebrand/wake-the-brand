@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const STORAGE_KEY = 'wtb_portal_data_v1';
     const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
+    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v1';
 
     // Domyślny szablon danych dla nowego klienta
     const defaultClientData = {
@@ -84,6 +85,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function saveLocalData(data) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function getCachedAccounts() {
+        const raw = localStorage.getItem(ACCOUNTS_CACHE_KEY);
+        if (!raw) return [{ id: 'demo_client', ...getLocalData() }];
+        try {
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) && parsed.length > 0 ? parsed : [{ id: 'demo_client', ...getLocalData() }];
+        } catch (e) {
+            return [{ id: 'demo_client', ...getLocalData() }];
+        }
+    }
+
+    function saveCachedAccounts(arr) {
+        try {
+            localStorage.setItem(ACCOUNTS_CACHE_KEY, JSON.stringify(arr));
+        } catch (e) {}
     }
 
     function getLocalLeads() {
@@ -365,7 +383,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             sec.classList.toggle('active', isMatch);
         });
 
-        // Pokazuj baner wybranego klienta tylko w zakładkach edycji konkretnego klienta
         if (activeClientBanner) {
             const clientEditTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-finances', 'admin-tab-chat'];
             if (clientEditTabs.includes(targetId)) {
@@ -401,7 +418,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 5. INICJALIZACJA FIREBASE SDK (DYNAMICZNY IMPORT Z CDN)
+    // 5. NATYCHMIASTOWE RENDEROWANIE UI Z PAMIĘCI PODRĘCZNEJ (0.01s)
     // =========================================================
     let auth = null;
     let db = null;
@@ -409,47 +426,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     let firebaseReady = false;
     let currentLoggedInAdminEmail = localStorage.getItem('wtb_admin_email') || CONTACT_RECEIVER_EMAIL;
 
-    try {
-        const appMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
-        const authMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js');
-        const firestoreMod = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
+    const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
+    if (adminEmailLabelEl) {
+        adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
+    }
 
-        const app = appMod.initializeApp(firebaseConfig);
-        auth = authMod.getAuth(app);
-        db = firestoreMod.getFirestore(app);
-
-        fbFns = {
-            ...authMod,
-            ...firestoreMod
-        };
-        firebaseReady = true;
-
-        const statusEl = document.getElementById('firebaseStatusText');
-        if (statusEl) {
-            statusEl.style.color = '#d4ff00';
-            statusEl.innerText = '● Połączono z chmurą Firebase (Live)';
-        }
-
-        fbFns.onAuthStateChanged(auth, (user) => {
-            if (user && user.email) {
-                currentLoggedInAdminEmail = user.email;
-                localStorage.setItem('wtb_admin_email', user.email);
-            }
-            const adminEmailLabel = document.getElementById('loggedInAdminEmail');
-            if (adminEmailLabel) {
-                adminEmailLabel.innerText = currentLoggedInAdminEmail;
-            }
-        });
-    } catch (err) {
-        console.warn('Praca w trybie lokalnym (brak połączenia z CDN Firebase):', err);
-        const statusEl = document.getElementById('firebaseStatusText');
-        if (statusEl) {
-            statusEl.innerText = '● Tryb lokalny (localStorage)';
-        }
+    function statusBadgeHTML(status) {
+        if (status === 'done') return '<span class="badge-status done">✓ Zrobione</span>';
+        if (status === 'progress') return '<span class="badge-status progress">⏳ W trakcie</span>';
+        return '<span class="badge-status todo">📋 Zaplanowane</span>';
     }
 
     async function saveClientData(clientId, dataObj) {
         saveLocalData(dataObj);
+        // Zaktualizuj również szybki cache wszystkich kont
+        const cached = getCachedAccounts();
+        const idx = cached.findIndex(a => a.id === clientId);
+        if (idx >= 0) {
+            cached[idx] = { id: clientId, ...dataObj };
+        } else {
+            cached.push({ id: clientId, ...dataObj });
+        }
+        saveCachedAccounts(cached);
+
         if (firebaseReady && db && clientId) {
             try {
                 const docRef = fbFns.doc(db, 'clients', clientId);
@@ -461,318 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 6. FORMULARZ KONTAKTOWY (Zapis do Firebase + Wysyłka na kontakt@wakethebrand.pl)
-    // =========================================================
-    const topicPills = document.querySelectorAll('.topic-pill');
-    const contactForm = document.getElementById('contactForm');
-    const messageInput = document.getElementById('message');
-    const formFeedback = document.getElementById('formFeedback');
-
-    topicPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            pill.classList.toggle('active');
-        });
-    });
-
-    if (messageInput) {
-        const savedQuote = localStorage.getItem('wakeTheBrandQuote');
-        if (savedQuote) {
-            messageInput.value = savedQuote;
-            localStorage.removeItem('wakeTheBrandQuote');
-        }
-    }
-
-    if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const msgVal = document.getElementById('message').value.trim();
-
-            const activeTopics = [];
-            topicPills.forEach(pill => {
-                if (pill.classList.contains('active')) activeTopics.push(pill.innerText);
-            });
-            const topicsStr = activeTopics.join(', ') || 'Ogólne';
-
-            formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
-
-            const leadObj = {
-                id: 'lead_' + Date.now(),
-                name,
-                email,
-                topics: topicsStr,
-                message: msgVal,
-                createdAt: getCurrentTimeStr(),
-                timestamp: Date.now()
-            };
-
-            saveLocalLead(leadObj);
-            const localPortal = getLocalData();
-            localPortal.messages = localPortal.messages || [];
-            localPortal.messages.push({
-                sender: 'client',
-                author: `📬 Formularz: ${name} (${email})`,
-                text: `[Temat: ${topicsStr}] ${msgVal}`,
-                time: getCurrentTimeStr()
-            });
-            saveLocalData(localPortal);
-
-            if (firebaseReady && db) {
-                try {
-                    await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj);
-                    await saveClientData('demo_client', localPortal);
-                } catch (err) {
-                    console.error('Błąd zapisu formularza w Firebase:', err);
-                }
-            }
-
-            if (window.location.protocol !== 'file:') {
-                try {
-                    await fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            _subject: `⚡ Nowe zapytanie Wake The Brand od: ${name}`,
-                            _replyto: email,
-                            Imie_lub_Firma: name,
-                            Kontakt_Klienta: email,
-                            Wybrane_Tematy: topicsStr,
-                            Wiadomosc: msgVal,
-                            _template: 'table'
-                        })
-                    });
-                } catch (mailErr) {
-                    console.warn('Powiadomienie e-mail (FormSubmit):', mailErr);
-                }
-            }
-
-            formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = `Dzięki, ${name}! Twoje zgłoszenie zostało zapisane w bazie i wysłane na ${CONTACT_RECEIVER_EMAIL} ⚡ Odpowiemy w ciągu 24h!`;
-            contactForm.reset();
-        });
-    }
-
-    // =========================================================
-    // 7. LOGOWANIE I REJESTRACJA (logowanie.html -> Firebase Auth)
-    // =========================================================
-    const tabLoginBtn = document.getElementById('tabLoginBtn');
-    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const savedQuoteAlert = document.getElementById('savedQuoteAlert');
-    const savedQuoteText = document.getElementById('savedQuoteText');
-    const regPackage = document.getElementById('regPackage');
-    const forgotPassBtn = document.getElementById('forgotPassBtn');
-
-    function switchToRegisterTab() {
-        if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
-            tabRegisterBtn.classList.add('active');
-            tabLoginBtn.classList.remove('active');
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-        }
-    }
-
-    function switchToLoginTab() {
-        if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
-            tabLoginBtn.classList.add('active');
-            tabRegisterBtn.classList.remove('active');
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-        }
-    }
-
-    if (tabLoginBtn && tabRegisterBtn) {
-        tabLoginBtn.addEventListener('click', switchToLoginTab);
-        tabRegisterBtn.addEventListener('click', switchToRegisterTab);
-
-        const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
-        if (window.location.hash === '#rejestracja' || savedQuoteObjRaw) {
-            switchToRegisterTab();
-        }
-
-        if (savedQuoteObjRaw && savedQuoteAlert && regPackage) {
-            try {
-                const quoteObj = JSON.parse(savedQuoteObjRaw);
-                savedQuoteAlert.classList.remove('hidden');
-                savedQuoteText.innerText = `Wybrano: ${quoteObj.servicesText} (${quoteObj.totalCost} + budżet Ads ${quoteObj.adBudget}). Załóż konto poniżej, aby zapisać ten pakiet w swoim Panelu Klienta.`;
-                regPackage.value = `${quoteObj.servicesText} (${quoteObj.totalCost})`;
-            } catch (e) {}
-        }
-    }
-
-    if (forgotPassBtn) {
-        forgotPassBtn.addEventListener('click', async () => {
-            const emailVal = document.getElementById('loginEmail').value.trim();
-            const loginFeedback = document.getElementById('loginFeedback');
-            if (!emailVal) {
-                loginFeedback.style.color = '#ffb074';
-                loginFeedback.innerText = 'Wpisz najpierw swój adres e-mail w polu powyżej, aby zresetować hasło.';
-                return;
-            }
-            if (firebaseReady && auth) {
-                try {
-                    await fbFns.sendPasswordResetEmail(auth, emailVal);
-                    loginFeedback.style.color = '#d4ff00';
-                    loginFeedback.innerText = `Link do resetu hasła został wysłany na adres: ${emailVal} ⚡`;
-                } catch (err) {
-                    loginFeedback.style.color = '#fca5a5';
-                    loginFeedback.innerText = 'Nie znaleziono konta o tym adresie e-mail.';
-                }
-            }
-        });
-    }
-
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            const password = document.getElementById('loginPassword').value;
-            const loginFeedback = document.getElementById('loginFeedback');
-
-            loginFeedback.style.color = '#d4ff00';
-            loginFeedback.innerText = 'Weryfikacja danych w bazie Firebase... ⏳';
-
-            if (firebaseReady && auth && db) {
-                try {
-                    const userCred = await fbFns.signInWithEmailAndPassword(auth, email, password);
-                    const uid = userCred.user.uid;
-                    localStorage.setItem('wtb_active_uid', uid);
-
-                    // Sprawdź dokument użytkownika w Firestore (czy ma nadaną rolę Admina lub czy konto jest zablokowane)
-                    let userDocData = null;
-                    try {
-                        const snap = await fbFns.getDoc(fbFns.doc(db, 'clients', uid));
-                        if (snap.exists()) userDocData = snap.data();
-                    } catch (e) {}
-
-                    if (userDocData && userDocData.isBlocked) {
-                        await fbFns.signOut(auth);
-                        loginFeedback.style.color = '#fca5a5';
-                        loginFeedback.innerText = '⛔ To konto zostało zawieszone przez Administratora. Skontaktuj się z kontakt@wakethebrand.pl.';
-                        return;
-                    }
-
-                    const hasAdminRights = isOwnerEmail(email) || (userDocData && userDocData.isAdminRole === true);
-
-                    if (hasAdminRights) {
-                        localStorage.setItem('wtb_admin_email', email);
-                        loginFeedback.innerText = 'Zalogowano jako Administrator! Otwieram Centrum Dowodzenia... ⚡';
-                        setTimeout(() => { window.location.href = 'admin.html'; }, 500);
-                    } else {
-                        loginFeedback.innerText = 'Logowanie pomyślne! Otwieram Twój Panel Klienta... ⚡';
-                        setTimeout(() => { window.location.href = 'panel-klienta.html'; }, 500);
-                    }
-                } catch (err) {
-                    loginFeedback.style.color = '#fca5a5';
-                    loginFeedback.innerText = 'Błędny e-mail lub hasło (upewnij się, że masz już założone konto w zakładce „Załóż darmowe konto”).';
-                }
-            } else {
-                if (isOwnerEmail(email)) {
-                    window.location.href = 'admin.html';
-                } else {
-                    window.location.href = 'panel-klienta.html';
-                }
-            }
-        });
-    }
-
-    if (registerForm) {
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('regName').value.trim();
-            const brand = document.getElementById('regBrand').value.trim();
-            const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
-            const pkg = document.getElementById('regPackage').value.trim() || 'Pakiet Startowy ⚡';
-            const registerFeedback = document.getElementById('registerFeedback');
-
-            registerFeedback.style.color = '#d4ff00';
-            registerFeedback.innerText = 'Tworzenie bezpiecznego konta w chmurze Firebase... ⏳';
-
-            const isInitialAdmin = isOwnerEmail(email);
-
-            const newClientDoc = JSON.parse(JSON.stringify(defaultClientData));
-            newClientDoc.userName = name;
-            newClientDoc.clientName = `${brand} (${name})`;
-            newClientDoc.email = email;
-            newClientDoc.isAdminRole = isInitialAdmin;
-            newClientDoc.isBlocked = false;
-            newClientDoc.createdAt = getCurrentTimeStr();
-            newClientDoc.packageName = pkg;
-            newClientDoc.progressPercent = 15;
-
-            const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
-            if (savedQuoteObjRaw) {
-                try {
-                    const quoteObj = JSON.parse(savedQuoteObjRaw);
-                    newClientDoc.currentCost = quoteObj.totalCost;
-                    newClientDoc.adBudget = quoteObj.adBudget;
-                    localStorage.removeItem('wakeTheBrandQuoteObj');
-                } catch (err) {}
-            }
-
-            newClientDoc.messages.push({
-                sender: 'client',
-                author: `${name} (${brand})`,
-                text: `Cześć! Właśnie utworzyłem konto w Strefie Klienta. Mój wybrany pakiet/cel: ${pkg}.`,
-                time: getCurrentTimeStr()
-            });
-
-            if (firebaseReady && auth && db) {
-                try {
-                    const userCred = await fbFns.createUserWithEmailAndPassword(auth, email, password);
-                    const uid = userCred.user.uid;
-                    localStorage.setItem('wtb_active_uid', uid);
-
-                    await saveClientData(uid, newClientDoc);
-
-                    if (isInitialAdmin) {
-                        localStorage.setItem('wtb_admin_email', email);
-                        registerFeedback.innerText = 'Konto Administratora utworzone! Przekierowuję do HQ... ⚡';
-                        setTimeout(() => { window.location.href = 'admin.html'; }, 600);
-                    } else {
-                        registerFeedback.innerText = `Konto dla marki „${brand}” gotowe! Otwieram Panel Klienta... ⚡`;
-                        setTimeout(() => { window.location.href = 'panel-klienta.html'; }, 600);
-                    }
-                } catch (err) {
-                    registerFeedback.style.color = '#fca5a5';
-                    if (err.code === 'auth/email-already-in-use') {
-                        registerFeedback.innerText = 'Ten adres e-mail ma już konto! Przełącz się na zakładkę „Zaloguj się”.';
-                    } else {
-                        registerFeedback.innerText = `Błąd rejestracji: ${err.message}`;
-                    }
-                }
-            } else {
-                saveLocalData(newClientDoc);
-                window.location.href = 'panel-klienta.html';
-            }
-        });
-    }
-
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
-
-    [logoutBtn, adminLogoutBtn].forEach(btn => {
-        if (btn) {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                if (firebaseReady && auth) {
-                    await fbFns.signOut(auth);
-                }
-                localStorage.removeItem('wtb_active_uid');
-                window.location.href = 'logowanie.html';
-            });
-        }
-    });
-
-    // =========================================================
-    // 8. PANEL KLIENTA (panel-klienta.html)
+    // 6. ELEMENTY PANELU KLIENTA I ADMINA (PRZYGOTOWANIE PRZED POŁĄCZENIEM)
     // =========================================================
     const clientTopName = document.getElementById('clientTopName');
     const clientWelcomeTitle = document.getElementById('clientWelcomeTitle');
@@ -793,15 +481,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentClientId = localStorage.getItem('wtb_active_uid') || 'demo_client';
     let currentClientCache = getLocalData();
 
-    function statusBadgeHTML(status) {
-        if (status === 'done') return '<span class="badge-status done">✓ Zrobione</span>';
-        if (status === 'progress') return '<span class="badge-status progress">⏳ W trakcie</span>';
-        return '<span class="badge-status todo">📋 Zaplanowane</span>';
-    }
-
     function renderClientUI(data) {
         if (!clientActivePackage) return;
         currentClientCache = data;
+        saveLocalData(data);
 
         if (clientTopName) clientTopName.innerText = data.clientName || 'Konto Klienta';
         if (clientWelcomeTitle) clientWelcomeTitle.innerText = `Cześć! Oto aktualny status dla: ${data.clientName} ⚡`;
@@ -871,75 +554,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Natychmiastowe wyrenderowanie Panelu Klienta przed połączeniem z siecią
     if (clientActivePackage) {
         renderClientUI(currentClientCache);
-
-        if (firebaseReady && auth && db) {
-            fbFns.onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentClientId = user.uid;
-                    localStorage.setItem('wtb_active_uid', user.uid);
-                }
-                try {
-                    const docRef = fbFns.doc(db, 'clients', currentClientId);
-                    const snap = await fbFns.getDoc(docRef);
-                    if (!snap.exists()) {
-                        await fbFns.setDoc(docRef, currentClientCache);
-                    }
-                    fbFns.onSnapshot(docRef, (docSnap) => {
-                        if (docSnap.exists()) {
-                            renderClientUI(docSnap.data());
-                        }
-                    });
-                } catch (e) {
-                    console.warn('Brak dostępu do Firestore (sprawdź zakładkę Rules):', e);
-                }
-            });
-        }
     }
 
-    if (clientChatForm && clientChatInput) {
-        clientChatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = clientChatInput.value.trim();
-            if (!text) return;
-
-            currentClientCache.messages = currentClientCache.messages || [];
-            currentClientCache.messages.push({
-                sender: 'client',
-                author: currentClientCache.clientName,
-                text: text,
-                time: getCurrentTimeStr()
-            });
-
-            clientChatInput.value = '';
-            renderClientUI(currentClientCache);
-            await saveClientData(currentClientId, currentClientCache);
-        });
-    }
-
-    document.querySelectorAll('.approve-file-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const cardTitle = btn.closest('.service-card').querySelector('h3').innerText;
-            btn.innerText = 'Zaakceptowano ✓';
-            btn.disabled = true;
-
-            currentClientCache.messages = currentClientCache.messages || [];
-            currentClientCache.messages.push({
-                sender: 'client',
-                author: currentClientCache.clientName,
-                text: `✅ Zaakceptowałem materiał w panelu: „${cardTitle}”. Możemy działać dalej!`,
-                time: getCurrentTimeStr()
-            });
-
-            renderClientUI(currentClientCache);
-            await saveClientData(currentClientId, currentClientCache);
-        });
-    });
-
-    // =========================================================
-    // 9. PANEL ADMINISTRATORA (admin.html – CENTRUM KONT + AUTORYZACJA HASŁEM)
-    // =========================================================
+    // Elementy Panelu Admina
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
     const bannerClientName = document.getElementById('bannerClientName');
@@ -972,7 +592,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminLeadsList = document.getElementById('adminLeadsList');
     const resetDemoDataBtn = document.getElementById('resetDemoDataBtn');
 
-    // Elementy Modala Bezpieczeństwa (Potwierdzenie Hasłem Admina)
     const adminSecurityModal = document.getElementById('adminSecurityModal');
     const closeSecurityModal = document.getElementById('closeSecurityModal');
     const cancelSecurityBtn = document.getElementById('cancelSecurityBtn');
@@ -983,13 +602,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const securityModalDesc = document.getElementById('securityModalDesc');
     const securityModalFeedback = document.getElementById('securityModalFeedback');
 
-    let allAccountsCache = [];
-    let selectedAdminClientId = 'demo_client';
-    let selectedAdminClientData = getLocalData();
+    let allAccountsCache = getCachedAccounts();
+    let selectedAdminClientId = localStorage.getItem('wtb_active_uid') || allAccountsCache[0].id || 'demo_client';
+    let selectedAdminClientData = allAccountsCache.find(a => a.id === selectedAdminClientId) || getLocalData();
     let unsubscribeAdminClient = null;
     let pendingSecurityAction = null;
 
-    // Funkcja otwierająca modal wymagający hasła obecnego Admina
     function openSecurityPrompt({ title, description, onConfirm }) {
         if (!adminSecurityModal) return;
         securityModalTitle.innerText = title;
@@ -1012,34 +630,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (closeSecurityModal) closeSecurityModal.addEventListener('click', closeSecurityPrompt);
     if (cancelSecurityBtn) cancelSecurityBtn.addEventListener('click', closeSecurityPrompt);
 
-    if (adminSecurityForm) {
-        adminSecurityForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const enteredPass = confirmAdminPassInput.value;
-            if (!enteredPass || !pendingSecurityAction) return;
-
-            securityModalFeedback.style.color = '#d4ff00';
-            securityModalFeedback.innerText = 'Weryfikacja hasła Administratora... ⏳';
-
-            try {
-                if (firebaseReady && auth) {
-                    const emailToVerify = (auth.currentUser && auth.currentUser.email)
-                        ? auth.currentUser.email
-                        : currentLoggedInAdminEmail;
-
-                    await fbFns.signInWithEmailAndPassword(auth, emailToVerify, enteredPass);
-                }
-
-                await pendingSecurityAction();
-                closeSecurityPrompt();
-            } catch (err) {
-                securityModalFeedback.style.color = '#fca5a5';
-                securityModalFeedback.innerText = '❌ Błędne hasło Administratora! Operacja została odrzucona.';
-            }
+    function populateSelectorFromCache() {
+        if (!adminClientSelector) return;
+        adminClientSelector.innerHTML = '';
+        allAccountsCache.forEach(acc => {
+            const opt = document.createElement('option');
+            opt.value = acc.id;
+            opt.innerText = `${acc.clientName || acc.id} (${acc.packageName || 'Pakiet'})`;
+            adminClientSelector.appendChild(opt);
         });
+        const exists = allAccountsCache.some(a => a.id === selectedAdminClientId);
+        if (!exists && allAccountsCache.length > 0) {
+            selectedAdminClientId = allAccountsCache[0].id;
+        }
+        adminClientSelector.value = selectedAdminClientId;
     }
 
-    // Renderowanie listy wszystkich kont w zakładce "👥 Wszystkie Konta"
     function renderAllAccountsList() {
         if (!adminAccountsList) return;
 
@@ -1144,7 +750,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }).join('');
 
-        // 1. Kliknięcie "Otwórz panel klienta" -> wybiera konto i przechodzi do jego zakładki Status & Postęp
         adminAccountsList.querySelectorAll('[data-manage-uid]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uid = btn.getAttribute('data-manage-uid');
@@ -1154,7 +759,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        // 2. Kliknięcie "Nadaj Admina / Odbierz Admina" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
         adminAccountsList.querySelectorAll('[data-toggle-admin]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uid = btn.getAttribute('data-toggle-admin');
@@ -1180,7 +784,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        // 3. Kliknięcie "Zablokuj / Odblokuj" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
         adminAccountsList.querySelectorAll('[data-toggle-block]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uid = btn.getAttribute('data-toggle-block');
@@ -1205,7 +808,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        // 4. Kliknięcie "Reset hasła" -> Wysyła maila resetującego przez Firebase Auth
         adminAccountsList.querySelectorAll('[data-reset-pass]').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const targetEmail = btn.getAttribute('data-reset-pass');
@@ -1219,13 +821,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } catch (e) {
                     if (adminAccountActionFeedback) {
                         adminAccountActionFeedback.style.color = '#fca5a5';
-                        adminAccountActionFeedback.innerText = `Nie udało się wysłać linku na ${targetEmail} (konto może być tylko demonstracyjne).`;
+                        adminAccountActionFeedback.innerText = `Nie udało się wysłać linku na ${targetEmail}.`;
                     }
                 }
             });
         });
 
-        // 5. Kliknięcie "Usuń konto" -> WYMAGA POTWIERDZENIA HASŁEM ADMINA
         adminAccountsList.querySelectorAll('[data-delete-uid]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const uid = btn.getAttribute('data-delete-uid');
@@ -1234,8 +835,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 openSecurityPrompt({
                     title: '🗑️ Trwałe usunięcie konta z bazy',
-                    description: `Czy na pewno chcesz bezpowrotnie usunąć profil „${targetAcc.clientName}” (${targetAcc.email}) wraz z jego zadaniami i historią czatu? Potwierdź hasłem Administratora.`,
+                    description: `Czy na pewno chcesz bezpowrotnie usunąć profil „${targetAcc.clientName}” (${targetAcc.email})? Potwierdź hasłem Administratora.`,
                     onConfirm: async () => {
+                        allAccountsCache = allAccountsCache.filter(a => a.id !== uid);
+                        saveCachedAccounts(allAccountsCache);
+                        renderAllAccountsList();
                         if (firebaseReady && db) {
                             await fbFns.deleteDoc(fbFns.doc(db, 'clients', uid));
                         }
@@ -1247,13 +851,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             });
         });
-    }
-
-    if (adminAccountSearch) {
-        adminAccountSearch.addEventListener('input', renderAllAccountsList);
-    }
-    if (adminRoleFilter) {
-        adminRoleFilter.addEventListener('change', renderAllAccountsList);
     }
 
     function renderLeadsListUI(leadsArray) {
@@ -1320,7 +917,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </li>
             `).join('');
 
-            // Szybkie przełączanie statusu zadania po kliknięciu (todo -> progress -> done)
             adminTaskList.querySelectorAll('[data-cycle-task]').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const idx = parseInt(btn.getAttribute('data-cycle-task'), 10);
@@ -1379,6 +975,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function subscribeToSelectedClient(clientId) {
         selectedAdminClientId = clientId;
         localStorage.setItem('wtb_active_uid', clientId);
+
+        const cachedMatch = allAccountsCache.find(a => a.id === clientId);
+        if (cachedMatch) {
+            renderAdminUI(cachedMatch);
+        }
         renderAllAccountsList();
 
         if (unsubscribeAdminClient) {
@@ -1391,21 +992,88 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (snap.exists()) {
                     renderAdminUI(snap.data());
                 }
-            }, () => {
-                renderAdminUI(getLocalData());
             });
-        } else {
-            renderAdminUI(getLocalData());
         }
     }
 
+    // Natychmiastowe wyrenderowanie Panelu Admina z pamięci podręcznej (0.01s)
     if (adminStatusForm) {
-        allAccountsCache = [{ id: 'demo_client', ...selectedAdminClientData }];
+        populateSelectorFromCache();
         renderAllAccountsList();
         renderAdminUI(selectedAdminClientData);
         renderLeadsListUI(getLocalLeads());
+    }
 
-        if (firebaseReady && db) {
+    if (adminAccountSearch) {
+        adminAccountSearch.addEventListener('input', renderAllAccountsList);
+    }
+    if (adminRoleFilter) {
+        adminRoleFilter.addEventListener('change', renderAllAccountsList);
+    }
+    if (adminClientSelector) {
+        adminClientSelector.addEventListener('change', () => {
+            subscribeToSelectedClient(adminClientSelector.value);
+        });
+    }
+
+    // =========================================================
+    // 7. SZYBKA RÓWNOLEGŁA INICJALIZACJA FIREBASE (PROMISE.ALL + BRAVE FIX)
+    // =========================================================
+    try {
+        // Pobieramy wszystkie 3 biblioteki RÓWNOLEGLE (3x szybciej niż po kolei!)
+        const [appMod, authMod, firestoreMod] = await Promise.all([
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js'),
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
+        ]);
+
+        const app = appMod.initializeApp(firebaseConfig);
+        auth = authMod.getAuth(app);
+
+        // Specjalna optymalizacja dla przeglądarki Brave i szybkiego łączenia (omija wieszanie się WebChannel)
+        db = firestoreMod.initializeFirestore(app, {
+            experimentalAutoDetectLongPolling: true
+        });
+
+        fbFns = {
+            ...authMod,
+            ...firestoreMod
+        };
+        firebaseReady = true;
+
+        const statusEl = document.getElementById('firebaseStatusText');
+        if (statusEl) {
+            statusEl.style.color = '#d4ff00';
+            statusEl.innerText = '● Połączono z Firebase (Turbo Sync)';
+        }
+
+        // Poczekaj ułamek sekundy na gotowość sesji Auth przed odpytaniem bazy
+        if (typeof auth.authStateReady === 'function') {
+            await auth.authStateReady();
+        }
+
+        if (auth.currentUser && auth.currentUser.email) {
+            currentLoggedInAdminEmail = auth.currentUser.email;
+            localStorage.setItem('wtb_admin_email', auth.currentUser.email);
+            if (adminEmailLabelEl) adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
+        }
+
+        // A) Jeśli jesteśmy w Panelu Klienta – podłącz strumień na żywo
+        if (clientActivePackage) {
+            if (auth.currentUser) {
+                currentClientId = auth.currentUser.uid;
+                localStorage.setItem('wtb_active_uid', currentClientId);
+            }
+            const docRef = fbFns.doc(db, 'clients', currentClientId);
+            fbFns.onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    renderClientUI(docSnap.data());
+                }
+            });
+        }
+
+        // B) Jeśli jesteśmy w Panelu Admina – pobierz wszystkie konta i zgłoszenia w tle
+        if (adminStatusForm) {
             const clientsCol = fbFns.collection(db, 'clients');
             fbFns.onSnapshot(clientsCol, async (colSnap) => {
                 if (colSnap.empty) {
@@ -1413,34 +1081,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                allAccountsCache = [];
-                if (adminClientSelector) {
-                    const currentVal = adminClientSelector.value;
-                    adminClientSelector.innerHTML = '';
-                    colSnap.forEach(docSnap => {
-                        const d = docSnap.data();
-                        allAccountsCache.push({ id: docSnap.id, ...d });
-
-                        const opt = document.createElement('option');
-                        opt.value = docSnap.id;
-                        opt.innerText = `${d.clientName || docSnap.id} (${d.packageName || 'Pakiet'})`;
-                        adminClientSelector.appendChild(opt);
-                    });
-
-                    const exists = Array.from(adminClientSelector.options).some(o => o.value === currentVal);
-                    adminClientSelector.value = exists ? currentVal : adminClientSelector.options[0].value;
-                    subscribeToSelectedClient(adminClientSelector.value);
-                }
-                renderAllAccountsList();
-            }, (err) => {
-                console.warn('Brak uprawnień odczytu kolekcji clients (ustaw Rules w Firestore):', err);
-            });
-
-            if (adminClientSelector) {
-                adminClientSelector.addEventListener('change', () => {
-                    subscribeToSelectedClient(adminClientSelector.value);
+                const freshAccounts = [];
+                colSnap.forEach(docSnap => {
+                    freshAccounts.push({ id: docSnap.id, ...docSnap.data() });
                 });
-            }
+
+                allAccountsCache = freshAccounts;
+                saveCachedAccounts(freshAccounts);
+                populateSelectorFromCache();
+                renderAllAccountsList();
+
+                const activeDoc = freshAccounts.find(a => a.id === selectedAdminClientId) || freshAccounts[0];
+                if (activeDoc) {
+                    selectedAdminClientId = activeDoc.id;
+                    renderAdminUI(activeDoc);
+                }
+            });
 
             if (adminLeadsList) {
                 const leadsCol = fbFns.collection(db, 'contact_leads');
@@ -1452,13 +1108,374 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const leadsArr = [];
                     leadsSnap.forEach(l => leadsArr.push({ id: l.id, ...l.data() }));
                     leadsArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(leadsArr));
                     renderLeadsListUI(leadsArr);
-                }, () => {
-                    renderLeadsListUI(getLocalLeads());
                 });
             }
         }
+    } catch (err) {
+        console.warn('Praca w trybie lokalnym Cache:', err);
+        const statusEl = document.getElementById('firebaseStatusText');
+        if (statusEl) {
+            statusEl.innerText = '● Tryb lokalny Cache';
+        }
     }
+
+    // =========================================================
+    // 8. OBSŁUGA FORMULARZY (KONTAKT, LOGOWANIE, REJESTRACJA, AKCJE ADMINA)
+    // =========================================================
+    const topicPills = document.querySelectorAll('.topic-pill');
+    const contactForm = document.getElementById('contactForm');
+    const messageInput = document.getElementById('message');
+    const formFeedback = document.getElementById('formFeedback');
+
+    topicPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pill.classList.toggle('active');
+        });
+    });
+
+    if (messageInput) {
+        const savedQuote = localStorage.getItem('wakeTheBrandQuote');
+        if (savedQuote) {
+            messageInput.value = savedQuote;
+            localStorage.removeItem('wakeTheBrandQuote');
+        }
+    }
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const msgVal = document.getElementById('message').value.trim();
+
+            const activeTopics = [];
+            topicPills.forEach(pill => {
+                if (pill.classList.contains('active')) activeTopics.push(pill.innerText);
+            });
+            const topicsStr = activeTopics.join(', ') || 'Ogólne';
+
+            formFeedback.style.color = '#d4ff00';
+            formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
+
+            const leadObj = {
+                id: 'lead_' + Date.now(),
+                name,
+                email,
+                topics: topicsStr,
+                message: msgVal,
+                createdAt: getCurrentTimeStr(),
+                timestamp: Date.now()
+            };
+
+            saveLocalLead(leadObj);
+
+            if (firebaseReady && db) {
+                try {
+                    await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj);
+                } catch (err) {
+                    console.error('Błąd zapisu formularza w Firebase:', err);
+                }
+            }
+
+            if (window.location.protocol !== 'file:') {
+                fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        _subject: `⚡ Nowe zapytanie Wake The Brand od: ${name}`,
+                        _replyto: email,
+                        Imie_lub_Firma: name,
+                        Kontakt_Klienta: email,
+                        Wybrane_Tematy: topicsStr,
+                        Wiadomosc: msgVal,
+                        _template: 'table'
+                    })
+                }).catch(() => {});
+            }
+
+            formFeedback.style.color = '#d4ff00';
+            formFeedback.innerText = `Dzięki, ${name}! Twoje zgłoszenie zostało zapisane w bazie i wysłane na ${CONTACT_RECEIVER_EMAIL} ⚡ Odpowiemy w ciągu 24h!`;
+            contactForm.reset();
+        });
+    }
+
+    // Logowanie i Rejestracja
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const savedQuoteAlert = document.getElementById('savedQuoteAlert');
+    const savedQuoteText = document.getElementById('savedQuoteText');
+    const regPackage = document.getElementById('regPackage');
+    const forgotPassBtn = document.getElementById('forgotPassBtn');
+
+    function switchToRegisterTab() {
+        if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
+            tabRegisterBtn.classList.add('active');
+            tabLoginBtn.classList.remove('active');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        }
+    }
+
+    function switchToLoginTab() {
+        if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
+            tabLoginBtn.classList.add('active');
+            tabRegisterBtn.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        }
+    }
+
+    if (tabLoginBtn && tabRegisterBtn) {
+        tabLoginBtn.addEventListener('click', switchToLoginTab);
+        tabRegisterBtn.addEventListener('click', switchToRegisterTab);
+
+        const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
+        if (window.location.hash === '#rejestracja' || savedQuoteObjRaw) {
+            switchToRegisterTab();
+        }
+
+        if (savedQuoteObjRaw && savedQuoteAlert && regPackage) {
+            try {
+                const quoteObj = JSON.parse(savedQuoteObjRaw);
+                savedQuoteAlert.classList.remove('hidden');
+                savedQuoteText.innerText = `Wybrano: ${quoteObj.servicesText} (${quoteObj.totalCost} + budżet Ads ${quoteObj.adBudget}). Załóż konto poniżej, aby zapisać ten pakiet w swoim Panelu Klienta.`;
+                regPackage.value = `${quoteObj.servicesText} (${quoteObj.totalCost})`;
+            } catch (e) {}
+        }
+    }
+
+    if (forgotPassBtn) {
+        forgotPassBtn.addEventListener('click', async () => {
+            const emailVal = document.getElementById('loginEmail').value.trim();
+            const loginFeedback = document.getElementById('loginFeedback');
+            if (!emailVal) {
+                loginFeedback.style.color = '#ffb074';
+                loginFeedback.innerText = 'Wpisz najpierw swój adres e-mail w polu powyżej, aby zresetować hasło.';
+                return;
+            }
+            if (firebaseReady && auth) {
+                try {
+                    await fbFns.sendPasswordResetEmail(auth, emailVal);
+                    loginFeedback.style.color = '#d4ff00';
+                    loginFeedback.innerText = `Link do resetu hasła został wysłany na adres: ${emailVal} ⚡`;
+                } catch (err) {
+                    loginFeedback.style.color = '#fca5a5';
+                    loginFeedback.innerText = 'Nie znaleziono konta o tym adresie e-mail.';
+                }
+            }
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const loginFeedback = document.getElementById('loginFeedback');
+
+            loginFeedback.style.color = '#d4ff00';
+            loginFeedback.innerText = 'Logowanie... ⚡';
+
+            if (firebaseReady && auth && db) {
+                try {
+                    const userCred = await fbFns.signInWithEmailAndPassword(auth, email, password);
+                    const uid = userCred.user.uid;
+                    localStorage.setItem('wtb_active_uid', uid);
+
+                    let userDocData = null;
+                    try {
+                        const snap = await fbFns.getDoc(fbFns.doc(db, 'clients', uid));
+                        if (snap.exists()) {
+                            userDocData = snap.data();
+                            saveLocalData(userDocData);
+                        }
+                    } catch (e) {}
+
+                    if (userDocData && userDocData.isBlocked) {
+                        await fbFns.signOut(auth);
+                        loginFeedback.style.color = '#fca5a5';
+                        loginFeedback.innerText = '⛔ To konto zostało zawieszone przez Administratora.';
+                        return;
+                    }
+
+                    const hasAdminRights = isOwnerEmail(email) || (userDocData && userDocData.isAdminRole === true);
+
+                    if (hasAdminRights) {
+                        localStorage.setItem('wtb_admin_email', email);
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'panel-klienta.html';
+                    }
+                } catch (err) {
+                    loginFeedback.style.color = '#fca5a5';
+                    loginFeedback.innerText = 'Błędny e-mail lub hasło.';
+                }
+            } else {
+                window.location.href = isOwnerEmail(email) ? 'admin.html' : 'panel-klienta.html';
+            }
+        });
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const brand = document.getElementById('regBrand').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+            const pkg = document.getElementById('regPackage').value.trim() || 'Pakiet Startowy ⚡';
+            const registerFeedback = document.getElementById('registerFeedback');
+
+            registerFeedback.style.color = '#d4ff00';
+            registerFeedback.innerText = 'Tworzenie konta... ⚡';
+
+            const isInitialAdmin = isOwnerEmail(email);
+
+            const newClientDoc = JSON.parse(JSON.stringify(defaultClientData));
+            newClientDoc.userName = name;
+            newClientDoc.clientName = `${brand} (${name})`;
+            newClientDoc.email = email;
+            newClientDoc.isAdminRole = isInitialAdmin;
+            newClientDoc.isBlocked = false;
+            newClientDoc.createdAt = getCurrentTimeStr();
+            newClientDoc.packageName = pkg;
+            newClientDoc.progressPercent = 15;
+
+            const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
+            if (savedQuoteObjRaw) {
+                try {
+                    const quoteObj = JSON.parse(savedQuoteObjRaw);
+                    newClientDoc.currentCost = quoteObj.totalCost;
+                    newClientDoc.adBudget = quoteObj.adBudget;
+                    localStorage.removeItem('wakeTheBrandQuoteObj');
+                } catch (err) {}
+            }
+
+            newClientDoc.messages.push({
+                sender: 'client',
+                author: `${name} (${brand})`,
+                text: `Cześć! Właśnie utworzyłem konto w Strefie Klienta. Mój wybrany pakiet/cel: ${pkg}.`,
+                time: getCurrentTimeStr()
+            });
+
+            if (firebaseReady && auth && db) {
+                try {
+                    const userCred = await fbFns.createUserWithEmailAndPassword(auth, email, password);
+                    const uid = userCred.user.uid;
+                    localStorage.setItem('wtb_active_uid', uid);
+
+                    await saveClientData(uid, newClientDoc);
+
+                    if (isInitialAdmin) {
+                        localStorage.setItem('wtb_admin_email', email);
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'panel-klienta.html';
+                    }
+                } catch (err) {
+                    registerFeedback.style.color = '#fca5a5';
+                    if (err.code === 'auth/email-already-in-use') {
+                        registerFeedback.innerText = 'Ten adres e-mail ma już konto! Przełącz się na zakładkę „Zaloguj się”.';
+                    } else {
+                        registerFeedback.innerText = `Błąd rejestracji: ${err.message}`;
+                    }
+                }
+            } else {
+                saveLocalData(newClientDoc);
+                window.location.href = 'panel-klienta.html';
+            }
+        });
+    }
+
+    // Potwierdzenie hasłem Admina w modalu bezpieczeństwa
+    if (adminSecurityForm) {
+        adminSecurityForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const enteredPass = confirmAdminPassInput.value;
+            if (!enteredPass || !pendingSecurityAction) return;
+
+            securityModalFeedback.style.color = '#d4ff00';
+            securityModalFeedback.innerText = 'Weryfikacja hasła... ⚡';
+
+            try {
+                if (firebaseReady && auth) {
+                    const emailToVerify = (auth.currentUser && auth.currentUser.email)
+                        ? auth.currentUser.email
+                        : currentLoggedInAdminEmail;
+
+                    await fbFns.signInWithEmailAndPassword(auth, emailToVerify, enteredPass);
+                }
+
+                await pendingSecurityAction();
+                closeSecurityPrompt();
+            } catch (err) {
+                securityModalFeedback.style.color = '#fca5a5';
+                securityModalFeedback.innerText = '❌ Błędne hasło Administratora! Operacja odrzucona.';
+            }
+        });
+    }
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+
+    [logoutBtn, adminLogoutBtn].forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (firebaseReady && auth) {
+                    await fbFns.signOut(auth);
+                }
+                localStorage.removeItem('wtb_active_uid');
+                window.location.href = 'logowanie.html';
+            });
+        }
+    });
+
+    if (clientChatForm && clientChatInput) {
+        clientChatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = clientChatInput.value.trim();
+            if (!text) return;
+
+            currentClientCache.messages = currentClientCache.messages || [];
+            currentClientCache.messages.push({
+                sender: 'client',
+                author: currentClientCache.clientName,
+                text: text,
+                time: getCurrentTimeStr()
+            });
+
+            clientChatInput.value = '';
+            renderClientUI(currentClientCache);
+            await saveClientData(currentClientId, currentClientCache);
+        });
+    }
+
+    document.querySelectorAll('.approve-file-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const cardTitle = btn.closest('.service-card').querySelector('h3').innerText;
+            btn.innerText = 'Zaakceptowano ✓';
+            btn.disabled = true;
+
+            currentClientCache.messages = currentClientCache.messages || [];
+            currentClientCache.messages.push({
+                sender: 'client',
+                author: currentClientCache.clientName,
+                text: `✅ Zaakceptowałem materiał w panelu: „${cardTitle}”. Możemy działać dalej!`,
+                time: getCurrentTimeStr()
+            });
+
+            renderClientUI(currentClientCache);
+            await saveClientData(currentClientId, currentClientCache);
+        });
+    });
 
     if (adminProgressSlider && adminProgressVal) {
         adminProgressSlider.addEventListener('input', () => {
@@ -1478,8 +1495,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
             adminStatusFeedback.style.color = '#d4ff00';
-            adminStatusFeedback.innerText = 'Zapisano! Widok klienta został zaktualizowany ⚡';
-            setTimeout(() => { adminStatusFeedback.innerText = ''; }, 4000);
+            adminStatusFeedback.innerText = 'Zapisano błyskawicznie! ⚡';
+            setTimeout(() => { adminStatusFeedback.innerText = ''; }, 3000);
         });
     }
 
