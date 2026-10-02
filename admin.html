@@ -37,7 +37,7 @@
                         <span>📬</span> Wiadomości (<span id="sidebarLeadsCount">0</span>)
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-planner">
-                        <span>📋</span> Nasz Planer & Notatnik
+                        <span>📅</span> Kalendarz & Planer
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-drive">
                         <span>📁</span> Dysk Google & Pliki
@@ -46,7 +46,7 @@
                         <span>🧮</span> Wewnętrzna Wycena
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-docs">
-                        <span>🖨️</span> Generator Druków A4
+                        <span>🖨️️</span> Generator Druków A4
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-chat">
                         <span>💬</span> Nasz Wewnętrzny Czat
@@ -74,9 +74,9 @@
                     <span class="kpi-sub">Z formularza kontaktowego</span>
                 </div>
                 <div class="dash-kpi-card glass-card">
-                    <span class="kpi-label">Zadania w Planerze</span>
+                    <span class="kpi-label">Zadania w Kalendarzu</span>
                     <div class="kpi-val" id="statActiveTasks">0</div>
-                    <span class="kpi-sub">Do zrobienia / W toku</span>
+                    <span class="kpi-sub">Niewykonane zaplanowane zadania</span>
                 </div>
                 <div class="dash-kpi-card glass-card">
                     <span class="kpi-label">Pliki / Foldery Drive</span>
@@ -106,84 +106,61 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 2: NASZ WEWNĘTRZNY PLANER ZADAŃ & NOTATNIK
+                 MODUŁ 2: INTERAKTYWNY KALENDARZ & NOTATNIK (planner.js)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-planner">
                 <div class="dash-section-title">
-                    <span class="section-tag">Organizacja Pracy (Mateusz & Bartek)</span>
-                    <h2>📋 Nasz Wewnętrzny Planer & Tablica Notatek</h2>
-                    <p>Planujcie bieżące projekty, przypisujcie kto za co odpowiada i zapisujcie wspólne ustalenia.</p>
+                    <span class="section-tag">Harmonogram Zespołu (Mateusz & Bartek)</span>
+                    <h2>📅 Interaktywny Kalendarz Zadań & Notatnik</h2>
+                    <p>Kliknij w dowolny dzień na kalendarzu, aby otworzyć okno dnia, zaplanować działania, przypisać osobę oraz ustawić priorytet.</p>
                 </div>
 
-                <div class="dash-two-cols">
-                    <div class="dash-task-list">
-                        <!-- Dodawanie wewnętrznego zadania -->
-                        <form class="glass-card" id="hqPlannerForm">
-                            <div class="card-header-between">
-                                <h3>➕ Dodaj zadanie do planu</h3>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="planTaskTitle">Co jest do zrobienia?</label>
-                                <input type="text" id="planTaskTitle" required placeholder="np. Wykonać audyt konta Google Ads / Zoptymalizować 20 ofert Allegro">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="planTaskProject">Projekt / Klient / Kategoria</label>
-                                <input type="text" id="planTaskProject" placeholder="np. Wake The Brand / Klient E-commerce">
-                            </div>
-
-                            <div class="two-inputs-grid">
-                                <div class="form-group">
-                                    <label for="planTaskOwner">Kto robi?</label>
-                                    <select id="planTaskOwner" class="admin-select">
-                                        <option value="Wspólnie">⚡ Wspólnie</option>
-                                        <option value="Mateusz">🟢 Mateusz</option>
-                                        <option value="Bartek">🔵 Bartek</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="planTaskPriority">Status</label>
-                                    <select id="planTaskPriority" class="admin-select">
-                                        <option value="todo">📋 Do zrobienia</option>
-                                        <option value="progress">⏳ W trakcie</option>
-                                        <option value="done">✓ Gotowe</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary btn-full">Dodaj do naszego planera ⚡</button>
-                        </form>
-
-                        <!-- Wspólny Szybki Notatnik -->
-                        <form class="glass-card" id="hqScratchpadForm">
-                            <div class="card-header-between">
-                                <h3>📝 Wspólny Notatnik (Scratchpad)</h3>
-                                <span id="scratchpadSavedInfo" class="hq-pill mateusz">Notatnik HQ</span>
-                            </div>
-                            <div class="form-group">
-                                <textarea id="hqScratchpadInput" rows="6" placeholder="Wpisz dowolne notatki, linki i ustalenia dla Was dwóch..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-outline btn-sm btn-full">💾 Zapisz notatnik</button>
-                        </form>
-                    </div>
-
-                    <!-- Lista zadań w planerze -->
-                    <div class="glass-card">
-                        <div class="card-header-between">
-                            <h3>📌 Nasza Lista Zadań</h3>
-                            <div class="form-group">
-                                <select id="planFilterOwner" class="admin-select">
-                                    <option value="all">Wszyscy (Mateusz & Bartek)</option>
-                                    <option value="Mateusz">🟢 Tylko Mateusz</option>
-                                    <option value="Bartek">🔵 Tylko Bartek</option>
-                                    <option value="Wspólnie">⚡ Wspólne</option>
-                                </select>
-                            </div>
+                <!-- GŁÓWNY KONTENER KALENDARZA -->
+                <div class="glass-card cal-wrapper-card">
+                    <div class="cal-toolbar">
+                        <div class="cal-nav-group">
+                            <button type="button" class="btn-mini" id="calPrevMonthBtn">◀ Poprzedni</button>
+                            <h3 id="calMonthTitle" class="cal-month-heading">Październik 2026</h3>
+                            <button type="button" class="btn-mini" id="calNextMonthBtn">Następny ▶</button>
+                            <button type="button" class="btn-mini btn-accent" id="calTodayBtn">Dzisiaj</button>
                         </div>
-                        <ul class="dash-task-list" id="hqPlannerList"></ul>
+
+                        <div class="cal-filter-group">
+                            <select id="calFilterOwner" class="admin-select">
+                                <option value="all">Wszyscy (Mateusz & Bartek)</option>
+                                <option value="Mateusz">🟢 Tylko Mateusz</option>
+                                <option value="Bartek">🔵 Tylko Bartek</option>
+                                <option value="Wspólnie">⚡ Wspólne</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <!-- Nagłówki dni tygodnia -->
+                    <div class="cal-weekdays-row">
+                        <div>Pon</div>
+                        <div>Wt</div>
+                        <div>Śr</div>
+                        <div>Czw</div>
+                        <div>Pt</div>
+                        <div>Sob</div>
+                        <div>Ndz</div>
+                    </div>
+
+                    <!-- Siatka dni generowana przez planner.js -->
+                    <div class="cal-days-grid" id="hqCalendarGrid"></div>
                 </div>
+
+                <!-- WSPÓLNY SZYBKI NOTATNIK POD KALENDARZEM -->
+                <form class="glass-card" id="hqScratchpadForm">
+                    <div class="card-header-between">
+                        <h3>📝 Wspólny Notatnik Operacyjny (Scratchpad)</h3>
+                        <span id="scratchpadSavedInfo" class="hq-pill mateusz">Notatnik HQ</span>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="hqScratchpadInput" rows="4" placeholder="Wpisz luźne notatki, szybkie linki i ustalenia dla Was dwóch..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline btn-sm">💾 Zapisz zmiany w notatniku</button>
+                </form>
             </section>
 
             <!-- ==========================================
@@ -270,7 +247,6 @@
                             <input type="text" id="calcClientName" placeholder="np. Sklep E-commerce / Konto Allegro Klienta">
                         </div>
 
-                        <!-- 1. Audyt konta reklamowego -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="700" data-name="1. Audyt konta reklamowego (Google / Meta / Allegro Ads)">
@@ -279,7 +255,6 @@
                             <span class="hq-pill mateusz">700 zł</span>
                         </label>
 
-                        <!-- 2. Optymalizacja ofert Allegro -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1200" data-name="2. Optymalizacja ofert Allegro (Tytuły, parametry, opisy sprzedażowe)">
@@ -288,7 +263,6 @@
                             <span class="hq-pill mateusz">1 200 zł</span>
                         </label>
 
-                        <!-- 3. Konfiguracja analityki -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="900" data-name="3. Konfiguracja analityki (GA4, GTM, Meta Pixel, śledzenie e-commerce)">
@@ -297,7 +271,6 @@
                             <span class="hq-pill mateusz">900 zł</span>
                         </label>
 
-                        <!-- 4. Audyt SEO -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1100" data-name="4. Audyt SEO (Analiza techniczna, treściowa i słowa kluczowe)">
@@ -306,7 +279,6 @@
                             <span class="hq-pill mateusz">1 100 zł</span>
                         </label>
 
-                        <!-- 5. Kampanie Allegro Ads -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1200" data-name="5. Kampanie Allegro Ads (Konfiguracja i prowadzenie)">
@@ -315,7 +287,6 @@
                             <span class="hq-pill mateusz">1 200 zł</span>
                         </label>
 
-                        <!-- 6. Kampanie Google Ads -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1400" data-name="6. Kampanie Google Ads (Shopping, Performance Max, Search)">
@@ -324,7 +295,6 @@
                             <span class="hq-pill mateusz">1 400 zł</span>
                         </label>
 
-                        <!-- 7. Kampanie Facebook i Instagram Ads -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1300" data-name="7. Kampanie Facebook i Instagram Ads (Meta Ads & Remarketing)">
@@ -333,7 +303,6 @@
                             <span class="hq-pill mateusz">1 300 zł</span>
                         </label>
 
-                        <!-- 8. Landing page pod kampanię -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1800" data-name="8. Landing page pod kampanię (Projekt UX/UI + wdrożenie pod konwersję)">
@@ -342,7 +311,6 @@
                             <span class="hq-pill mateusz">1 800 zł</span>
                         </label>
 
-                        <!-- 9. Strategia marketingowa -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1500" data-name="9. Strategia marketingowa (Lejek sprzedażowy, grupy docelowe, plan działań)">
@@ -351,7 +319,6 @@
                             <span class="hq-pill mateusz">1 500 zł</span>
                         </label>
 
-                        <!-- 10. Pozycjonowanie (SEO) -->
                         <label class="calc-service-row">
                             <span>
                                 <input type="checkbox" class="hq-calc-check" value="1600" data-name="10. Pozycjonowanie (SEO) (Optymalizacja, content i budowa widoczności)">
@@ -408,7 +375,7 @@
 
                         <div class="glass-card">
                             <div class="card-header-between">
-                                <h3>🗂️ Zapisane wyceny</h3>
+                                <h3>🗂️️ Zapisane wyceny</h3>
                             </div>
                             <ul class="dash-task-list" id="hqSavedQuotesList"></ul>
                         </div>
@@ -445,11 +412,11 @@
                         <div class="two-inputs-grid">
                             <div class="form-group">
                                 <label for="docDateInput">Data dokumentu (puste = wykropkowane)</label>
-                                <input type="text" id="docDateInput" placeholder="np. 02.10.2026">
+                                <input type="text" id="docDateInput" placeholder="np. 03.10.2026">
                             </div>
                             <div class="form-group">
                                 <label for="docOwnerInput">Opiekun / Sporządził (puste = wykropkowane)</label>
-                                <input type="text" id="docOwnerInput" placeholder="np. Mateusz Bugajski / Bartek Koczara">
+                                <input type="text" id="docOwnerInput" placeholder="np. Mateusz Bugajski / Bartosz Koczara">
                             </div>
                         </div>
 
@@ -540,6 +507,72 @@
         </main>
     </div>
 
+    <!-- ==========================================
+         MODAL WYBRANEGO DNIA W KALENDARZU (planner.js)
+         ========================================== -->
+    <div class="modal-overlay" id="calendarDayModal">
+        <div class="modal-content glass-card cal-day-modal-box">
+            <button type="button" class="modal-close" id="closeDayModalBtn" aria-label="Zamknij">&times;</button>
+
+            <span class="section-tag">Harmonogram Dnia • Wake The Brand</span>
+            <h2 id="dayModalDateTitle">📅 Plan na dzień</h2>
+            <p id="dayModalSubtitle" class="cal-modal-sub">Wybierz i zaplanuj zadania oraz priorytety na ten dzień.</p>
+
+            <div class="dash-two-cols cal-modal-columns">
+                <!-- Formularz dodawania zadania na kliknięty dzień -->
+                <form id="dayTaskForm" class="cal-modal-form">
+                    <h4>➕ Zaplanuj na ten dzień</h4>
+
+                    <div class="form-group">
+                        <label for="dayTaskTitle">Zadanie do wykonania</label>
+                        <input type="text" id="dayTaskTitle" required placeholder="np. Audyt Google Ads / Optymalizacja 15 ofert Allegro">
+                    </div>
+
+                    <div class="two-inputs-grid">
+                        <div class="form-group">
+                            <label for="dayTaskTime">Godzina (opcjonalnie)</label>
+                            <input type="time" id="dayTaskTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="dayTaskPriority">Priorytet zadania</label>
+                            <select id="dayTaskPriority" class="admin-select">
+                                <option value="high">🔥 Wysoki (Pilne)</option>
+                                <option value="medium" selected>⚡ Normalny</option>
+                                <option value="low">🟢 Niski</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="two-inputs-grid">
+                        <div class="form-group">
+                            <label for="dayTaskOwner">Kto odpowiada?</label>
+                            <select id="dayTaskOwner" class="admin-select">
+                                <option value="Wspólnie">⚡ Wspólnie</option>
+                                <option value="Mateusz">🟢 Mateusz</option>
+                                <option value="Bartek">🔵 Bartek</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dayTaskProject">Klient / Projekt</label>
+                            <input type="text" id="dayTaskProject" placeholder="np. Wake The Brand / Klient X">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm btn-full">
+                        Dodaj zadanie do tego dnia ⚡
+                    </button>
+                </form>
+
+                <!-- Lista zadań zaplanowanych na ten dzień -->
+                <div>
+                    <h4 class="cal-modal-list-heading">📌 Zadania zaplanowane na ten dzień</h4>
+                    <ul class="dash-task-list" id="dayTasksList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script src="planner.js"></script>
 </body>
 </html>
