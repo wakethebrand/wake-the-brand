@@ -30,21 +30,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         tasks: [
             {
                 id: 't_start_1',
-                title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny',
+                title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny (1-10 usług)',
                 project: 'Wake The Brand HQ',
                 owner: 'Wspólnie',
                 status: 'todo',
                 createdAt: 'Start'
             }
         ],
-        scratchpad: 'Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze lub pomysły na rolki...',
+        scratchpad: 'Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze, wnioski z audytów kont lub listy słów kluczowych...',
         driveFiles: [
             {
                 id: 'd_start_1',
                 title: 'Główny Folder Projektowy Wake The Brand',
                 category: '📂 Folder Klienta',
                 url: 'https://drive.google.com/',
-                note: 'Główny dysk współdzielony założycieli',
+                note: 'Główny dysk współdzielony założycieli (Audyty, Allegro, Kampanie Ads, SEO)',
                 createdAt: 'Start'
             }
         ],
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 3. FILTRY PORTFOLIO & MODALE (koncepty.html + portfolio.html)
+    // 3. FILTRY PORTFOLIO & MODALE (10 USŁUG WAKE THE BRAND)
     // =========================================================
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioCards = document.querySelectorAll('.portfolio-card');
@@ -205,66 +205,66 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const modalDetailsMap = {
         "ecom-1": {
-            tag: "Filar 01 • Budowa i Optymalizacja Sklepu Online",
-            title: "Jak wdrażamy szybki sklep internetowy nastawiony na konwersję?",
+            tag: "Filar 01 • Analityka, Audyt, Strategia & Landing Page",
+            title: "Uszczelnienie lejka i pomiaru przed skalowaniem budżetu",
             steps: [
-                "<strong>Etap 1: Architektura UX/UI Mobile-First</strong> – projektujemy układ kart produktów i koszyka tak, aby zakup na smartfonie zajmował mniej niż 60 sekund.",
-                "<strong>Etap 2: Wdrożenie płatności i logistyki</strong> – integrujemy szybkie płatności (BLIK, Apple Pay, Google Pay, karty) oraz mapy paczkomatów InPost / kurierów.",
-                "<strong>Etap 3: Szybkość i techniczne SEO</strong> – optymalizujemy kod i grafikę, aby sklep ładował się błyskawicznie i wysoko pozycjonował w Google."
+                "<strong>Krok 1: Audyt konta reklamowego & Strategia marketingowa</strong> – prześwietlamy dotychczasowe kampanie, analizujemy konkurencję i układamy plan lejka sprzedażowego.",
+                "<strong>Krok 2: Konfiguracja analityki</strong> – wdrażamy Google Analytics 4 (GA4), Google Tag Manager (GTM), Meta Pixel i API Konwersji, aby mierzyć każdy koszyk i zakup.",
+                "<strong>Krok 3: Landing page pod kampanię</strong> – projektujemy i kodujemy szybką stronę docelową nastawioną na maksymalny współczynnik konwersji z ruchu płatnego."
             ]
         },
         "ecom-2": {
-            tag: "Filar 02 • Kreacja Wideo & Wizerunek Marki",
-            title: "Rolki produktowe (Reels / TikTok), które sprzedają",
+            tag: "Filar 02 • Kampanie Google Ads, Meta Ads & Allegro Ads",
+            title: "Jak prowadzimy kampanie Performance nastawione na zwrot (ROAS)?",
             steps: [
-                "<strong>Etap 1: Koncepcja i Haki (Hooks)</strong> – przygotowujemy pomysły na krótkie wideo, które zatrzymują scrollowanie w pierwszych 3 sekundach.",
-                "<strong>Etap 2: Dynamiczny montaż z Twoich nagrań</strong> – przesyłasz nam surowe ujęcia telefonu, a my robimy cięcia, napisy, sound design i korekcję barw.",
-                "<strong>Etap 3: Spójny Branding</strong> – dbamy o to, by sklep, banery i rolki tworzyły jedną, rozpoznawalną markę."
+                "<strong>Krok 1: Kampanie Google Ads</strong> – uruchamiamy kampanie produktowe (Shopping / Performance Max) oraz Search na frazy o wysokiej intencji zakupowej.",
+                "<strong>Krok 2: Kampanie Facebook i Instagram Ads</strong> – docieramy z ofertą do nowych grup odbiorców i odzyskujemy porzucone koszyki za pomocą remarketingu dynamicznego (DPA).",
+                "<strong>Krok 3: Kampanie Allegro Ads</strong> – precyzyjnie zarządzamy stawkami CPC i ofertami sponsorowanymi, obniżając ACOS i zwiększając sprzedaż na Allegro."
             ]
         },
         "ecom-3": {
-            tag: "Filar 03 • Skalowanie Sprzedaży & Ads",
-            title: "System reklamowy dla E-commerce",
+            tag: "Filar 03 • Optymalizacja Allegro, Audyt SEO & Pozycjonowanie",
+            title: "Długofalowa widoczność organiczna w Google i na Allegro",
             steps: [
-                "<strong>Etap 1: Analityka sprzedaży</strong> – wdrażamy Meta Pixel oraz Google Analytics 4 ze śledzeniem wartości koszyka i zakupów.",
-                "<strong>Etap 2: Kampanie produktowe i wideo</strong> – docieramy z Twoją ofertą do nowej, precyzyjnie dobranej grupy odbiorców.",
-                "<strong>Etap 3: Ratowanie porzuconych koszyków</strong> – uruchamiamy dynamiczny remarketing przypominający o dokończeniu zamówienia."
+                "<strong>Krok 1: Optymalizacja ofert Allegro</strong> – przebudowujemy tytuły, parametry i opisy aukcji pod kątem słów kluczowych i algorytmu trafności Allegro.",
+                "<strong>Krok 2: Audyt SEO</strong> – badamy kondycję techniczną sklepu, szybkość ładowania (Core Web Vitals), indeksację i strukturę nagłówków.",
+                "<strong>Krok 3: Pozycjonowanie (SEO)</strong> – regularnie optymalizujemy kategorie produktowe, tworzymy treści eksperckie i budujemy profil linkowy domeny."
             ]
         },
         "port-1": {
-            tag: "Case Study • Sklep Streetwear & Moda",
-            title: "Vintage Drop Store – Sklep pod limitowane kolekcje",
+            tag: "Case Study • Optymalizacja Ofert & Kampanie Allegro Ads",
+            title: "Home & Garden Allegro – ROAS 840% po przebudowie konta",
             steps: [
-                "<strong>Wyzwanie:</strong> Klient sprzedawał wcześniej wyłącznie przez wiadomości prywatne na Instagramie, tracąc klientów przy większych premierach.",
-                "<strong>Rozwiązanie:</strong> Stworzyliśmy mroczny, nowoczesny sklep z licznikiem do dropu, automatycznymi stanami magazynowymi i płatnością BLIK jednym kliknięciem.",
-                "<strong>Rezultat:</strong> Czas ładowania 0.8s na telefonie i pełna automatyzacja wysyłek od pierwszego dnia premiery."
+                "<strong>Wyzwanie:</strong> Wysoki koszt kliknięcia w Allegro Ads (ACOS powyżej 28%) i niska pozycja kluczowych aukcji w wynikach trafności.",
+                "<strong>Wdrożone usługi:</strong> 1. Audyt konta reklamowego, 2. Optymalizacja ofert Allegro (120 aukcji), 5. Kampanie Allegro Ads.",
+                "<strong>Rezultat:</strong> Spadek ACOS do 11,9% (ROAS 840%) i trwały wzrost sprzedaży organicznej dzięki poprawie trafności ofert."
             ]
         },
         "port-2": {
-            tag: "Case Study • Wideo Reels & TikTok",
-            title: "Clay & Craft Studio – Kampania wideo dla rękodzieła",
+            tag: "Case Study • Google Ads, Facebook/Instagram Ads & Analityka",
+            title: "Urban Wear E-commerce – Redukcja kosztu zakupu o 38%",
             steps: [
-                "<strong>Wyzwanie:</strong> Statyczne zdjęcia produktów nie oddawały detali i nie budowały zasięgów organicznych.",
-                "<strong>Rozwiązanie:</strong> Zmontowaliśmy serię 8 dynamicznych rolek z procesu tworzenia na żywo, pakowania paczek (ASMR) i prezentacji detali.",
-                "<strong>Rezultat:</strong> Wyraźny wzrost zaangażowania na profilu i bezpośrednie przejścia z bio prosto do kart produktów."
+                "<strong>Wyzwanie:</strong> Błędnie zliczane konwersje w sklepie i przepalany budżet w ogólnych kampaniach Performance Max.",
+                "<strong>Wdrożone usługi:</strong> 1. Audyt konta reklamowego, 3. Konfiguracja analityki (GA4 + GTM + Pixel), 6. Kampanie Google Ads, 7. Kampanie Facebook i Instagram Ads.",
+                "<strong>Rezultat:</strong> Pełna przejrzystość danych sprzedażowych i obniżenie kosztu pozyskania zamówienia (CPA) o 38%."
             ]
         },
         "port-3": {
-            tag: "Case Study • Redesign E-commerce",
-            title: "Neon Gear E-Shop – Optymalizacja ścieżki zakupowej",
+            tag: "Case Study • Audyt SEO & Pozycjonowanie (SEO)",
+            title: "TechParts Sklep Online – +165% ruchu organicznego z Google",
             steps: [
-                "<strong>Wyzwanie:</strong> Duży odsetek porzuconych koszyków na smartfonach przez skomplikowany, 5-etapowy formularz zamówienia.",
-                "<strong>Rozwiązanie:</strong> Przebudowaliśmy kartę produktu (dodając wideo-prezentację) i skróciliśmy koszyk do jednego przejrzystego ekranu.",
-                "<strong>Rezultat:</strong> Znacznie szybsze finalizowanie zamówień na urządzeniach mobilnych i wyższa średnia wartość koszyka."
+                "<strong>Wyzwanie:</strong> Duplikacja treści w sklepie, wolne działanie wersji mobilnej i brak widoczności kategorii na frazy produktowe.",
+                "<strong>Wdrożone usługi:</strong> 4. Audyt SEO, 10. Pozycjonowanie (SEO), 3. Konfiguracja analityki.",
+                "<strong>Rezultat:</strong> Wzrost bezpłatnego ruchu z wyszukiwarki Google o 165% w ciągu 5 miesięcy systematycznej optymalizacji."
             ]
         },
         "port-4": {
-            tag: "Case Study • Branding & Meta Ads",
-            title: "Pulse Coffee Roasters – Rebranding i kampania zestawów",
+            tag: "Case Study • Strategia Marketingowa & Landing Page",
+            title: "Pro-Fit Supplements – Konwersja 6,8% na starcie nowej linii",
             steps: [
-                "<strong>Wyzwanie:</strong> Lokalna palarnia kawy chciała rozpocząć sprzedaż wysyłkową w całej Polsce.",
-                "<strong>Rozwiązanie:</strong> Zaprojektowaliśmy nowe logo, paletę barw, kreacje reklamowe oraz uruchomiliśmy kampanię Meta Ads na zestawy startowe.",
-                "<strong>Rezultat:</strong> Spójny wizerunek marki premium i regularny napływ nowych zamówień ze sklepu online."
+                "<strong>Wyzwanie:</strong> Wprowadzenie nowego produktu na konkurencyjny rynek bez wcześniej przygotowanego lejka sprzedażowego.",
+                "<strong>Wdrożone usługi:</strong> 9. Strategia marketingowa, 8. Landing page pod kampanię, 3. Konfiguracja analityki.",
+                "<strong>Rezultat:</strong> Dedykowany, ultraszybki Landing Page osiągnął współczynnik konwersji na poziomie 6,8% z kampanii Google i Meta Ads."
             ]
         }
     };
@@ -373,14 +373,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         _replyto: email,
                         Imie_lub_Marka: name,
                         Kontakt_Klienta: email,
-                        Wybrane_Obszary: topicsStr,
+                        Wybrane_Uslugi: topicsStr,
                         Wiadomosc: msgVal,
                         _template: 'table'
                     })
                 }).catch(() => {});
             }
 
-            formFeedback.innerText = `Dzięki, ${name}! Wiadomość została wysłana. Odezwiemy się maksymalnie w 24h ⚡`;
+            formFeedback.innerText = `Dzięki, ${name}! Zapytanie zostało wysłane. Odezwiemy się maksymalnie w 24h ⚡`;
             contactForm.reset();
         });
     }
@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <span class="hq-pill mateusz">${lead.email}</span>
                         ${leadStatusBadgeHTML(lead.crmStatus)}
                     </div>
-                    <small>Wybrane obszary: <strong>${lead.topics || 'Ogólne'}</strong> • Wysłano: ${lead.createdAt || ''}</small>
+                    <small>Wybrane usługi: <strong>${lead.topics || 'Ogólne'}</strong> • Wysłano: ${lead.createdAt || ''}</small>
                     <p>„${lead.message}”</p>
                 </div>
                 <div class="cookie-actions">
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 7C. Wewnętrzny Kalkulator Wyceny – obliczenia na żywo
+    // 7C. Wewnętrzny Kalkulator Wyceny (10 Usług) – obliczenia na żywo
     function recalculateInternalQuote() {
         if (!hqCalcTotal) return;
         let baseSum = 0;
@@ -778,8 +778,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         const customAdd = parseInt(calcCustomAdd?.value, 10) || 0;
-        if (customAdd > 0) {
-            selectedWithPrices.push(`Dodatkowe prace wdrożeniowe - ${customAdd} zł`);
+        if (customAdd !== 0) {
+            selectedWithPrices.push(`Korekta / Dodatkowy zakres wdrożeniowy - ${customAdd} zł`);
         }
 
         const discountPct = Math.min(80, Math.max(0, parseInt(calcDiscountPercent?.value, 10) || 0));
@@ -795,19 +795,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const clientLabel = (calcClientName?.value || '').trim() || 'Twojej Marki';
         const servicesLines = selectedNames.length > 0
             ? selectedNames.map(s => `• ${s}`).join('\n')
-            : '• Indywidualny zakres prac dopasowany do projektu';
+            : '• Indywidualny zakres usług Performance / SEO / Allegro';
 
         if (hqQuoteReadyText) {
             hqQuoteReadyText.value =
-`Cześć! Przygotowaliśmy indywidualną propozycję współpracy dla ${clientLabel} w Wake The Brand ⚡
+`Cześć! Przygotowaliśmy indywidualną wycenę współpracy dla ${clientLabel} w Wake The Brand ⚡
 
-Zakres prac:
+Wybrany zakres usług:
 ${servicesLines}
 
-💰 Całkowity koszt realizacji: ${finalTotal.toLocaleString('pl-PL')} zł${discountPct > 0 ? ` (po uwzględnieniu ${discountPct}% rabatu)` : ''}
-📈 Rekomendowany budżet reklamowy Ads: ok. ${suggestedAds.toLocaleString('pl-PL')} zł / mies.
+💰 Koszt realizacji: ${finalTotal.toLocaleString('pl-PL')} zł${discountPct > 0 ? ` (po uwzględnieniu ${discountPct}% rabatu)` : ''}
+📈 Rekomendowany budżet mediowy na kampanie Ads: ok. ${suggestedAds.toLocaleString('pl-PL')} zł / mies.
 
-Daj znać, czy taki zakres jest dla Ciebie odpowiedni – możemy startować od razu!
+Daj znać, czy taki zakres jest dla Ciebie odpowiedni – możemy startować!
 Zespół Wake The Brand`;
         }
 
@@ -871,7 +871,7 @@ Zespół Wake The Brand`;
     }
 
     // =========================================================
-    // 7D. GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF
+    // 7D. GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF (10 USŁUG WTB)
     // =========================================================
     function valOrBlankLine(val, placeholderDots = '........................................................................................') {
         const cleaned = (val || '').trim();
@@ -898,7 +898,7 @@ Zespół Wake The Brand`;
             <div class="print-doc-header">
                 <div>
                     <div class="print-brand-title">WAKE THE BRAND.</div>
-                    <div class="print-brand-sub">Kreatywne Studio Digital & E-commerce • kontakt@wakethebrand.pl</div>
+                    <div class="print-brand-sub">Performance Marketing • Allegro • SEO • Analityka • kontakt@wakethebrand.pl</div>
                 </div>
                 <div class="print-meta-box">
                     <div><strong>Dokument:</strong> ${docCode} ${pageBadge}</div>
@@ -923,18 +923,22 @@ Zespół Wake The Brand`;
         const rawScope = (docScopeItems?.value || '').trim();
         const scopeArr = rawScope ? rawScope.split('\n').map(s => s.trim()).filter(Boolean) : [];
 
-        // SZABLON 1: KARTA BRIEFU I INFORMACJI OD KLIENTA (1 STRONA A4)
+        // SZABLON 1: KARTA BRIEFU I INFORMACJI OD KLIENTA (1 STRONA A4 - 10 USŁUG)
         if (tpl === 'brief') {
             const scopeBlockHTML = scopeArr.length > 0
                 ? `<div class="print-notes-box">${scopeArr.map(item => `• ${item}`).join('<br>')}</div>`
                 : `
                     <div class="print-check-grid">
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Budowa Sklepu Internetowego (E-commerce)</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Nowoczesna Strona WWW / Landing Page</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Montaż Wideo (Rolki Reels / TikTok)</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Branding & Identyfikacja Wizualna</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Kampanie Meta Ads / Google Ads</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> Inne: .........................................................</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 1. Audyt konta reklamowego</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 2. Optymalizacja ofert Allegro</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 3. Konfiguracja analityki (GA4 / GTM / Pixel)</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 4. Audyt SEO</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 5. Kampanie Allegro Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 6. Kampanie Google Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 7. Kampanie Facebook i Instagram Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 8. Landing page pod kampanię</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 9. Strategia marketingowa</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> 10. Pozycjonowanie (SEO)</div>
                     </div>
                 `;
 
@@ -944,18 +948,18 @@ Zespół Wake The Brand`;
 
                     <div class="print-doc-banner">
                         <h2>Karta Briefu i Informacji od Klienta</h2>
-                        <p>Arkusz ustaleń projektowych, celów marki oraz wymagań wdrożeniowych</p>
+                        <p>Arkusz ustaleń projektowych, celów sprzedażowych oraz audytu potrzeb w Wake The Brand</p>
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">1. Dane Klienta / Marki</div>
+                        <div class="print-section-heading">1. Dane Klienta / Sklepu / Konta Allegro</div>
                         <div class="print-grid-2">
                             <div class="print-field-row">
                                 <span class="print-field-label">Nazwa Klienta / Marki / Firmy</span>
                                 <span class="print-field-value">${cName}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">NIP / Adres / Obecna strona WWW</span>
+                                <span class="print-field-label">NIP / Adres WWW sklepu / Login Allegro</span>
                                 <span class="print-field-value">${cNip}</span>
                             </div>
                             <div class="print-field-row">
@@ -963,39 +967,39 @@ Zespół Wake The Brand`;
                                 <span class="print-field-value">${cContact}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">Branża / Profil działalności</span>
+                                <span class="print-field-label">Branża / Główne produkty</span>
                                 <span class="print-field-value">${cIndustry}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">2. Obszary Współpracy & Zakres Zainteresowania</div>
+                        <div class="print-section-heading">2. Wybrane Usługi Wake The Brand (1–10)</div>
                         ${scopeBlockHTML}
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">3. Główny Cel Projektu & Informacje od Klienta</div>
+                        <div class="print-section-heading">3. Główny Cel Sprzedażowy & Informacje od Klienta</div>
                         ${valOrNotesLines(docMainGoal?.value, 4)}
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">4. Szacowany Budżet & Planowany Termin</div>
+                        <div class="print-section-heading">4. Budżet & Planowany Termin Wdrożenia</div>
                         <div class="print-grid-2">
                             <div class="print-field-row">
-                                <span class="print-field-label">Ustalony / Deklarowany budżet</span>
+                                <span class="print-field-label">Ustalony budżet obsługi / budżet reklamowy</span>
                                 <span class="print-field-value">${totalPrice}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">Oczekiwany termin realizacji / Startu</span>
+                                <span class="print-field-label">Planowany termin startu / realizacji</span>
                                 <span class="print-field-value">${deadline}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">5. Dodatkowe Notatki z Rozmowy / Inspiracje / Dostępy</div>
-                        ${valOrNotesLines(docExtraNotes?.value, 4)}
+                        <div class="print-section-heading">5. Dodatkowe Notatki z Rozmowy / Dostępy (GA4, GTM, Ads, Allegro)</div>
+                        ${valOrNotesLines(docExtraNotes?.value, 3)}
                     </div>
 
                     <div class="print-signatures-row">
@@ -1004,7 +1008,7 @@ Zespół Wake The Brand`;
                     </div>
 
                     <div class="print-footer-note">
-                        <span>Wake The Brand — Kreatywne Studio Digital & E-commerce</span>
+                        <span>Wake The Brand — Agencja Performance, Allegro & SEO</span>
                         <span>Strona 1 z 1</span>
                     </div>
                 </div>
@@ -1029,7 +1033,7 @@ Zespół Wake The Brand`;
                     `;
                 }).join('');
             } else {
-                for (let i = 1; i <= 7; i++) {
+                for (let i = 1; i <= 8; i++) {
                     tableRowsHTML += `
                         <tr>
                             <td>${i}.</td>
@@ -1047,7 +1051,7 @@ Zespół Wake The Brand`;
 
                     <div class="print-doc-banner">
                         <h2>Kosztorys, Wycena i Zakres Prac</h2>
-                        <p>Indywidualna specyfikacja usług oraz wycena realizacji dla klienta</p>
+                        <p>Indywidualna specyfikacja usług Performance, Allegro, SEO i Analityki w Wake The Brand</p>
                     </div>
 
                     <div class="print-section-block">
@@ -1058,7 +1062,7 @@ Zespół Wake The Brand`;
                                 <span class="print-field-value">${cName}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">NIP / Adres / Strona WWW</span>
+                                <span class="print-field-label">NIP / Adres WWW / Konto Allegro</span>
                                 <span class="print-field-value">${cNip}</span>
                             </div>
                             <div class="print-field-row">
@@ -1066,7 +1070,7 @@ Zespół Wake The Brand`;
                                 <span class="print-field-value">${cContact}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">Branża / Projekt</span>
+                                <span class="print-field-label">Branża / Obszar działań</span>
                                 <span class="print-field-value">${cIndustry}</span>
                             </div>
                         </div>
@@ -1083,7 +1087,7 @@ Zespół Wake The Brand`;
                             <thead>
                                 <tr>
                                     <th style="width: 45px;">Lp.</th>
-                                    <th>Nazwa usługi / Etap prac wdrożeniowych</th>
+                                    <th>Nazwa usługi (z katalogu Wake The Brand) / Zakres prac</th>
                                     <th style="width: 160px;">Wycena / Koszt</th>
                                 </tr>
                             </thead>
@@ -1104,19 +1108,19 @@ Zespół Wake The Brand`;
                     </div>
                 </div>
 
-                <!-- STRONA 2 Z 2: HARMONOGRAM, ZAŁĄCZONE DOKUMENTY (RĘCZNIE) I PODPISY -->
+                <!-- STRONA 2 Z 2: HARMONOGRAM, ZAŁĄCZONE DOKUMENTY (DO WPISANIA RĘCZNEGO) I PODPISY -->
                 <div class="print-page-a4">
                     ${buildDocHeaderHTML('WTB / KOSZTORYS', '(Strona 2/2)')}
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">4. Harmonogram, Termin Realizacji i Warunki Płatności</div>
+                        <div class="print-section-heading">4. Harmonogram, Okres Współpracy i Warunki Płatności</div>
                         <div class="print-grid-2">
                             <div class="print-field-row">
-                                <span class="print-field-label">Przewidywany czas realizacji</span>
+                                <span class="print-field-label">Przewidywany czas realizacji / Model rozliczenia</span>
                                 <span class="print-field-value">${deadline}</span>
                             </div>
                             <div class="print-field-row">
-                                <span class="print-field-label">Sposób rozliczenia (np. zaliczka / etapy)</span>
+                                <span class="print-field-label">Sposób płatności (np. faktura / zaliczka / abonament)</span>
                                 <span class="print-field-value">........................................................................................</span>
                             </div>
                         </div>
@@ -1143,7 +1147,7 @@ Zespół Wake The Brand`;
                     </div>
 
                     <div class="print-footer-note">
-                        <span>Wake The Brand — Kreatywne Studio Digital & E-commerce</span>
+                        <span>Wake The Brand — Agencja Performance, Allegro & SEO</span>
                         <span>Strona 2 z 2</span>
                     </div>
                 </div>
@@ -1151,18 +1155,20 @@ Zespół Wake The Brand`;
             return;
         }
 
-        // SZABLON 3: KARTA PROJEKTU & CHECKLISTA WDROŻENIOWA (1 STRONA A4)
+        // SZABLON 3: KARTA PROJEKTU & CHECKLISTA WDROŻENIOWA (1 STRONA A4 - 10 USŁUG)
         const checklistRowsHTML = scopeArr.length > 0
             ? scopeArr.map(item => `<div class="print-check-item"><span class="print-checkbox-square"></span> ${item}</div>`).join('')
             : `
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Zebranie materiałów (logo, zdjęcia, wideo) od klienta</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Konfiguracja domeny, hostingu i certyfikatu SSL</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Projekt UX/UI sklepu lub strony WWW (Mobile-First)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Wdrożenie koszyka, płatności BLIK oraz dostaw</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Montaż i akceptacja rolek produktowych (Reels / TikTok)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Instalacja Meta Pixel oraz Google Analytics 4</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> Testy szybkości ładowania i odbiór końcowy projektu</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> ................................................................................................</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 1. Audyt konta reklamowego (Google / Meta / Allegro Ads)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 2. Optymalizacja ofert Allegro (tytuły, parametry, opisy)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 3. Konfiguracja analityki (GA4, GTM, Meta Pixel, konwersje)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 4. Audyt SEO (weryfikacja techniczna i treściowa strony)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 5. Uruchomienie i optymalizacja Kampanii Allegro Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 6. Uruchomienie i optymalizacja Kampanii Google Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 7. Uruchomienie Kampanii Facebook i Instagram Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 8. Projekt i wdrożenie Landing Page'a pod kampanię</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 9. Opracowanie Strategii marketingowej</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> 10. Działania w ramach Pozycjonowania (SEO)</div>
             `;
 
         printableDocumentArea.innerHTML = `
@@ -1171,7 +1177,7 @@ Zespół Wake The Brand`;
 
                 <div class="print-doc-banner">
                     <h2>Karta Projektu & Checklista Wdrożeniowa</h2>
-                    <p>Wewnętrzny arkusz kontrolny realizacji projektu w Wake The Brand</p>
+                    <p>Wewnętrzny arkusz kontrolny realizacji usług w Wake The Brand</p>
                 </div>
 
                 <div class="print-section-block">
@@ -1182,7 +1188,7 @@ Zespół Wake The Brand`;
                             <span class="print-field-value">${cName}</span>
                         </div>
                         <div class="print-field-row">
-                            <span class="print-field-label">Adres docelowej domeny / WWW</span>
+                            <span class="print-field-label">Adres domeny WWW / Konto Allegro</span>
                             <span class="print-field-value">${cNip}</span>
                         </div>
                         <div class="print-field-row">
@@ -1190,14 +1196,14 @@ Zespół Wake The Brand`;
                             <span class="print-field-value">${cContact}</span>
                         </div>
                         <div class="print-field-row">
-                            <span class="print-field-label">Termin oddania projektu</span>
+                            <span class="print-field-label">Termin realizacji / Etap</span>
                             <span class="print-field-value">${deadline}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="print-section-block">
-                    <div class="print-section-heading">2. Lista Kontrolna Etapów Wdrożenia (Checklista)</div>
+                    <div class="print-section-heading">2. Lista Kontrolna Etapów Wdrożenia (Checklista 1–10)</div>
                     <div class="print-notes-box">
                         ${checklistRowsHTML}
                     </div>
@@ -1205,11 +1211,11 @@ Zespół Wake The Brand`;
 
                 <div class="print-section-block">
                     <div class="print-section-heading">3. Specyfikacja Techniczna / Notatki Zespołu</div>
-                    ${valOrNotesLines(docMainGoal?.value, 4)}
+                    ${valOrNotesLines(docMainGoal?.value, 3)}
                 </div>
 
                 <div class="print-section-block">
-                    <div class="print-section-heading">4. Uwagi Końcowe & Potwierdzenie Odbioru</div>
+                    <div class="print-section-heading">4. Uwagi Końcowe & Potwierdzenie Wdrożenia</div>
                     ${valOrNotesLines(docExtraNotes?.value, 3)}
                 </div>
 
