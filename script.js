@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // =========================================================
-    // 0. KONFIGURACJA FIREBASE (PROJEKT: WAKE-THE-BRAND)
-    // =========================================================
+    // 0. KONFIGURACJA FIREBASE (WAKE-THE-BRAND)
     const firebaseConfig = {
         apiKey: "AIzaSyBBPECw6qPYOd7g1NUFzHNQMzljUBOwL9I",
         authDomain: "wake-the-brand.firebaseapp.com",
@@ -12,62 +10,53 @@ document.addEventListener('DOMContentLoaded', async () => {
         appId: "1:765483574565:web:c898771abb393cf11526cc"
     };
 
-    // Główny mail, na który przychodzą wiadomości z formularza kontaktowego (kontakt.html)
     const CONTACT_RECEIVER_EMAIL = "kontakt@wakethebrand.pl";
-
-    // Główne adresy e-mail Właściciela (mają zawsze uprawnienia Administratora)
     const ADMIN_EMAILS = [
         'kontakt@wakethebrand.pl',
         'contact@wakethebrand.pl',
         'mateuszbugecik@gmail.com'
     ];
 
-    const STORAGE_KEY = 'wtb_portal_data_v1';
+    const STORAGE_KEY = 'wtb_portal_data_v3';
     const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
-    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v1';
+    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v3';
 
-    // Domyślny szablon danych dla nowego klienta
+    // CZYSTY SZABLON DLA NOWEGO KLIENTA (Wszystko ustala Admin po opłaceniu)
     const defaultClientData = {
-        clientName: 'Marka Klienta (Konto Testowe)',
+        clientName: 'Nowy Klient (Oczekuje na aktywację)',
         userName: 'Klient',
         email: 'klient@twojamarka.pl',
         isAdminRole: false,
         isBlocked: false,
-        createdAt: 'Październik 2026',
-        packageName: 'Podwójny Shot ⚡',
-        progressPercent: 65,
-        currentCost: '2 100 zł',
-        paymentStatus: '● Opłacone',
-        adBudget: '1 000 zł',
-        tasks: [
-            { id: 1, title: 'Audyt profilu i odświeżenie sekcji BIO na Instagramie', category: 'Social Media', status: 'done' },
-            { id: 2, title: 'Projekt palety kolorystycznej i szablonów graficznych', category: 'Branding', status: 'done' },
-            { id: 3, title: 'Montaż pierwszych 4 dynamicznych Rolek (Reels)', category: 'Wideo & Reels', status: 'progress' },
-            { id: 4, title: 'Kodowanie responsywnej strony głównej i kalkulatora', category: 'Strona WWW', status: 'progress' },
-            { id: 5, title: 'Konfiguracja kampanii retargetingowej Meta Ads', category: 'Kampanie Ads', status: 'todo' }
-        ],
-        finances: [
-            { id: 1, period: 'Październik 2026', scope: 'Pakiet Podwójny Shot (-30% Partner)', docType: 'Rachunek (0% VAT)', amount: '2 100 zł', status: 'Opłacone ✓' },
-            { id: 2, period: 'Październik 2026 (Budżet Ads)', scope: 'Doładowanie konta Meta Ads', docType: 'Bezpośrednio w Meta', amount: '1 000 zł', status: 'Opłacone ✓' }
-        ],
+        createdAt: 'Nowe konto',
+        packageName: 'Oczekuje na wybór i opłacenie ⏳',
+        progressPercent: 0,
+        currentCost: '0 zł (Do ustalenia)',
+        paymentStatus: '⏳ Oczekuje na płatność',
+        adBudget: '0 zł',
+        tasks: [],
+        finances: [],
         messages: [
-            { sender: 'agency', author: 'Wake The Brand ⚡', text: 'Cześć! Witamy w Twoim Panelu Klienta. Tutaj będziesz widzieć postęp wszystkich naszych prac na żywo.', time: 'Start współpracy' },
-            { sender: 'agency', author: 'Wake The Brand ⚡', text: 'Wrzuciliśmy do zakładki „Pliki do akceptacji” pierwsze projekty. Daj znać na czacie, jak Ci się podobają!', time: 'Dzisiaj' }
+            {
+                sender: 'agency',
+                author: 'Wake The Brand ⚡',
+                text: 'Cześć! Witamy w Twoim Panelu Klienta. Twoje konto jest już aktywne. Po ustaleniu szczegółów i opłaceniu pakietu Administrator uruchomi tutaj Twój harmonogram zadań, pasek postępu oraz budżet.',
+                time: 'Start'
+            }
         ]
     };
 
     function getCurrentTimeStr() {
         const now = new Date();
-        const day = String(now.getDate()).padStart(2, '0');
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const mins = String(now.getMinutes()).padStart(2, '0');
-        return `${day}.${month}, ${hours}:${mins}`;
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const h = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        return `${d}.${m}, ${h}:${min}`;
     }
 
     function isOwnerEmail(email) {
-        if (!email) return false;
-        return ADMIN_EMAILS.includes(email.trim().toLowerCase());
+        return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
     }
 
     function getLocalData() {
@@ -120,16 +109,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(current));
     }
 
-    // =========================================================
-    // 1. MENU MOBILNE (HAMBURGER) & BANER COOKIES
-    // =========================================================
+    // 1. MENU MOBILNE & COOKIES
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
-
     if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-        });
+        hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
     }
 
     const cookieBanner = document.getElementById('cookieBanner');
@@ -139,31 +123,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resetCookiesBtn = document.getElementById('resetCookiesBtn');
 
     if (cookieBanner) {
-        const savedConsent = localStorage.getItem('wtb_cookie_consent');
-        if (!savedConsent) {
+        if (!localStorage.getItem('wtb_cookie_consent')) {
             cookieBanner.classList.remove('hidden');
         }
-
         if (cookieEssentialBtn) {
             cookieEssentialBtn.addEventListener('click', () => {
                 localStorage.setItem('wtb_cookie_consent', 'essential');
                 cookieBanner.classList.add('hidden');
             });
         }
-
         if (cookieAcceptAllBtn) {
             cookieAcceptAllBtn.addEventListener('click', () => {
                 localStorage.setItem('wtb_cookie_consent', 'all');
                 cookieBanner.classList.add('hidden');
             });
         }
-
         if (openCookiesBtn) {
-            openCookiesBtn.addEventListener('click', () => {
-                cookieBanner.classList.remove('hidden');
-            });
+            openCookiesBtn.addEventListener('click', () => cookieBanner.classList.remove('hidden'));
         }
-
         if (resetCookiesBtn) {
             resetCookiesBtn.addEventListener('click', () => {
                 localStorage.removeItem('wtb_cookie_consent');
@@ -172,9 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // =========================================================
-    // 2. SYMULATOR MARKI (index.html), FAQ & KONCEPTY (koncepty.html)
-    // =========================================================
+    // 2. SYMULATOR MARKI, FAQ & KONCEPTY
     const btnSleep = document.getElementById('btnSleep');
     const btnAwake = document.getElementById('btnAwake');
     const stateSleep = document.getElementById('stateSleep');
@@ -187,7 +162,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             stateSleep.classList.remove('hidden');
             stateAwake.classList.add('hidden');
         });
-
         btnAwake.addEventListener('click', () => {
             btnAwake.classList.add('active');
             btnSleep.classList.remove('active');
@@ -197,27 +171,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.querySelectorAll('.faq-item').forEach(item => {
-        const question = item.querySelector('.faq-question');
-        if (question) {
-            question.addEventListener('click', () => {
-                item.classList.toggle('open');
-            });
-        }
+        const q = item.querySelector('.faq-question');
+        if (q) q.addEventListener('click', () => item.classList.toggle('open'));
     });
 
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioCards = document.querySelectorAll('.portfolio-card');
-
     if (filterBtns.length > 0 && portfolioCards.length > 0) {
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const filterValue = btn.getAttribute('data-filter');
-
                 portfolioCards.forEach(card => {
-                    const category = card.getAttribute('data-category');
-                    card.style.display = (filterValue === 'all' || filterValue === category) ? 'block' : 'none';
+                    const cat = card.getAttribute('data-category');
+                    card.style.display = (filterValue === 'all' || filterValue === cat) ? 'block' : 'none';
                 });
             });
         });
@@ -228,27 +196,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             tag: "Strategia Zdalna #1: Turystyka & Noclegi",
             title: "System rezerwacji bezpośrednich bez prowizji pośredników",
             steps: [
-                "<strong>Etap 1: Szybka strona WWW z bezpośrednim zapytaniem</strong> – projektujemy nowoczesną witrynę prezentującą pokoje, atuty okolicy i cennik, która zachęca do kontaktu bezpośredniego.",
-                "<strong>Etap 2: Krótkie formy wideo (Reels / TikTok)</strong> – z przesłanych przez Ciebie nagrań montujemy klimatyczne rolki pokazujące atmosferę wypoczynku.",
-                "<strong>Etap 3: Kampania przed sezonem</strong> – odpalamy celowane reklamy Meta & Google na osoby szukające noclegu, z bonusem za rezerwację bezpośrednią."
+                "<strong>Etap 1: Szybka strona WWW z bezpośrednim zapytaniem</strong> – projektujemy nowoczesną witrynę prezentującą pokoje, atuty okolicy i cennik.",
+                "<strong>Etap 2: Krótkie formy wideo (Reels / TikTok)</strong> – z przesłanych nagrań montujemy klimatyczne rolki pokazujące atmosferę wypoczynku.",
+                "<strong>Etap 3: Kampania przed sezonem</strong> – odpalamy celowane reklamy Meta & Google na osoby szukające noclegu."
             ]
         },
         "2": {
             tag: "Strategia Zdalna #2: Moda, Streetwear & Rękodzieło",
             title: "Budowa zaangażowanej społeczności wokół unikalnego produktu",
             steps: [
-                "<strong>Etap 1: Wyrazista identyfikacja wizualna</strong> – tworzymy logo, dobieramy czcionki i estetykę (np. retro / nowoczesny minimalizm), która wyróżnia markę od pierwszej sekundy.",
-                "<strong>Etap 2: Kulisy powstawania (Behind The Scenes)</strong> – montujemy dynamiczne Rolki z procesu projektowania, tworzenia i pakowania zamówień.",
-                "<strong>Etap 3: Komunikacja dropów i premier</strong> – budujemy napięcie wokół nowych kolekcji i kierujemy ruch prosto na Twoją stronę."
+                "<strong>Etap 1: Wyrazista identyfikacja wizualna</strong> – tworzymy logo, dobieramy czcionki i estetykę wyróżniającą markę.",
+                "<strong>Etap 2: Kulisy powstawania (Behind The Scenes)</strong> – montujemy dynamiczne Rolki z procesu projektowania i tworzenia.",
+                "<strong>Etap 3: Komunikacja dropów i premier</strong> – budujemy napięcie wokół nowych kolekcji i kierujemy ruch na stronę."
             ]
         },
         "3": {
             tag: "Strategia Zdalna #3: Usługi & Gastronomia",
             title: "Magnes na klientów w promieniu 15 km od Twojej firmy",
             steps: [
-                "<strong>Etap 1: Odświeżenie strony WWW i wizytówki Google</strong> – czytelny cennik, szybki formularz i pokazanie efektów Twojej pracy.",
-                "<strong>Etap 2: Wideo „Przed i Po”</strong> – dynamiczne rolki prezentujące rezultaty usług lub proces przygotowania flagowego produktu.",
-                "<strong>Etap 3: Reklama lokalna</strong> – precyzyjna kampania reklamowa wyświetlana wyłącznie mieszkańcom Twojego miasta i okolic."
+                "<strong>Etap 1: Odświeżenie strony WWW i wizytówki Google</strong> – czytelny cennik, szybki formularz i efekty pracy.",
+                "<strong>Etap 2: Wideo „Przed i Po”</strong> – dynamiczne rolki prezentujące rezultaty usług.",
+                "<strong>Etap 3: Reklama lokalna</strong> – precyzyjna kampania reklamowa wyświetlana mieszkańcom Twojego miasta."
             ]
         }
     };
@@ -261,8 +229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-concept');
-            const data = conceptDetails[id];
+            const data = conceptDetails[btn.getAttribute('data-concept')];
             if (data && modal) {
                 modalTag.innerText = data.tag;
                 modalTitle.innerText = data.title;
@@ -279,9 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // =========================================================
     // 3. KALKULATOR WYCENY (wycena.html)
-    // =========================================================
     const checkboxes = document.querySelectorAll('.service-checkbox');
     const budgetSlider = document.getElementById('adBudget');
     const budgetValue = document.getElementById('budgetValue');
@@ -297,25 +262,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         function calculateTotal() {
             let total = 0;
             if (receiptList) receiptList.innerHTML = '';
-
             checkboxes.forEach(box => {
                 if (box.checked) {
-                    const rawPrice = parseInt(box.value, 10);
-                    const discountedPrice = Math.round(rawPrice * currentDiscount);
-                    total += discountedPrice;
-
+                    const price = Math.round(parseInt(box.value, 10) * currentDiscount);
+                    total += price;
                     if (receiptList) {
                         const li = document.createElement('li');
-                        li.innerHTML = `<span>${box.getAttribute('data-name')}</span><strong>${discountedPrice} zł</strong>`;
+                        li.innerHTML = `<span>${box.getAttribute('data-name')}</span><strong>${price} zł</strong>`;
                         receiptList.appendChild(li);
                     }
                 }
             });
-
             if (total === 0 && receiptList) {
                 receiptList.innerHTML = '<li><span>Brak wybranych usług</span><strong>0 zł</strong></li>';
             }
-
             if (totalPriceEl) totalPriceEl.innerText = total;
             if (budgetValue) budgetValue.innerText = `${budgetSlider.value} zł`;
             if (summaryBudget) summaryBudget.innerText = budgetSlider.value;
@@ -335,91 +295,58 @@ document.addEventListener('DOMContentLoaded', async () => {
         calculateTotal();
 
         function buildQuoteObject() {
-            const selectedServices = [];
+            const selected = [];
             checkboxes.forEach(box => {
-                if (box.checked) selectedServices.push(box.getAttribute('data-name'));
+                if (box.checked) selected.push(box.getAttribute('data-name'));
             });
-            const servicesText = selectedServices.length > 0 ? selectedServices.join(' + ') : 'Pakiet Indywidualny';
+            const servicesText = selected.length > 0 ? selected.join(' + ') : 'Pakiet Indywidualny';
             return {
                 servicesText,
                 totalCost: `${totalPriceEl.innerText} zł`,
                 adBudget: `${budgetSlider.value} zł`,
-                fullText: `Cześć Wake The Brand! Wybieram z kalkulatora: ${servicesText}. Szacowany koszt prac: ${totalPriceEl.innerText} zł + budżet reklamowy ok. ${budgetSlider.value} zł.`
+                fullText: `Cześć Wake The Brand! Wybieram z kalkulatora: ${servicesText}. Szacowany koszt prac: ${totalPriceEl.innerText} zł + proponowany budżet reklamowy ok. ${budgetSlider.value} zł.`
             };
         }
 
         if (transferQuoteBtn) {
             transferQuoteBtn.addEventListener('click', () => {
-                const quote = buildQuoteObject();
-                localStorage.setItem('wakeTheBrandQuote', quote.fullText);
+                localStorage.setItem('wakeTheBrandQuote', buildQuoteObject().fullText);
                 window.location.href = 'kontakt.html';
             });
         }
-
         if (transferToPanelBtn) {
             transferToPanelBtn.addEventListener('click', () => {
-                const quote = buildQuoteObject();
-                localStorage.setItem('wakeTheBrandQuoteObj', JSON.stringify(quote));
+                localStorage.setItem('wakeTheBrandQuoteObj', JSON.stringify(buildQuoteObject()));
                 window.location.href = 'logowanie.html#rejestracja';
             });
         }
     }
 
-    // =========================================================
-    // 4. PRZEŁĄCZANIE ZAKŁADEK BOCZNYCH (PANEL KLIENTA / ADMINA)
-    // =========================================================
+    // 4. NAWIGACJA ZAKŁADEK PANELU
     const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
     const dashTabContents = document.querySelectorAll('.dash-tab-content');
     const activeClientBanner = document.getElementById('activeClientBanner');
     const backToAccountsBtn = document.getElementById('backToAccountsBtn');
 
     function activateDashTab(targetId) {
-        dashNavBtns.forEach(b => {
-            b.classList.toggle('active', b.getAttribute('data-tab') === targetId);
-        });
+        dashNavBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === targetId));
         dashTabContents.forEach(sec => {
             const isMatch = sec.id === targetId;
             sec.classList.toggle('hidden', !isMatch);
             sec.classList.toggle('active', isMatch);
         });
-
         if (activeClientBanner) {
-            const clientEditTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-finances', 'admin-tab-chat'];
-            if (clientEditTabs.includes(targetId)) {
-                activeClientBanner.classList.remove('hidden');
-            } else {
-                activeClientBanner.classList.add('hidden');
-            }
+            const editTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-finances', 'admin-tab-chat'];
+            activeClientBanner.classList.toggle('hidden', !editTabs.includes(targetId));
         }
     }
 
-    dashNavBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            activateDashTab(btn.getAttribute('data-tab'));
-        });
-    });
+    dashNavBtns.forEach(btn => btn.addEventListener('click', () => activateDashTab(btn.getAttribute('data-tab'))));
+    if (backToAccountsBtn) backToAccountsBtn.addEventListener('click', () => activateDashTab('admin-tab-accounts'));
+    document.querySelectorAll('[data-go-tab]').forEach(btn => btn.addEventListener('click', () => activateDashTab(btn.getAttribute('data-go-tab'))));
+    document.querySelectorAll('.switch-to-chat-btn').forEach(btn => btn.addEventListener('click', () => activateDashTab('tab-chat')));
 
-    if (backToAccountsBtn) {
-        backToAccountsBtn.addEventListener('click', () => {
-            activateDashTab('admin-tab-accounts');
-        });
-    }
-
-    document.querySelectorAll('[data-go-tab]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            activateDashTab(btn.getAttribute('data-go-tab'));
-        });
-    });
-
-    document.querySelectorAll('.switch-to-chat-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            activateDashTab('tab-chat');
-        });
-    });
-
-    // =========================================================
-    // 5. NATYCHMIASTOWE RENDEROWANIE UI Z PAMIĘCI PODRĘCZNEJ (0.01s)
-    // =========================================================
+    // 5. ZMIENNE GLOBALNE FIREBASE I POMOCNICZE
     let auth = null;
     let db = null;
     let fbFns = {};
@@ -427,9 +354,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentLoggedInAdminEmail = localStorage.getItem('wtb_admin_email') || CONTACT_RECEIVER_EMAIL;
 
     const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
-    if (adminEmailLabelEl) {
-        adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
-    }
+    if (adminEmailLabelEl) adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
 
     function statusBadgeHTML(status) {
         if (status === 'done') return '<span class="badge-status done">✓ Zrobione</span>';
@@ -439,29 +364,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function saveClientData(clientId, dataObj) {
         saveLocalData(dataObj);
-        // Zaktualizuj również szybki cache wszystkich kont
         const cached = getCachedAccounts();
         const idx = cached.findIndex(a => a.id === clientId);
-        if (idx >= 0) {
-            cached[idx] = { id: clientId, ...dataObj };
-        } else {
-            cached.push({ id: clientId, ...dataObj });
-        }
+        if (idx >= 0) cached[idx] = { id: clientId, ...dataObj };
+        else cached.push({ id: clientId, ...dataObj });
         saveCachedAccounts(cached);
 
         if (firebaseReady && db && clientId) {
             try {
-                const docRef = fbFns.doc(db, 'clients', clientId);
-                await fbFns.setDoc(docRef, dataObj, { merge: true });
+                await fbFns.setDoc(fbFns.doc(db, 'clients', clientId), dataObj, { merge: true });
             } catch (e) {
-                console.error('Błąd zapisu do Firestore:', e);
+                console.error('Błąd zapisu Firestore:', e);
             }
         }
     }
 
-    // =========================================================
-    // 6. ELEMENTY PANELU KLIENTA I ADMINA (PRZYGOTOWANIE PRZED POŁĄCZENIEM)
-    // =========================================================
+    // 6. RENDEROWANIE PANELU KLIENTA I ADMINA
     const clientTopName = document.getElementById('clientTopName');
     const clientWelcomeTitle = document.getElementById('clientWelcomeTitle');
     const clientActivePackage = document.getElementById('clientActivePackage');
@@ -486,80 +404,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentClientCache = data;
         saveLocalData(data);
 
+        const progressVal = data.progressPercent ?? 0;
         if (clientTopName) clientTopName.innerText = data.clientName || 'Konto Klienta';
         if (clientWelcomeTitle) clientWelcomeTitle.innerText = `Cześć! Oto aktualny status dla: ${data.clientName} ⚡`;
-        if (clientActivePackage) clientActivePackage.innerText = data.packageName;
-        if (clientProgressPercent) clientProgressPercent.innerText = data.progressPercent;
-        if (clientProgressBar) clientProgressBar.style.width = `${data.progressPercent}%`;
-        if (clientCurrentCost) clientCurrentCost.innerText = data.currentCost;
-        if (clientPaymentStatus) clientPaymentStatus.innerText = data.paymentStatus;
-        if (clientAdBudget) clientAdBudget.innerText = data.adBudget;
+        if (clientActivePackage) clientActivePackage.innerText = data.packageName || 'Oczekuje na ustalenie ⏳';
+        if (clientProgressPercent) clientProgressPercent.innerText = progressVal;
+        if (clientProgressBar) clientProgressBar.style.width = `${progressVal}%`;
+        if (clientCurrentCost) clientCurrentCost.innerText = data.currentCost || '0 zł (Do ustalenia)';
+        if (clientPaymentStatus) clientPaymentStatus.innerText = data.paymentStatus || '⏳ Oczekuje na płatność';
+        if (clientAdBudget) clientAdBudget.innerText = data.adBudget || '0 zł';
 
         const tasks = data.tasks || [];
-        if (overviewTaskList) {
-            overviewTaskList.innerHTML = tasks.slice(0, 4).map(t => `
-                <li class="dash-task-item">
-                    <div class="task-meta">
-                        <strong>${t.title}</strong>
-                        <small>${t.category}</small>
-                    </div>
-                    ${statusBadgeHTML(t.status)}
-                </li>
-            `).join('');
-        }
+        const emptyTasksHTML = `
+            <li class="dash-task-item">
+                <div class="task-meta">
+                    <strong>📋 Brak aktywnych zadań na koncie</strong>
+                    <small>Harmonogram prac pojawi się tutaj po opłaceniu pakietu i aktywacji projektu przez Administratora.</small>
+                </div>
+                <span class="badge-status todo">Oczekuje na start</span>
+            </li>
+        `;
 
+        if (overviewTaskList) {
+            overviewTaskList.innerHTML = tasks.length > 0
+                ? tasks.slice(0, 4).map(t => `<li class="dash-task-item"><div class="task-meta"><strong>${t.title}</strong><small>${t.category}</small></div>${statusBadgeHTML(t.status)}</li>`).join('')
+                : emptyTasksHTML;
+        }
         if (clientFullTaskList) {
-            clientFullTaskList.innerHTML = tasks.map(t => `
-                <li class="dash-task-item">
-                    <div class="task-meta">
-                        <strong>${t.title}</strong>
-                        <small>Obszar: ${t.category}</small>
-                    </div>
-                    ${statusBadgeHTML(t.status)}
-                </li>
-            `).join('');
+            clientFullTaskList.innerHTML = tasks.length > 0
+                ? tasks.map(t => `<li class="dash-task-item"><div class="task-meta"><strong>${t.title}</strong><small>Obszar: ${t.category}</small></div>${statusBadgeHTML(t.status)}</li>`).join('')
+                : emptyTasksHTML;
         }
 
         const finances = data.finances || [];
         if (clientFinanceTable) {
-            clientFinanceTable.innerHTML = finances.map(f => `
-                <tr>
-                    <td><strong>${f.period}</strong></td>
-                    <td>${f.scope}</td>
-                    <td>${f.docType}</td>
-                    <td class="highlight-col">${f.amount}</td>
-                    <td>${f.status}</td>
-                </tr>
-            `).join('');
+            clientFinanceTable.innerHTML = finances.length > 0
+                ? finances.map(f => `<tr><td><strong>${f.period}</strong></td><td>${f.scope}</td><td>${f.docType}</td><td class="highlight-col">${f.amount}</td><td>${f.status}</td></tr>`).join('')
+                : `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;">Brak wystawionych rozliczeń. Po ustaleniu szczegółów współpracy tutaj pojawią się Twoje rachunki.</td></tr>`;
         }
 
         const messages = data.messages || [];
         if (latestMsgPreview && messages.length > 0) {
             const lastMsg = messages[messages.length - 1];
-            latestMsgPreview.innerHTML = `
-                <strong>${lastMsg.author}</strong>
-                <p>„${lastMsg.text}”</p>
-                <span class="msg-time">${lastMsg.time}</span>
-            `;
+            latestMsgPreview.innerHTML = `<strong>${lastMsg.author}</strong><p>„${lastMsg.text}”</p><span class="msg-time">${lastMsg.time}</span>`;
         }
-
         if (clientChatBox) {
-            clientChatBox.innerHTML = messages.map(m => `
-                <div class="chat-bubble ${m.sender === 'agency' ? 'from-agency' : 'from-client'}">
-                    <span class="chat-sender">${m.author} • ${m.time}</span>
-                    <div>${m.text}</div>
-                </div>
-            `).join('');
+            clientChatBox.innerHTML = messages.map(m => `<div class="chat-bubble ${m.sender === 'agency' ? 'from-agency' : 'from-client'}"><span class="chat-sender">${m.author} • ${m.time}</span><div>${m.text}</div></div>`).join('');
             clientChatBox.scrollTop = clientChatBox.scrollHeight;
         }
     }
 
-    // Natychmiastowe wyrenderowanie Panelu Klienta przed połączeniem z siecią
-    if (clientActivePackage) {
-        renderClientUI(currentClientCache);
-    }
+    if (clientActivePackage) renderClientUI(currentClientCache);
 
-    // Elementy Panelu Admina
+    // Elementy Admina
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
     const bannerClientName = document.getElementById('bannerClientName');
@@ -612,9 +509,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!adminSecurityModal) return;
         securityModalTitle.innerText = title;
         securityModalDesc.innerText = description;
-        if (confirmAdminEmailLabel) {
-            confirmAdminEmailLabel.innerText = currentLoggedInAdminEmail;
-        }
+        if (confirmAdminEmailLabel) confirmAdminEmailLabel.innerText = currentLoggedInAdminEmail;
         confirmAdminPassInput.value = '';
         securityModalFeedback.innerText = '';
         pendingSecurityAction = onConfirm;
@@ -639,8 +534,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             opt.innerText = `${acc.clientName || acc.id} (${acc.packageName || 'Pakiet'})`;
             adminClientSelector.appendChild(opt);
         });
-        const exists = allAccountsCache.some(a => a.id === selectedAdminClientId);
-        if (!exists && allAccountsCache.length > 0) {
+        if (!allAccountsCache.some(a => a.id === selectedAdminClientId) && allAccountsCache.length > 0) {
             selectedAdminClientId = allAccountsCache[0].id;
         }
         adminClientSelector.value = selectedAdminClientId;
@@ -648,45 +542,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderAllAccountsList() {
         if (!adminAccountsList) return;
-
         const searchQuery = (adminAccountSearch ? adminAccountSearch.value : '').trim().toLowerCase();
         const roleFilter = adminRoleFilter ? adminRoleFilter.value : 'all';
 
-        let totalCount = allAccountsCache.length;
         let adminsCount = 0;
         let clientsCount = 0;
-
         allAccountsCache.forEach(acc => {
-            const isAccAdmin = isOwnerEmail(acc.email) || acc.isAdminRole === true;
-            if (isAccAdmin) adminsCount++;
+            if (isOwnerEmail(acc.email) || acc.isAdminRole === true) adminsCount++;
             else clientsCount++;
         });
 
-        if (statTotalAccounts) statTotalAccounts.innerText = totalCount;
+        if (statTotalAccounts) statTotalAccounts.innerText = allAccountsCache.length;
         if (statAdminAccounts) statAdminAccounts.innerText = adminsCount;
         if (statClientAccounts) statClientAccounts.innerText = clientsCount;
 
         const filtered = allAccountsCache.filter(acc => {
             const isAccAdmin = isOwnerEmail(acc.email) || acc.isAdminRole === true;
             const isBlocked = acc.isBlocked === true;
-
             if (roleFilter === 'admin' && !isAccAdmin) return false;
             if (roleFilter === 'client' && isAccAdmin) return false;
             if (roleFilter === 'blocked' && !isBlocked) return false;
-
             if (searchQuery) {
-                const haystack = `${acc.clientName || ''} ${acc.userName || ''} ${acc.email || ''} ${acc.packageName || ''}`.toLowerCase();
-                if (!haystack.includes(searchQuery)) return false;
+                const hay = `${acc.clientName || ''} ${acc.userName || ''} ${acc.email || ''} ${acc.packageName || ''}`.toLowerCase();
+                if (!hay.includes(searchQuery)) return false;
             }
             return true;
         });
 
         if (filtered.length === 0) {
-            adminAccountsList.innerHTML = `
-                <div class="account-card-row">
-                    <span style="color: var(--text-muted);">Brak kont spełniających kryteria wyszukiwania.</span>
-                </div>
-            `;
+            adminAccountsList.innerHTML = `<div class="account-card-row"><span style="color:var(--text-muted);">Brak kont spełniających kryteria.</span></div>`;
             return;
         }
 
@@ -696,24 +580,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isBlocked = acc.isBlocked === true;
             const isSelected = acc.id === selectedAdminClientId;
 
-            const roleBadge = isAccAdmin
-                ? '<span class="role-pill admin-role">👑 Administrator</span>'
-                : '<span class="role-pill client-role">👤 Klient</span>';
-
-            const blockedBadge = isBlocked
-                ? '<span class="role-pill blocked-role">⛔ Zablokowane</span>'
-                : '';
-
-            const toggleRoleBtnText = isAccAdmin ? '👤 Odbierz Admina' : '👑 Nadaj Admina';
-            const toggleBlockBtnText = isBlocked ? '🔓 Odblokuj' : '⛔ Zablokuj';
-
             return `
                 <div class="account-card-row ${isSelected ? 'selected-account' : ''}">
                     <div class="account-main-info">
                         <div class="account-title-line">
-                            <strong style="font-size: 1.05rem;">${acc.clientName || 'Bez nazwy'}</strong>
-                            ${roleBadge}
-                            ${blockedBadge}
+                            <strong style="font-size:1.05rem;">${acc.clientName || 'Bez nazwy'}</strong>
+                            ${isAccAdmin ? '<span class="role-pill admin-role">👑 Administrator</span>' : '<span class="role-pill client-role">👤 Klient</span>'}
+                            ${isBlocked ? '<span class="role-pill blocked-role">⛔ Zablokowane</span>' : ''}
                         </div>
                         <div class="account-meta-line">
                             <span>📧 ${acc.email || 'Brak e-maila'}</span>
@@ -722,29 +595,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span>🧾 ${acc.currentCost || '0 zł'} (${acc.paymentStatus || 'Status'})</span>
                         </div>
                     </div>
-
                     <div class="account-actions">
-                        <button type="button" class="btn-mini btn-manage" data-manage-uid="${acc.id}">
-                            🎛️ Otwórz panel klienta →
-                        </button>
+                        <button type="button" class="btn-mini btn-manage" data-manage-uid="${acc.id}">🎛️ Otwórz panel klienta →</button>
                         ${!isProtectedOwner ? `
-                            <button type="button" class="btn-mini" data-toggle-admin="${acc.id}">
-                                ${toggleRoleBtnText}
-                            </button>
-                            <button type="button" class="btn-mini" data-toggle-block="${acc.id}">
-                                ${toggleBlockBtnText}
-                            </button>
-                        ` : `
-                            <span style="font-size: 0.75rem; color: var(--text-muted); padding: 0 0.4rem;">Główne konto właściciela</span>
-                        `}
-                        <button type="button" class="btn-mini" data-reset-pass="${acc.email || ''}">
-                            🔑 Reset hasła
-                        </button>
-                        ${!isProtectedOwner && acc.id !== 'demo_client' ? `
-                            <button type="button" class="btn-mini btn-danger" data-delete-uid="${acc.id}">
-                                🗑️ Usuń
-                            </button>
-                        ` : ''}
+                            <button type="button" class="btn-mini" data-toggle-admin="${acc.id}">${isAccAdmin ? '👤 Odbierz Admina' : '👑 Nadaj Admina'}</button>
+                            <button type="button" class="btn-mini" data-toggle-block="${acc.id}">${isBlocked ? '🔓 Odblokuj' : '⛔ Zablokuj'}</button>
+                        ` : `<span style="font-size:0.75rem;color:var(--text-muted);padding:0 0.4rem;">Konto właściciela</span>`}
+                        <button type="button" class="btn-mini" data-reset-pass="${acc.email || ''}">🔑 Reset hasła</button>
+                        ${!isProtectedOwner && acc.id !== 'demo_client' ? `<button type="button" class="btn-mini btn-danger" data-delete-uid="${acc.id}">🗑️ Usuń</button>` : ''}
                     </div>
                 </div>
             `;
@@ -764,19 +622,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const uid = btn.getAttribute('data-toggle-admin');
                 const targetAcc = allAccountsCache.find(a => a.id === uid);
                 if (!targetAcc) return;
-
                 const newAdminState = !targetAcc.isAdminRole;
-                const roleName = newAdminState ? 'ADMINISTRATOR (pełny dostęp do HQ)' : 'KLIENT (zwykłe konto)';
-
+                const roleName = newAdminState ? 'ADMINISTRATOR' : 'KLIENT';
                 openSecurityPrompt({
                     title: newAdminState ? '👑 Nadaj uprawnienia Admina' : '👤 Odbierz uprawnienia Admina',
-                    description: `Czy na pewno chcesz zmienić uprawnienia konta „${targetAcc.clientName}” (${targetAcc.email}) na: ${roleName}? Potwierdź swoim hasłem Administratora.`,
+                    description: `Zmienić uprawnienia konta „${targetAcc.clientName}” (${targetAcc.email}) na: ${roleName}? Wpisz swoje hasło Administratora.`,
                     onConfirm: async () => {
                         targetAcc.isAdminRole = newAdminState;
                         await saveClientData(uid, targetAcc);
                         if (adminAccountActionFeedback) {
                             adminAccountActionFeedback.style.color = '#d4ff00';
-                            adminAccountActionFeedback.innerText = `✅ Zaktualizowano uprawnienia konta ${targetAcc.clientName} na: ${roleName}!`;
+                            adminAccountActionFeedback.innerText = `✅ Zmieniono rolę konta ${targetAcc.clientName} na: ${roleName}!`;
                         }
                         renderAllAccountsList();
                     }
@@ -789,19 +645,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const uid = btn.getAttribute('data-toggle-block');
                 const targetAcc = allAccountsCache.find(a => a.id === uid);
                 if (!targetAcc) return;
-
                 const newBlockedState = !targetAcc.isBlocked;
-
                 openSecurityPrompt({
-                    title: newBlockedState ? '⛔ Zablokuj dostęp do konta' : '🔓 Odblokuj konto klienta',
-                    description: `Czy na pewno chcesz ${newBlockedState ? 'ZABLOKOWAĆ' : 'ODBLOKOWAĆ'} konto „${targetAcc.clientName}” (${targetAcc.email})? Potwierdź swoim hasłem Administratora.`,
+                    title: newBlockedState ? '⛔ Zablokuj konto' : '🔓 Odblokuj konto',
+                    description: `Czy chcesz ${newBlockedState ? 'ZABLOKOWAĆ' : 'ODBLOKOWAĆ'} konto „${targetAcc.clientName}”? Potwierdź hasłem Administratora.`,
                     onConfirm: async () => {
                         targetAcc.isBlocked = newBlockedState;
                         await saveClientData(uid, targetAcc);
-                        if (adminAccountActionFeedback) {
-                            adminAccountActionFeedback.style.color = '#d4ff00';
-                            adminAccountActionFeedback.innerText = `✅ Konto ${targetAcc.clientName} zostało ${newBlockedState ? 'zablokowane' : 'odblokowane'}.`;
-                        }
                         renderAllAccountsList();
                     }
                 });
@@ -816,14 +666,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await fbFns.sendPasswordResetEmail(auth, targetEmail);
                     if (adminAccountActionFeedback) {
                         adminAccountActionFeedback.style.color = '#d4ff00';
-                        adminAccountActionFeedback.innerText = `🔑 Wysłano link do resetowania hasła na adres: ${targetEmail}`;
+                        adminAccountActionFeedback.innerText = `🔑 Wysłano link resetujący hasło na: ${targetEmail}`;
                     }
-                } catch (e) {
-                    if (adminAccountActionFeedback) {
-                        adminAccountActionFeedback.style.color = '#fca5a5';
-                        adminAccountActionFeedback.innerText = `Nie udało się wysłać linku na ${targetEmail}.`;
-                    }
-                }
+                } catch (e) {}
             });
         });
 
@@ -832,21 +677,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const uid = btn.getAttribute('data-delete-uid');
                 const targetAcc = allAccountsCache.find(a => a.id === uid);
                 if (!targetAcc) return;
-
                 openSecurityPrompt({
-                    title: '🗑️ Trwałe usunięcie konta z bazy',
-                    description: `Czy na pewno chcesz bezpowrotnie usunąć profil „${targetAcc.clientName}” (${targetAcc.email})? Potwierdź hasłem Administratora.`,
+                    title: '🗑️ Usunięcie konta z bazy',
+                    description: `Czy bezpowrotnie usunąć profil „${targetAcc.clientName}” (${targetAcc.email})? Potwierdź hasłem Administratora.`,
                     onConfirm: async () => {
                         allAccountsCache = allAccountsCache.filter(a => a.id !== uid);
                         saveCachedAccounts(allAccountsCache);
                         renderAllAccountsList();
-                        if (firebaseReady && db) {
-                            await fbFns.deleteDoc(fbFns.doc(db, 'clients', uid));
-                        }
-                        if (adminAccountActionFeedback) {
-                            adminAccountActionFeedback.style.color = '#d4ff00';
-                            adminAccountActionFeedback.innerText = `🗑️ Usunięto konto ${targetAcc.clientName} z bazy danych.`;
-                        }
+                        if (firebaseReady && db) await fbFns.deleteDoc(fbFns.doc(db, 'clients', uid));
                     }
                 });
             });
@@ -861,10 +699,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         adminLeadsList.innerHTML = leadsArray.map(lead => `
-            <li class="dash-task-item" style="align-items: flex-start;">
+            <li class="dash-task-item" style="align-items:flex-start;">
                 <div class="task-meta">
-                    <strong>${lead.name} (${lead.email}) • <span style="color: var(--accent-lime);">${lead.topics}</span></strong>
-                    <p style="margin: 0.4rem 0; color: #d1d5db;">${lead.message}</p>
+                    <strong>${lead.name} (${lead.email}) • <span style="color:var(--accent-lime);">${lead.topics}</span></strong>
+                    <p style="margin:0.4rem 0;color:#d1d5db;">${lead.message}</p>
                     <small>Wysłano: ${lead.createdAt}</small>
                 </div>
                 <button type="button" class="admin-action-btn" data-del-lead="${lead.id}">Usuń</button>
@@ -877,11 +715,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const localFiltered = getLocalLeads().filter(l => l.id !== leadId);
                 localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(localFiltered));
                 renderLeadsListUI(localFiltered);
-
                 if (firebaseReady && db) {
-                    try {
-                        await fbFns.deleteDoc(fbFns.doc(db, 'contact_leads', leadId));
-                    } catch (e) {}
+                    try { await fbFns.deleteDoc(fbFns.doc(db, 'contact_leads', leadId)); } catch (e) {}
                 }
             });
         });
@@ -890,39 +725,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderAdminUI(data) {
         if (!adminStatusForm) return;
         selectedAdminClientData = data;
+        const progressVal = data.progressPercent ?? 0;
 
         if (bannerClientName) bannerClientName.innerText = `${data.clientName || 'Konto'} (${data.email || 'brak e-maila'})`;
         adminClientName.value = data.clientName || '';
         adminPackageName.value = data.packageName || '';
-        adminProgressSlider.value = data.progressPercent ?? 50;
-        adminProgressVal.innerText = `${data.progressPercent ?? 50}%`;
-        adminCurrentCost.value = data.currentCost || '';
-        adminPaymentStatus.value = data.paymentStatus || '● Opłacone';
-        adminAdBudget.value = data.adBudget || '';
+        adminProgressSlider.value = progressVal;
+        adminProgressVal.innerText = `${progressVal}%`;
+        adminCurrentCost.value = data.currentCost || '0 zł (Do ustalenia)';
+        adminPaymentStatus.value = data.paymentStatus || '⏳ Oczekuje na płatność';
+        adminAdBudget.value = data.adBudget || '0 zł';
 
         const tasks = data.tasks || [];
         if (adminTaskList) {
-            adminTaskList.innerHTML = tasks.map((t, index) => `
-                <li class="dash-task-item">
-                    <div class="task-meta">
-                        <strong>${t.title}</strong>
-                        <small>${t.category}</small>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <button type="button" class="btn-mini" data-cycle-task="${index}" title="Kliknij, aby zmienić status">
-                            ${statusBadgeHTML(t.status)}
-                        </button>
-                        <button type="button" class="admin-action-btn" data-del-task="${index}">Usuń</button>
-                    </div>
-                </li>
-            `).join('');
+            adminTaskList.innerHTML = tasks.length === 0
+                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zadań na koncie tego klienta. Dodaj pierwsze zadanie po opłaceniu pakietu.</span></li>`
+                : tasks.map((t, idx) => `
+                    <li class="dash-task-item">
+                        <div class="task-meta"><strong>${t.title}</strong><small>${t.category}</small></div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <button type="button" class="btn-mini" data-cycle-task="${idx}">${statusBadgeHTML(t.status)}</button>
+                            <button type="button" class="admin-action-btn" data-del-task="${idx}">Usuń</button>
+                        </div>
+                    </li>
+                `).join('');
 
             adminTaskList.querySelectorAll('[data-cycle-task]').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const idx = parseInt(btn.getAttribute('data-cycle-task'), 10);
-                    const currentStatus = selectedAdminClientData.tasks[idx].status;
-                    const nextStatus = currentStatus === 'todo' ? 'progress' : (currentStatus === 'progress' ? 'done' : 'todo');
-                    selectedAdminClientData.tasks[idx].status = nextStatus;
+                    const cur = selectedAdminClientData.tasks[idx].status;
+                    selectedAdminClientData.tasks[idx].status = cur === 'todo' ? 'progress' : (cur === 'progress' ? 'done' : 'todo');
                     renderAdminUI(selectedAdminClientData);
                     await saveClientData(selectedAdminClientId, selectedAdminClientData);
                 });
@@ -940,15 +772,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const finances = data.finances || [];
         if (adminFinanceList) {
-            adminFinanceList.innerHTML = finances.map((f, index) => `
-                <li class="dash-task-item">
-                    <div class="task-meta">
-                        <strong>${f.period} – ${f.amount}</strong>
-                        <small>${f.scope} (${f.docType}) • ${f.status}</small>
-                    </div>
-                    <button type="button" class="admin-action-btn" data-del-fin="${index}">Usuń</button>
-                </li>
-            `).join('');
+            adminFinanceList.innerHTML = finances.length === 0
+                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak wystawionych rozliczeń dla tego klienta.</span></li>`
+                : finances.map((f, idx) => `
+                    <li class="dash-task-item">
+                        <div class="task-meta"><strong>${f.period} – ${f.amount}</strong><small>${f.scope} (${f.docType}) • ${f.status}</small></div>
+                        <button type="button" class="admin-action-btn" data-del-fin="${idx}">Usuń</button>
+                    </li>
+                `).join('');
 
             adminFinanceList.querySelectorAll('[data-del-fin]').forEach(btn => {
                 btn.addEventListener('click', async () => {
@@ -962,12 +793,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const messages = data.messages || [];
         if (adminChatBox) {
-            adminChatBox.innerHTML = messages.map(m => `
-                <div class="chat-bubble ${m.sender === 'agency' ? 'from-client' : 'from-agency'}">
-                    <span class="chat-sender">${m.author} • ${m.time}</span>
-                    <div>${m.text}</div>
-                </div>
-            `).join('');
+            adminChatBox.innerHTML = messages.map(m => `<div class="chat-bubble ${m.sender === 'agency' ? 'from-client' : 'from-agency'}"><span class="chat-sender">${m.author} • ${m.time}</span><div>${m.text}</div></div>`).join('');
             adminChatBox.scrollTop = adminChatBox.scrollHeight;
         }
     }
@@ -975,28 +801,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     function subscribeToSelectedClient(clientId) {
         selectedAdminClientId = clientId;
         localStorage.setItem('wtb_active_uid', clientId);
-
         const cachedMatch = allAccountsCache.find(a => a.id === clientId);
-        if (cachedMatch) {
-            renderAdminUI(cachedMatch);
-        }
+        if (cachedMatch) renderAdminUI(cachedMatch);
         renderAllAccountsList();
 
-        if (unsubscribeAdminClient) {
-            unsubscribeAdminClient();
-        }
-
+        if (unsubscribeAdminClient) unsubscribeAdminClient();
         if (firebaseReady && db) {
-            const docRef = fbFns.doc(db, 'clients', clientId);
-            unsubscribeAdminClient = fbFns.onSnapshot(docRef, (snap) => {
-                if (snap.exists()) {
-                    renderAdminUI(snap.data());
-                }
+            unsubscribeAdminClient = fbFns.onSnapshot(fbFns.doc(db, 'clients', clientId), (snap) => {
+                if (snap.exists()) renderAdminUI(snap.data());
             });
         }
     }
 
-    // Natychmiastowe wyrenderowanie Panelu Admina z pamięci podręcznej (0.01s)
     if (adminStatusForm) {
         populateSelectorFromCache();
         renderAllAccountsList();
@@ -1004,23 +820,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderLeadsListUI(getLocalLeads());
     }
 
-    if (adminAccountSearch) {
-        adminAccountSearch.addEventListener('input', renderAllAccountsList);
-    }
-    if (adminRoleFilter) {
-        adminRoleFilter.addEventListener('change', renderAllAccountsList);
-    }
-    if (adminClientSelector) {
-        adminClientSelector.addEventListener('change', () => {
-            subscribeToSelectedClient(adminClientSelector.value);
-        });
-    }
+    if (adminAccountSearch) adminAccountSearch.addEventListener('input', renderAllAccountsList);
+    if (adminRoleFilter) adminRoleFilter.addEventListener('change', renderAllAccountsList);
+    if (adminClientSelector) adminClientSelector.addEventListener('change', () => subscribeToSelectedClient(adminClientSelector.value));
 
-    // =========================================================
-    // 7. SZYBKA RÓWNOLEGŁA INICJALIZACJA FIREBASE (PROMISE.ALL + BRAVE FIX)
-    // =========================================================
+    // 7. SZYBKIE POŁĄCZENIE Z FIREBASE (PROMISE.ALL + BRAVE LONG-POLLING)
     try {
-        // Pobieramy wszystkie 3 biblioteki RÓWNOLEGLE (3x szybciej niż po kolei!)
         const [appMod, authMod, firestoreMod] = await Promise.all([
             import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
             import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js'),
@@ -1029,16 +834,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const app = appMod.initializeApp(firebaseConfig);
         auth = authMod.getAuth(app);
-
-        // Specjalna optymalizacja dla przeglądarki Brave i szybkiego łączenia (omija wieszanie się WebChannel)
-        db = firestoreMod.initializeFirestore(app, {
-            experimentalAutoDetectLongPolling: true
-        });
-
-        fbFns = {
-            ...authMod,
-            ...firestoreMod
-        };
+        db = firestoreMod.initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+        fbFns = { ...authMod, ...firestoreMod };
         firebaseReady = true;
 
         const statusEl = document.getElementById('firebaseStatusText');
@@ -1047,10 +844,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             statusEl.innerText = '● Połączono z Firebase (Turbo Sync)';
         }
 
-        // Poczekaj ułamek sekundy na gotowość sesji Auth przed odpytaniem bazy
-        if (typeof auth.authStateReady === 'function') {
-            await auth.authStateReady();
-        }
+        if (typeof auth.authStateReady === 'function') await auth.authStateReady();
 
         if (auth.currentUser && auth.currentUser.email) {
             currentLoggedInAdminEmail = auth.currentUser.email;
@@ -1058,40 +852,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (adminEmailLabelEl) adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
         }
 
-        // A) Jeśli jesteśmy w Panelu Klienta – podłącz strumień na żywo
         if (clientActivePackage) {
             if (auth.currentUser) {
                 currentClientId = auth.currentUser.uid;
                 localStorage.setItem('wtb_active_uid', currentClientId);
             }
-            const docRef = fbFns.doc(db, 'clients', currentClientId);
-            fbFns.onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    renderClientUI(docSnap.data());
-                }
+            fbFns.onSnapshot(fbFns.doc(db, 'clients', currentClientId), (docSnap) => {
+                if (docSnap.exists()) renderClientUI(docSnap.data());
             });
         }
 
-        // B) Jeśli jesteśmy w Panelu Admina – pobierz wszystkie konta i zgłoszenia w tle
         if (adminStatusForm) {
-            const clientsCol = fbFns.collection(db, 'clients');
-            fbFns.onSnapshot(clientsCol, async (colSnap) => {
+            fbFns.onSnapshot(fbFns.collection(db, 'clients'), async (colSnap) => {
                 if (colSnap.empty) {
                     await saveClientData('demo_client', defaultClientData);
                     return;
                 }
-
-                const freshAccounts = [];
-                colSnap.forEach(docSnap => {
-                    freshAccounts.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
-                allAccountsCache = freshAccounts;
-                saveCachedAccounts(freshAccounts);
+                const fresh = [];
+                colSnap.forEach(docSnap => fresh.push({ id: docSnap.id, ...docSnap.data() }));
+                allAccountsCache = fresh;
+                saveCachedAccounts(fresh);
                 populateSelectorFromCache();
                 renderAllAccountsList();
 
-                const activeDoc = freshAccounts.find(a => a.id === selectedAdminClientId) || freshAccounts[0];
+                const activeDoc = fresh.find(a => a.id === selectedAdminClientId) || fresh[0];
                 if (activeDoc) {
                     selectedAdminClientId = activeDoc.id;
                     renderAdminUI(activeDoc);
@@ -1099,48 +883,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (adminLeadsList) {
-                const leadsCol = fbFns.collection(db, 'contact_leads');
-                fbFns.onSnapshot(leadsCol, (leadsSnap) => {
+                fbFns.onSnapshot(fbFns.collection(db, 'contact_leads'), (leadsSnap) => {
                     if (leadsSnap.empty) {
                         renderLeadsListUI(getLocalLeads());
                         return;
                     }
-                    const leadsArr = [];
-                    leadsSnap.forEach(l => leadsArr.push({ id: l.id, ...l.data() }));
-                    leadsArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(leadsArr));
-                    renderLeadsListUI(leadsArr);
+                    const arr = [];
+                    leadsSnap.forEach(l => arr.push({ id: l.id, ...l.data() }));
+                    arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(arr));
+                    renderLeadsListUI(arr);
                 });
             }
         }
     } catch (err) {
-        console.warn('Praca w trybie lokalnym Cache:', err);
-        const statusEl = document.getElementById('firebaseStatusText');
-        if (statusEl) {
-            statusEl.innerText = '● Tryb lokalny Cache';
-        }
+        console.warn('Tryb lokalny Cache:', err);
     }
 
-    // =========================================================
-    // 8. OBSŁUGA FORMULARZY (KONTAKT, LOGOWANIE, REJESTRACJA, AKCJE ADMINA)
-    // =========================================================
+    // 8. FORMULARZE: KONTAKT, LOGOWANIE, REJESTRACJA, EDYCJA
     const topicPills = document.querySelectorAll('.topic-pill');
     const contactForm = document.getElementById('contactForm');
     const messageInput = document.getElementById('message');
     const formFeedback = document.getElementById('formFeedback');
 
-    topicPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            pill.classList.toggle('active');
-        });
-    });
-
-    if (messageInput) {
-        const savedQuote = localStorage.getItem('wakeTheBrandQuote');
-        if (savedQuote) {
-            messageInput.value = savedQuote;
-            localStorage.removeItem('wakeTheBrandQuote');
-        }
+    topicPills.forEach(pill => pill.addEventListener('click', () => pill.classList.toggle('active')));
+    if (messageInput && localStorage.getItem('wakeTheBrandQuote')) {
+        messageInput.value = localStorage.getItem('wakeTheBrandQuote');
+        localStorage.removeItem('wakeTheBrandQuote');
     }
 
     if (contactForm) {
@@ -1149,15 +918,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const msgVal = document.getElementById('message').value.trim();
-
             const activeTopics = [];
-            topicPills.forEach(pill => {
-                if (pill.classList.contains('active')) activeTopics.push(pill.innerText);
-            });
+            topicPills.forEach(p => { if (p.classList.contains('active')) activeTopics.push(p.innerText); });
             const topicsStr = activeTopics.join(', ') || 'Ogólne';
-
-            formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
 
             const leadObj = {
                 id: 'lead_' + Date.now(),
@@ -1170,22 +933,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             saveLocalLead(leadObj);
-
             if (firebaseReady && db) {
-                try {
-                    await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj);
-                } catch (err) {
-                    console.error('Błąd zapisu formularza w Firebase:', err);
-                }
+                try { await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj); } catch (err) {}
             }
-
             if (window.location.protocol !== 'file:') {
                 fetch(`https://formsubmit.co/ajax/${CONTACT_RECEIVER_EMAIL}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         _subject: `⚡ Nowe zapytanie Wake The Brand od: ${name}`,
                         _replyto: email,
@@ -1199,12 +953,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = `Dzięki, ${name}! Twoje zgłoszenie zostało zapisane w bazie i wysłane na ${CONTACT_RECEIVER_EMAIL} ⚡ Odpowiemy w ciągu 24h!`;
+            formFeedback.innerText = `Dzięki, ${name}! Zgłoszenie zostało zapisane i wysłane na ${CONTACT_RECEIVER_EMAIL} ⚡`;
             contactForm.reset();
         });
     }
 
-    // Logowanie i Rejestracja
     const tabLoginBtn = document.getElementById('tabLoginBtn');
     const tabRegisterBtn = document.getElementById('tabRegisterBtn');
     const loginForm = document.getElementById('loginForm');
@@ -1222,7 +975,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             loginForm.classList.add('hidden');
         }
     }
-
     function switchToLoginTab() {
         if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
             tabLoginBtn.classList.add('active');
@@ -1235,18 +987,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabLoginBtn && tabRegisterBtn) {
         tabLoginBtn.addEventListener('click', switchToLoginTab);
         tabRegisterBtn.addEventListener('click', switchToRegisterTab);
-
         const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
-        if (window.location.hash === '#rejestracja' || savedQuoteObjRaw) {
-            switchToRegisterTab();
-        }
-
+        if (window.location.hash === '#rejestracja' || savedQuoteObjRaw) switchToRegisterTab();
         if (savedQuoteObjRaw && savedQuoteAlert && regPackage) {
             try {
-                const quoteObj = JSON.parse(savedQuoteObjRaw);
+                const q = JSON.parse(savedQuoteObjRaw);
                 savedQuoteAlert.classList.remove('hidden');
-                savedQuoteText.innerText = `Wybrano: ${quoteObj.servicesText} (${quoteObj.totalCost} + budżet Ads ${quoteObj.adBudget}). Załóż konto poniżej, aby zapisać ten pakiet w swoim Panelu Klienta.`;
-                regPackage.value = `${quoteObj.servicesText} (${quoteObj.totalCost})`;
+                savedQuoteText.innerText = `Twoja kalkulacja: ${q.servicesText} (szacunkowo ${q.totalCost} + proponowany budżet Ads ${q.adBudget}). Załóż konto – prześlemy tę propozycję do zatwierdzenia przez Administratora.`;
+                regPackage.value = q.servicesText;
             } catch (e) {}
         }
     }
@@ -1257,17 +1005,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const loginFeedback = document.getElementById('loginFeedback');
             if (!emailVal) {
                 loginFeedback.style.color = '#ffb074';
-                loginFeedback.innerText = 'Wpisz najpierw swój adres e-mail w polu powyżej, aby zresetować hasło.';
+                loginFeedback.innerText = 'Wpisz najpierw swój adres e-mail powyżej.';
                 return;
             }
             if (firebaseReady && auth) {
                 try {
                     await fbFns.sendPasswordResetEmail(auth, emailVal);
                     loginFeedback.style.color = '#d4ff00';
-                    loginFeedback.innerText = `Link do resetu hasła został wysłany na adres: ${emailVal} ⚡`;
+                    loginFeedback.innerText = `Link do resetu hasła wysłano na: ${emailVal} ⚡`;
                 } catch (err) {
                     loginFeedback.style.color = '#fca5a5';
-                    loginFeedback.innerText = 'Nie znaleziono konta o tym adresie e-mail.';
+                    loginFeedback.innerText = 'Nie znaleziono konta o tym adresie.';
                 }
             }
         });
@@ -1279,7 +1027,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
             const loginFeedback = document.getElementById('loginFeedback');
-
             loginFeedback.style.color = '#d4ff00';
             loginFeedback.innerText = 'Logowanie... ⚡';
 
@@ -1305,9 +1052,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         return;
                     }
 
-                    const hasAdminRights = isOwnerEmail(email) || (userDocData && userDocData.isAdminRole === true);
-
-                    if (hasAdminRights) {
+                    if (isOwnerEmail(email) || (userDocData && userDocData.isAdminRole === true)) {
                         localStorage.setItem('wtb_admin_email', email);
                         window.location.href = 'admin.html';
                     } else {
@@ -1323,6 +1068,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // REJESTRACJA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, pusta lista zadań – wszystko ustala Admin)
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1330,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const brand = document.getElementById('regBrand').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
-            const pkg = document.getElementById('regPackage').value.trim() || 'Pakiet Startowy ⚡';
+            const requestedPkg = document.getElementById('regPackage').value.trim() || 'Do ustalenia z Administratorem';
             const registerFeedback = document.getElementById('registerFeedback');
 
             registerFeedback.style.color = '#d4ff00';
@@ -1338,22 +1084,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const isInitialAdmin = isOwnerEmail(email);
 
-            const newClientDoc = JSON.parse(JSON.stringify(defaultClientData));
-            newClientDoc.userName = name;
-            newClientDoc.clientName = `${brand} (${name})`;
-            newClientDoc.email = email;
-            newClientDoc.isAdminRole = isInitialAdmin;
-            newClientDoc.isBlocked = false;
-            newClientDoc.createdAt = getCurrentTimeStr();
-            newClientDoc.packageName = pkg;
-            newClientDoc.progressPercent = 15;
+            const newClientDoc = {
+                userName: name,
+                clientName: `${brand} (${name})`,
+                email: email,
+                isAdminRole: isInitialAdmin,
+                isBlocked: false,
+                createdAt: getCurrentTimeStr(),
+                packageName: `${requestedPkg} (Oczekuje na zatwierdzenie)`,
+                progressPercent: 0,
+                currentCost: '0 zł (Ustalany po opłaceniu)',
+                paymentStatus: '⏳ Oczekuje na płatność',
+                adBudget: '0 zł',
+                tasks: [],
+                finances: [],
+                messages: [
+                    {
+                        sender: 'agency',
+                        author: 'Wake The Brand ⚡',
+                        text: 'Cześć! Witamy w Twoim Panelu Klienta. Po opłaceniu i zatwierdzeniu pakietu Administrator uruchomi tutaj Twój pasek postępu, budżet oraz harmonogram zadań.',
+                        time: getCurrentTimeStr()
+                    }
+                ]
+            };
 
+            let clientIntroMsg = `Cześć! Właśnie założyłem konto dla marki „${brand}”. Interesujący mnie zakres: ${requestedPkg}. Proszę o wycenę i aktywację pakietu.`;
             const savedQuoteObjRaw = localStorage.getItem('wakeTheBrandQuoteObj');
             if (savedQuoteObjRaw) {
                 try {
-                    const quoteObj = JSON.parse(savedQuoteObjRaw);
-                    newClientDoc.currentCost = quoteObj.totalCost;
-                    newClientDoc.adBudget = quoteObj.adBudget;
+                    const q = JSON.parse(savedQuoteObjRaw);
+                    clientIntroMsg = `Cześć! Przesyłam moją wstępną konfigurację z kalkulatora do zatwierdzenia: ${q.servicesText} (wyliczony koszt: ${q.totalCost}, proponowany budżet Ads: ${q.adBudget}).`;
                     localStorage.removeItem('wakeTheBrandQuoteObj');
                 } catch (err) {}
             }
@@ -1361,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             newClientDoc.messages.push({
                 sender: 'client',
                 author: `${name} (${brand})`,
-                text: `Cześć! Właśnie utworzyłem konto w Strefie Klienta. Mój wybrany pakiet/cel: ${pkg}.`,
+                text: clientIntroMsg,
                 time: getCurrentTimeStr()
             });
 
@@ -1370,7 +1130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const userCred = await fbFns.createUserWithEmailAndPassword(auth, email, password);
                     const uid = userCred.user.uid;
                     localStorage.setItem('wtb_active_uid', uid);
-
                     await saveClientData(uid, newClientDoc);
 
                     if (isInitialAdmin) {
@@ -1381,11 +1140,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 } catch (err) {
                     registerFeedback.style.color = '#fca5a5';
-                    if (err.code === 'auth/email-already-in-use') {
-                        registerFeedback.innerText = 'Ten adres e-mail ma już konto! Przełącz się na zakładkę „Zaloguj się”.';
-                    } else {
-                        registerFeedback.innerText = `Błąd rejestracji: ${err.message}`;
-                    }
+                    registerFeedback.innerText = err.code === 'auth/email-already-in-use'
+                        ? 'Ten adres e-mail ma już konto! Przełącz się na zakładkę „Zaloguj się”.'
+                        : `Błąd rejestracji: ${err.message}`;
                 }
             } else {
                 saveLocalData(newClientDoc);
@@ -1394,44 +1151,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Potwierdzenie hasłem Admina w modalu bezpieczeństwa
     if (adminSecurityForm) {
         adminSecurityForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const enteredPass = confirmAdminPassInput.value;
             if (!enteredPass || !pendingSecurityAction) return;
-
             securityModalFeedback.style.color = '#d4ff00';
             securityModalFeedback.innerText = 'Weryfikacja hasła... ⚡';
 
             try {
                 if (firebaseReady && auth) {
-                    const emailToVerify = (auth.currentUser && auth.currentUser.email)
-                        ? auth.currentUser.email
-                        : currentLoggedInAdminEmail;
-
+                    const emailToVerify = (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email : currentLoggedInAdminEmail;
                     await fbFns.signInWithEmailAndPassword(auth, emailToVerify, enteredPass);
                 }
-
                 await pendingSecurityAction();
                 closeSecurityPrompt();
             } catch (err) {
                 securityModalFeedback.style.color = '#fca5a5';
-                securityModalFeedback.innerText = '❌ Błędne hasło Administratora! Operacja odrzucona.';
+                securityModalFeedback.innerText = '❌ Błędne hasło Administratora!';
             }
         });
     }
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
-
-    [logoutBtn, adminLogoutBtn].forEach(btn => {
+    [document.getElementById('logoutBtn'), document.getElementById('adminLogoutBtn')].forEach(btn => {
         if (btn) {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                if (firebaseReady && auth) {
-                    await fbFns.signOut(auth);
-                }
+                if (firebaseReady && auth) await fbFns.signOut(auth);
                 localStorage.removeItem('wtb_active_uid');
                 window.location.href = 'logowanie.html';
             });
@@ -1443,15 +1189,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const text = clientChatInput.value.trim();
             if (!text) return;
-
             currentClientCache.messages = currentClientCache.messages || [];
-            currentClientCache.messages.push({
-                sender: 'client',
-                author: currentClientCache.clientName,
-                text: text,
-                time: getCurrentTimeStr()
-            });
-
+            currentClientCache.messages.push({ sender: 'client', author: currentClientCache.clientName, text, time: getCurrentTimeStr() });
             clientChatInput.value = '';
             renderClientUI(currentClientCache);
             await saveClientData(currentClientId, currentClientCache);
@@ -1463,24 +1202,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             const cardTitle = btn.closest('.service-card').querySelector('h3').innerText;
             btn.innerText = 'Zaakceptowano ✓';
             btn.disabled = true;
-
             currentClientCache.messages = currentClientCache.messages || [];
             currentClientCache.messages.push({
                 sender: 'client',
                 author: currentClientCache.clientName,
-                text: `✅ Zaakceptowałem materiał w panelu: „${cardTitle}”. Możemy działać dalej!`,
+                text: `✅ Zaakceptowałem materiał w panelu: „${cardTitle}”.`,
                 time: getCurrentTimeStr()
             });
-
             renderClientUI(currentClientCache);
             await saveClientData(currentClientId, currentClientCache);
         });
     });
 
     if (adminProgressSlider && adminProgressVal) {
-        adminProgressSlider.addEventListener('input', () => {
-            adminProgressVal.innerText = `${adminProgressSlider.value}%`;
-        });
+        adminProgressSlider.addEventListener('input', () => { adminProgressVal.innerText = `${adminProgressSlider.value}%`; });
     }
 
     if (adminStatusForm) {
@@ -1503,18 +1238,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminAddTaskForm) {
         adminAddTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const title = document.getElementById('newTaskTitle').value.trim();
-            const category = document.getElementById('newTaskCategory').value.trim();
-            const status = document.getElementById('newTaskStatus').value;
-
             selectedAdminClientData.tasks = selectedAdminClientData.tasks || [];
             selectedAdminClientData.tasks.unshift({
                 id: Date.now(),
-                title,
-                category,
-                status
+                title: document.getElementById('newTaskTitle').value.trim(),
+                category: document.getElementById('newTaskCategory').value.trim(),
+                status: document.getElementById('newTaskStatus').value
             });
-
             adminAddTaskForm.reset();
             renderAdminUI(selectedAdminClientData);
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
@@ -1524,22 +1254,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminAddFinanceForm) {
         adminAddFinanceForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const period = document.getElementById('finPeriod').value.trim();
-            const scope = document.getElementById('finScope').value.trim();
-            const docType = document.getElementById('finDocType').value;
-            const amount = document.getElementById('finAmount').value.trim();
-            const status = document.getElementById('finStatus').value;
-
             selectedAdminClientData.finances = selectedAdminClientData.finances || [];
             selectedAdminClientData.finances.unshift({
                 id: Date.now(),
-                period,
-                scope,
-                docType,
-                amount,
-                status
+                period: document.getElementById('finPeriod').value.trim(),
+                scope: document.getElementById('finScope').value.trim(),
+                docType: document.getElementById('finDocType').value,
+                amount: document.getElementById('finAmount').value.trim(),
+                status: document.getElementById('finStatus').value
             });
-
             adminAddFinanceForm.reset();
             renderAdminUI(selectedAdminClientData);
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
@@ -1551,15 +1274,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const text = adminChatInput.value.trim();
             if (!text) return;
-
             selectedAdminClientData.messages = selectedAdminClientData.messages || [];
             selectedAdminClientData.messages.push({
                 sender: 'agency',
                 author: 'Wake The Brand ⚡ (Zespół)',
-                text: text,
+                text,
                 time: getCurrentTimeStr()
             });
-
             adminChatInput.value = '';
             renderAdminUI(selectedAdminClientData);
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
@@ -1568,9 +1289,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (resetDemoDataBtn) {
         resetDemoDataBtn.addEventListener('click', async () => {
-            const freshCopy = JSON.parse(JSON.stringify(defaultClientData));
-            renderAdminUI(freshCopy);
-            await saveClientData(selectedAdminClientId, freshCopy);
+            const cleanAccount = {
+                ...selectedAdminClientData,
+                packageName: 'Oczekuje na wybór i opłacenie ⏳',
+                progressPercent: 0,
+                currentCost: '0 zł (Do ustalenia)',
+                paymentStatus: '⏳ Oczekuje na płatność',
+                adBudget: '0 zł',
+                tasks: [],
+                finances: []
+            };
+            renderAdminUI(cleanAccount);
+            await saveClientData(selectedAdminClientId, cleanAccount);
         });
     }
 
