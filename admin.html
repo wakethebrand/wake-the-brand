@@ -58,7 +58,7 @@
                 <strong>☁️ Synchronizacja HQ</strong>
                 <p id="firebaseStatusText">Łączenie z bazą Firebase...</p>
                 <a href="https://mail.google.com/" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-full">
-                    ✉️️ Otwórz Gmaila WTB →
+                    ✉️ Otwórz Gmaila WTB →
                 </a>
             </div>
         </aside>
@@ -125,12 +125,12 @@
 
                             <div class="form-group">
                                 <label for="planTaskTitle">Co jest do zrobienia?</label>
-                                <input type="text" id="planTaskTitle" required placeholder="np. Dokończyć makietę sklepu / Zmontować 3 rolki">
+                                <input type="text" id="planTaskTitle" required placeholder="np. Wykonać audyt konta Google Ads / Zoptymalizować 20 ofert Allegro">
                             </div>
 
                             <div class="form-group">
                                 <label for="planTaskProject">Projekt / Klient / Kategoria</label>
-                                <input type="text" id="planTaskProject" placeholder="np. Wake The Brand / Sklep Klienta X">
+                                <input type="text" id="planTaskProject" placeholder="np. Wake The Brand / Klient E-commerce">
                             </div>
 
                             <div class="two-inputs-grid">
@@ -193,7 +193,7 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Repozytorium Chmurowe Zespołu</span>
                     <h2>📁 Nasze Pliki i Foldery na Dysku Google</h2>
-                    <p>Dodawajcie tutaj linki do Waszych folderów na Google Drive (projekty klientów, surowe wideo, umowy, grafiki), abyście obaj mieli do nich natychmiastowy dostęp w jednym miejscu.</p>
+                    <p>Dodawajcie tutaj linki do Waszych folderów na Google Drive (raporty z audytów, arkusze słów kluczowych Allegro/SEO, kreacje Ads, umowy), abyście obaj mieli do nich natychmiastowy dostęp.</p>
                 </div>
 
                 <div class="dash-two-cols">
@@ -204,17 +204,17 @@
 
                         <div class="form-group">
                             <label for="driveItemTitle">Nazwa pliku / folderu</label>
-                            <input type="text" id="driveItemTitle" required placeholder="np. Folder Klienta: Vintage Store / Umowy 2026">
+                            <input type="text" id="driveItemTitle" required placeholder="np. Audyt SEO i Konta Ads - Klient X / Szablony Umów">
                         </div>
 
                         <div class="form-group">
                             <label for="driveItemCategory">Kategoria na Dysku</label>
                             <select id="driveItemCategory" class="admin-select">
                                 <option value="📂 Folder Klienta">📂 Folder Klienta</option>
-                                <option value="🎬 Surowe Wideo / Rolki">🎬 Surowe Wideo / Rolki</option>
-                                <option value="🎨 Grafiki / Logo / Brand">🎨 Grafiki / Logo / Brand</option>
+                                <option value="📊 Audyty Kont & SEO">📊 Audyty Kont & SEO</option>
+                                <option value="📦 Allegro & Kampanie Ads">📦 Allegro & Kampanie Ads</option>
+                                <option value="🚀 Landing Page & Strategia">🚀 Landing Page & Strategia</option>
                                 <option value="📄 Umowy / Kosztorysy / Dokumenty">📄 Umowy / Kosztorysy / Dokumenty</option>
-                                <option value="💻 Kod / Zasoby Sklepów">💻 Kod / Zasoby Sklepów</option>
                             </select>
                         </div>
 
@@ -225,7 +225,7 @@
 
                         <div class="form-group">
                             <label for="driveItemNote">Krótka notatka (co jest w środku?)</label>
-                            <input type="text" id="driveItemNote" placeholder="np. Wszystkie nagrania z października + logo w PNG">
+                            <input type="text" id="driveItemNote" placeholder="np. Raport PDF z audytu + dostęp do GTM i lista fraz">
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-full">Zapisz na liście Dysku Google ⚡</button>
@@ -250,77 +250,119 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 4: WEWNĘTRZNY KALKULATOR WYCENY DLA ZAŁOŻYCIELI
+                 MODUŁ 4: WEWNĘTRZNY KALKULATOR WYCENY (10 USŁUG)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-pricing">
                 <div class="dash-section-title">
                     <span class="section-tag">Wewnętrzny System Kosztorysowania</span>
-                    <h2>🧮 Kalkulator Wyceny dla Klienta (Tylko dla nas)</h2>
-                    <p>Złóż indywidualną wycenę podczas rozmowy lub pisania maila. Możesz też jednym kliknięciem przenieść wycenę do Generatora Druków A4.</p>
+                    <h2>🧮 Kalkulator Wyceny dla Klienta (10 Naszych Usług)</h2>
+                    <p>Zaznacz wybrane usługi z naszej listy 1–10. System automatycznie wylicza kwotę dla klienta, podział 50/50 dla Mateusza i Bartka oraz pozwala przenieść kosztorys prosto do druku A4.</p>
                 </div>
 
                 <div class="dash-two-cols">
                     <div class="glass-card">
                         <div class="card-header-between">
-                            <h3>1. Wybierz usługi projektu</h3>
+                            <h3>1. Wybierz usługi z katalogu (1–10)</h3>
                         </div>
 
                         <div class="form-group">
-                            <label for="calcClientName">Nazwa klienta / marki</label>
-                            <input type="text" id="calcClientName" placeholder="np. Marka Streetwear / Sklep Kawowy">
+                            <label for="calcClientName">Nazwa klienta / sklepu / konta Allegro</label>
+                            <input type="text" id="calcClientName" placeholder="np. Sklep E-commerce / Konto Allegro Klienta">
                         </div>
 
+                        <!-- 1. Audyt konta reklamowego -->
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="3200" data-name="Budowa Sklepu Internetowego (E-commerce UX/UI + płatności)">
-                                <strong>🛒 Budowa Sklepu Internetowego (E-commerce)</strong>
+                                <input type="checkbox" class="hq-calc-check" value="700" data-name="1. Audyt konta reklamowego (Google / Meta / Allegro Ads)">
+                                <strong>1. 🔍 Audyt konta reklamowego</strong>
                             </span>
-                            <span class="hq-pill mateusz">3 200 zł</span>
+                            <span class="hq-pill mateusz">700 zł</span>
                         </label>
 
+                        <!-- 2. Optymalizacja ofert Allegro -->
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1800" data-name="Nowoczesna Strona WWW (Wizytówka / Landing Page)">
-                                <strong>🌐 Nowoczesna Strona WWW / Landing Page</strong>
-                            </span>
-                            <span class="hq-pill mateusz">1 800 zł</span>
-                        </label>
-
-                        <label class="calc-service-row">
-                            <span>
-                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="Pakiet 4 Rolek Wideo (Montaż Reels / TikTok + napisy)">
-                                <strong>🎬 Pakiet 4 Rolek Wideo (Reels / TikTok)</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="2. Optymalizacja ofert Allegro (Tytuły, parametry, opisy sprzedażowe)">
+                                <strong>2. 📦 Optymalizacja ofert Allegro</strong>
                             </span>
                             <span class="hq-pill mateusz">1 200 zł</span>
                         </label>
 
+                        <!-- 3. Konfiguracja analityki -->
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="2100" data-name="Pakiet 8 Rolek Wideo (Pełny miesiąc wideo + scenariusze)">
-                                <strong>🎬 Pakiet 8 Rolek Wideo (Pełny miesiąc)</strong>
+                                <input type="checkbox" class="hq-calc-check" value="900" data-name="3. Konfiguracja analityki (GA4, GTM, Meta Pixel, śledzenie e-commerce)">
+                                <strong>3. 📊 Konfiguracja analityki</strong>
                             </span>
-                            <span class="hq-pill mateusz">2 100 zł</span>
+                            <span class="hq-pill mateusz">900 zł</span>
                         </label>
 
+                        <!-- 4. Audyt SEO -->
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1400" data-name="Branding & Identyfikacja Wizualna (Logo + Brandboard)">
-                                <strong>🎨 Branding & Identyfikacja (Logo + Brandboard)</strong>
-                            </span>
-                            <span class="hq-pill mateusz">1 400 zł</span>
-                        </label>
-
-                        <label class="calc-service-row">
-                            <span>
-                                <input type="checkbox" class="hq-calc-check" value="1100" data-name="Konfiguracja i prowadzenie kampanii Meta / Google Ads">
-                                <strong>📈 Kampanie Reklamowe Meta & Google Ads</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1100" data-name="4. Audyt SEO (Analiza techniczna, treściowa i słowa kluczowe)">
+                                <strong>4. 🛠️ Audyt SEO</strong>
                             </span>
                             <span class="hq-pill mateusz">1 100 zł</span>
                         </label>
 
+                        <!-- 5. Kampanie Allegro Ads -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="5. Kampanie Allegro Ads (Konfiguracja i prowadzenie)">
+                                <strong>5. 🛒 Kampanie Allegro Ads</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 200 zł</span>
+                        </label>
+
+                        <!-- 6. Kampanie Google Ads -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1400" data-name="6. Kampanie Google Ads (Shopping, Performance Max, Search)">
+                                <strong>6. 🎯 Kampanie Google Ads</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 400 zł</span>
+                        </label>
+
+                        <!-- 7. Kampanie Facebook i Instagram Ads -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1300" data-name="7. Kampanie Facebook i Instagram Ads (Meta Ads & Remarketing)">
+                                <strong>7. 📱 Kampanie Facebook i Instagram Ads</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 300 zł</span>
+                        </label>
+
+                        <!-- 8. Landing page pod kampanię -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1800" data-name="8. Landing page pod kampanię (Projekt UX/UI + wdrożenie pod konwersję)">
+                                <strong>8. 🚀 Landing page pod kampanię</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 800 zł</span>
+                        </label>
+
+                        <!-- 9. Strategia marketingowa -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1500" data-name="9. Strategia marketingowa (Lejek sprzedażowy, grupy docelowe, plan działań)">
+                                <strong>9. 🧭 Strategia marketingowa</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 500 zł</span>
+                        </label>
+
+                        <!-- 10. Pozycjonowanie (SEO) -->
+                        <label class="calc-service-row">
+                            <span>
+                                <input type="checkbox" class="hq-calc-check" value="1600" data-name="10. Pozycjonowanie (SEO) (Optymalizacja, content i budowa widoczności)">
+                                <strong>10. 📈 Pozycjonowanie (SEO)</strong>
+                            </span>
+                            <span class="hq-pill mateusz">1 600 zł</span>
+                        </label>
+
                         <div class="two-inputs-grid">
                             <div class="form-group">
-                                <label for="calcCustomAdd">Dodatkowa kwota (+ zł)</label>
+                                <label for="calcCustomAdd">Korekta / Dodatkowa kwota (+ / - zł)</label>
                                 <input type="number" id="calcCustomAdd" value="0" step="50">
                             </div>
                             <div class="form-group">
@@ -331,7 +373,7 @@
 
                         <div class="form-group">
                             <label for="calcSuggestedAds">Sugerowany budżet mediowy Ads dla klienta (zł / mies.)</label>
-                            <input type="number" id="calcSuggestedAds" value="1000" step="100">
+                            <input type="number" id="calcSuggestedAds" value="2000" step="100">
                         </div>
                     </div>
 
@@ -385,7 +427,6 @@
                 </div>
 
                 <div class="dash-two-cols">
-                    <!-- LEWA KOLUMNA: FORMULARZ GENERATORA (UKRYWANY W TRAKCIE DRUKU) -->
                     <div class="glass-card no-print">
                         <div class="card-header-between">
                             <h3>⚙️ Konfiguracja Dokumentu</h3>
@@ -418,7 +459,7 @@
                                 <input type="text" id="docClientName" placeholder="Zostaw puste, aby wpisać ręcznie po wydruku">
                             </div>
                             <div class="form-group">
-                                <label for="docClientNip">NIP / Adres / Strona WWW klienta</label>
+                                <label for="docClientNip">NIP / Adres / Link do sklepu lub Allegro</label>
                                 <input type="text" id="docClientNip" placeholder="Zostaw puste, aby wpisać ręcznie">
                             </div>
                         </div>
@@ -429,8 +470,8 @@
                                 <input type="text" id="docClientContact" placeholder="Zostaw puste, aby wpisać ręcznie">
                             </div>
                             <div class="form-group">
-                                <label for="docClientIndustry">Branża / Rodzaj sklepu lub działalności</label>
-                                <input type="text" id="docClientIndustry" placeholder="np. Sklep odzieżowy / E-commerce">
+                                <label for="docClientIndustry">Branża / Wybrane usługi</label>
+                                <input type="text" id="docClientIndustry" placeholder="np. E-commerce / Allegro Ads / SEO">
                             </div>
                         </div>
 
@@ -441,22 +482,22 @@
 
                         <div class="form-group">
                             <label for="docScopeItems">Zakres prac / Pozycje kosztorysu (każda pozycja w nowej linii)</label>
-                            <textarea id="docScopeItems" rows="4" placeholder="np. Budowa sklepu internetowego - 3200 zł&#10;Montaż 4 rolek Reels/TikTok - 1200 zł&#10;(Zostaw puste, aby mieć pustą tabelę do wypełnienia długopisem)"></textarea>
+                            <textarea id="docScopeItems" rows="4" placeholder="np. Audyt konta reklamowego - 700 zł&#10;Kampanie Google Ads - 1400 zł&#10;(Zostaw puste, aby mieć kafelki 1-10 lub pustą tabelę do wypełnienia długopisem)"></textarea>
                         </div>
 
                         <div class="two-inputs-grid">
                             <div class="form-group">
                                 <label for="docTotalPrice">Kwota całkowita / Budżet</label>
-                                <input type="text" id="docTotalPrice" placeholder="np. 4 400 zł (lub puste)">
+                                <input type="text" id="docTotalPrice" placeholder="np. 2 100 zł (lub puste)">
                             </div>
                             <div class="form-group">
-                                <label for="docDeadline">Planowany termin realizacji / Etapy</label>
-                                <input type="text" id="docDeadline" placeholder="np. 14 dni roboczych (lub puste)">
+                                <label for="docDeadline">Planowany termin realizacji / Okres umowy</label>
+                                <input type="text" id="docDeadline" placeholder="np. Rozliczenie miesięczne / 14 dni (lub puste)">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="docExtraNotes">Dodatkowe ustalenia / Uwagi</label>
+                            <label for="docExtraNotes">Dodatkowe ustalenia / Dostępy / Uwagi</label>
                             <textarea id="docExtraNotes" rows="2" placeholder="Zostaw puste pod odręczne zapiski..."></textarea>
                         </div>
 
@@ -465,7 +506,7 @@
                         </button>
                     </div>
 
-                    <!-- PRAWA KOLUMNA: PODGLĄD WYDRUKU A4 NA ŻYWO (TO SIĘ DRUKUJE) -->
+                    <!-- PRAWA KOLUMNA: PODGLĄD WYDRUKU A4 NA ŻYWO -->
                     <div class="print-preview-wrapper">
                         <div id="printableDocumentArea" class="print-sheet-container"></div>
                     </div>
