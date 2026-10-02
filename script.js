@@ -17,11 +17,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         'mateuszbugecik@gmail.com'
     ];
 
-    const STORAGE_KEY = 'wtb_portal_data_v3';
+    const STORAGE_KEY = 'wtb_portal_data_v4';
     const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
-    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v3';
+    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v4';
 
-    // CZYSTY SZABLON DLA NOWEGO KLIENTA (Wszystko ustala Admin po opłaceniu)
+    // CZYSTY SZABLON DLA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, brak zadań, brak plików – wszystko ustala Admin)
     const defaultClientData = {
         clientName: 'Nowy Klient (Oczekuje na aktywację)',
         userName: 'Klient',
@@ -35,12 +35,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         paymentStatus: '⏳ Oczekuje na płatność',
         adBudget: '0 zł',
         tasks: [],
+        filePackages: [],
         finances: [],
         messages: [
             {
                 sender: 'agency',
                 author: 'Wake The Brand ⚡',
-                text: 'Cześć! Witamy w Twoim Panelu Klienta. Twoje konto jest już aktywne. Po ustaleniu szczegółów i opłaceniu pakietu Administrator uruchomi tutaj Twój harmonogram zadań, pasek postępu oraz budżet.',
+                text: 'Cześć! Witamy w Twoim Panelu Klienta. Twoje konto jest już aktywne. Po ustaleniu szczegółów i opłaceniu pakietu Administrator uruchomi tutaj Twój harmonogram zadań, pasek postępu oraz udostępni pliki do akceptacji.',
                 time: 'Start'
             }
         ]
@@ -107,6 +108,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const current = getLocalLeads();
         current.unshift(leadObj);
         localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(current));
+    }
+
+    // Pomocniczy konwerter małego pliku z dysku do DataURL (do bezpośredniego pobrania przez klienta)
+    function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (err) => reject(err);
+            reader.readAsDataURL(file);
+        });
     }
 
     // 1. MENU MOBILNE & COOKIES
@@ -336,7 +347,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             sec.classList.toggle('active', isMatch);
         });
         if (activeClientBanner) {
-            const editTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-finances', 'admin-tab-chat'];
+            const editTabs = ['admin-tab-status', 'admin-tab-tasks', 'admin-tab-files', 'admin-tab-finances', 'admin-tab-chat'];
             activeClientBanner.classList.toggle('hidden', !editTabs.includes(targetId));
         }
     }
@@ -362,6 +373,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return '<span class="badge-status todo">📋 Zaplanowane</span>';
     }
 
+    function fileStatusBadgeHTML(status) {
+        if (status === 'approved') return '<span class="badge-status done">✓ Zaakceptowano</span>';
+        return '<span class="badge-status progress">⏳ Czeka na akceptację</span>';
+    }
+
     async function saveClientData(clientId, dataObj) {
         saveLocalData(dataObj);
         const cached = getCachedAccounts();
@@ -379,7 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 6. RENDEROWANIE PANELU KLIENTA I ADMINA
+    // 6. RENDEROWANIE PANELU KLIENTA (W TYM OTWIERANE KONTENERY PLIKÓW DO POBRANIA)
     const clientTopName = document.getElementById('clientTopName');
     const clientWelcomeTitle = document.getElementById('clientWelcomeTitle');
     const clientActivePackage = document.getElementById('clientActivePackage');
@@ -390,14 +406,118 @@ document.addEventListener('DOMContentLoaded', async () => {
     const clientAdBudget = document.getElementById('clientAdBudget');
     const overviewTaskList = document.getElementById('overviewTaskList');
     const clientFullTaskList = document.getElementById('clientFullTaskList');
+    const clientFilesGrid = document.getElementById('clientFilesGrid');
     const clientFinanceTable = document.getElementById('clientFinanceTable');
     const clientChatBox = document.getElementById('clientChatBox');
     const clientChatForm = document.getElementById('clientChatForm');
     const clientChatInput = document.getElementById('clientChatInput');
     const latestMsgPreview = document.getElementById('latestMsgPreview');
 
+    // Modal otwieranego kontenera plików u klienta
+    const clientFileModal = document.getElementById('clientFileModal');
+    const closeClientFileModal = document.getElementById('closeClientFileModal');
+    const modalFileCategory = document.getElementById('modalFileCategory');
+    const modalFileStatusBadge = document.getElementById('modalFileStatusBadge');
+    const modalFileTitle = document.getElementById('modalFileTitle');
+    const modalFileDate = document.getElementById('modalFileDate');
+    const modalFileDescription = document.getElementById('modalFileDescription');
+    const modalDownloadList = document.getElementById('modalDownloadList');
+    const modalApprovePackageBtn = document.getElementById('modalApprovePackageBtn');
+    const modalAskCorrectionBtn = document.getElementById('modalAskCorrectionBtn');
+
     let currentClientId = localStorage.getItem('wtb_active_uid') || 'demo_client';
     let currentClientCache = getLocalData();
+    let openedFilePackageId = null;
+
+    function openClientFilePackageModal(pkgId) {
+        const packages = currentClientCache.filePackages || [];
+        const pkg = packages.find(p => String(p.id) === String(pkgId));
+        if (!pkg || !clientFileModal) return;
+
+        openedFilePackageId = pkg.id;
+        if (modalFileCategory) modalFileCategory.innerText = pkg.category || 'Materiały';
+        if (modalFileStatusBadge) modalFileStatusBadge.innerHTML = fileStatusBadgeHTML(pkg.status);
+        if (modalFileTitle) modalFileTitle.innerText = pkg.title || 'Bez tytułu';
+        if (modalFileDate) modalFileDate.innerText = `Dodano przez Wake The Brand • ${pkg.createdAt || 'Teraz'}`;
+        if (modalFileDescription) modalFileDescription.innerText = pkg.description || 'Brak dodatkowego opisu.';
+
+        const files = pkg.files || [];
+        if (modalDownloadList) {
+            if (files.length === 0) {
+                modalDownloadList.innerHTML = `
+                    <div class="download-file-row">
+                        <span style="color:var(--text-muted);">Brak załączonych plików bezpośrednich w tym kontenerze.</span>
+                    </div>
+                `;
+            } else {
+                modalDownloadList.innerHTML = files.map(f => `
+                    <div class="download-file-row">
+                        <div style="display:flex;align-items:center;gap:0.6rem;">
+                            <span>📄</span>
+                            <strong>${f.name || 'Plik do pobrania'}</strong>
+                        </div>
+                        <a href="${f.url || '#'}" download="${f.name || 'plik'}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+                            ⬇️ Pobierz / Otwórz plik
+                        </a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        if (modalApprovePackageBtn) {
+            if (pkg.status === 'approved') {
+                modalApprovePackageBtn.innerText = '✓ Materiał został już zaakceptowany';
+                modalApprovePackageBtn.disabled = true;
+            } else {
+                modalApprovePackageBtn.innerText = '✅ Akceptuję ten materiał';
+                modalApprovePackageBtn.disabled = false;
+            }
+        }
+
+        clientFileModal.classList.add('open');
+    }
+
+    if (closeClientFileModal && clientFileModal) {
+        closeClientFileModal.addEventListener('click', () => clientFileModal.classList.remove('open'));
+        clientFileModal.addEventListener('click', (e) => {
+            if (e.target === clientFileModal) clientFileModal.classList.remove('open');
+        });
+    }
+
+    if (modalApprovePackageBtn) {
+        modalApprovePackageBtn.addEventListener('click', async () => {
+            if (!openedFilePackageId) return;
+            const packages = currentClientCache.filePackages || [];
+            const pkg = packages.find(p => String(p.id) === String(openedFilePackageId));
+            if (!pkg) return;
+
+            pkg.status = 'approved';
+            currentClientCache.messages = currentClientCache.messages || [];
+            currentClientCache.messages.push({
+                sender: 'client',
+                author: currentClientCache.clientName,
+                text: `✅ Zaakceptowałem kontener plików: „${pkg.title}”. Możemy działać dalej!`,
+                time: getCurrentTimeStr()
+            });
+
+            renderClientUI(currentClientCache);
+            openClientFilePackageModal(openedFilePackageId);
+            await saveClientData(currentClientId, currentClientCache);
+        });
+    }
+
+    if (modalAskCorrectionBtn) {
+        modalAskCorrectionBtn.addEventListener('click', () => {
+            const packages = currentClientCache.filePackages || [];
+            const pkg = packages.find(p => String(p.id) === String(openedFilePackageId));
+            if (clientFileModal) clientFileModal.classList.remove('open');
+            activateDashTab('tab-chat');
+            if (clientChatInput && pkg) {
+                clientChatInput.value = `Odnośnie kontenera „${pkg.title}”: `;
+                clientChatInput.focus();
+            }
+        });
+    }
 
     function renderClientUI(data) {
         if (!clientActivePackage) return;
@@ -436,6 +556,56 @@ document.addEventListener('DOMContentLoaded', async () => {
                 : emptyTasksHTML;
         }
 
+        // Renderowanie kontenerów plików do akceptacji (puste na starcie, dopóki Admin nie wgra)
+        const filePackages = data.filePackages || [];
+        if (clientFilesGrid) {
+            if (filePackages.length === 0) {
+                clientFilesGrid.innerHTML = `
+                    <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem;">
+                        <span style="font-size: 2.4rem; display: block; margin-bottom: 0.8rem;">📁</span>
+                        <h3>Brak materiałów oczekujących na akceptację</h3>
+                        <p style="color: var(--text-muted); max-width: 520px; margin: 0.6rem auto 0;">
+                            Gdy nasz zespół przygotuje dla Ciebie projekty graficzne, wideo lub podgląd strony WWW, Administrator udostępni je tutaj w formie gotowych kontenerów do pobrania.
+                        </p>
+                    </div>
+                `;
+            } else {
+                clientFilesGrid.innerHTML = filePackages.map(pkg => {
+                    const filesCount = (pkg.files || []).length;
+                    const shortDesc = (pkg.description || '').length > 110
+                        ? pkg.description.slice(0, 110) + '...'
+                        : (pkg.description || '');
+
+                    return `
+                        <div class="service-card glass-card file-package-card" data-open-pkg="${pkg.id}">
+                            <div>
+                                <div class="file-package-header">
+                                    <span class="section-tag" style="margin-bottom:0;">${pkg.category || 'Projekt'}</span>
+                                    ${fileStatusBadgeHTML(pkg.status)}
+                                </div>
+                                <h3 style="margin-bottom:0.5rem;">${pkg.title}</h3>
+                                <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.2rem;">${shortDesc}</p>
+                            </div>
+                            <div>
+                                <div style="font-size:0.8rem;color:var(--accent-lime);margin-bottom:0.9rem;">
+                                    📎 Załączone pliki do pobrania: <strong>${filesCount}</strong> • Dodano: ${pkg.createdAt || 'Teraz'}
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm btn-full" data-open-pkg-btn="${pkg.id}">
+                                    📂 Otwórz kontener i pobierz pliki →
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                clientFilesGrid.querySelectorAll('[data-open-pkg]').forEach(card => {
+                    card.addEventListener('click', () => {
+                        openClientFilePackageModal(card.getAttribute('data-open-pkg'));
+                    });
+                });
+            }
+        }
+
         const finances = data.finances || [];
         if (clientFinanceTable) {
             clientFinanceTable.innerHTML = finances.length > 0
@@ -456,7 +626,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (clientActivePackage) renderClientUI(currentClientCache);
 
-    // Elementy Admina
+    // 7. ELEMENTY I LOGIKA PANELU ADMINA (W TYM WGRYWANIE KONTENERÓW PLIKÓW)
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
     const bannerClientName = document.getElementById('bannerClientName');
@@ -481,6 +651,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const adminAddTaskForm = document.getElementById('adminAddTaskForm');
     const adminTaskList = document.getElementById('adminTaskList');
+    const adminAddFilePackageForm = document.getElementById('adminAddFilePackageForm');
+    const adminFilePackagesList = document.getElementById('adminFilePackagesList');
     const adminAddFinanceForm = document.getElementById('adminAddFinanceForm');
     const adminFinanceList = document.getElementById('adminFinanceList');
     const adminChatBox = document.getElementById('adminChatBox');
@@ -736,6 +908,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminPaymentStatus.value = data.paymentStatus || '⏳ Oczekuje na płatność';
         adminAdBudget.value = data.adBudget || '0 zł';
 
+        // Lista zadań w Adminie
         const tasks = data.tasks || [];
         if (adminTaskList) {
             adminTaskList.innerHTML = tasks.length === 0
@@ -770,6 +943,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        // Lista kontenerów plików w Adminie
+        const filePackages = data.filePackages || [];
+        if (adminFilePackagesList) {
+            adminFilePackagesList.innerHTML = filePackages.length === 0
+                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak udostępnionych kontenerów plików dla tego klienta.</span></li>`
+                : filePackages.map((pkg, idx) => `
+                    <li class="dash-task-item" style="align-items:flex-start;">
+                        <div class="task-meta">
+                            <strong>📁 ${pkg.title} <span style="color:var(--accent-lime);">(${pkg.category})</span></strong>
+                            <p style="font-size:0.84rem;color:#d1d5db;margin:0.3rem 0;">${pkg.description}</p>
+                            <small>Plików w kontenerze: ${(pkg.files || []).length} • Dodano: ${pkg.createdAt || 'Teraz'}</small>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            ${fileStatusBadgeHTML(pkg.status)}
+                            <button type="button" class="admin-action-btn" data-del-pkg="${idx}">Usuń</button>
+                        </div>
+                    </li>
+                `).join('');
+
+            adminFilePackagesList.querySelectorAll('[data-del-pkg]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const idx = parseInt(btn.getAttribute('data-del-pkg'), 10);
+                    selectedAdminClientData.filePackages.splice(idx, 1);
+                    renderAdminUI(selectedAdminClientData);
+                    await saveClientData(selectedAdminClientId, selectedAdminClientData);
+                });
+            });
+        }
+
+        // Lista finansów w Adminie
         const finances = data.finances || [];
         if (adminFinanceList) {
             adminFinanceList.innerHTML = finances.length === 0
@@ -824,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminRoleFilter) adminRoleFilter.addEventListener('change', renderAllAccountsList);
     if (adminClientSelector) adminClientSelector.addEventListener('change', () => subscribeToSelectedClient(adminClientSelector.value));
 
-    // 7. SZYBKIE POŁĄCZENIE Z FIREBASE (PROMISE.ALL + BRAVE LONG-POLLING)
+    // 8. SZYBKIE POŁĄCZENIE Z FIREBASE (PROMISE.ALL + BRAVE LONG-POLLING)
     try {
         const [appMod, authMod, firestoreMod] = await Promise.all([
             import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
@@ -900,7 +1103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('Tryb lokalny Cache:', err);
     }
 
-    // 8. FORMULARZE: KONTAKT, LOGOWANIE, REJESTRACJA, EDYCJA
+    // 9. FORMULARZE: KONTAKT, LOGOWANIE, REJESTRACJA, AKCJE ADMINA
     const topicPills = document.querySelectorAll('.topic-pill');
     const contactForm = document.getElementById('contactForm');
     const messageInput = document.getElementById('message');
@@ -1068,7 +1271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // REJESTRACJA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, pusta lista zadań – wszystko ustala Admin)
+    // REJESTRACJA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, pusta lista zadań i plików)
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1097,12 +1300,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 paymentStatus: '⏳ Oczekuje na płatność',
                 adBudget: '0 zł',
                 tasks: [],
+                filePackages: [],
                 finances: [],
                 messages: [
                     {
                         sender: 'agency',
                         author: 'Wake The Brand ⚡',
-                        text: 'Cześć! Witamy w Twoim Panelu Klienta. Po opłaceniu i zatwierdzeniu pakietu Administrator uruchomi tutaj Twój pasek postępu, budżet oraz harmonogram zadań.',
+                        text: 'Cześć! Witamy w Twoim Panelu Klienta. Po opłaceniu i zatwierdzeniu pakietu Administrator uruchomi tutaj Twój pasek postępu, budżet, harmonogram zadań oraz udostępni pliki do akceptacji.',
                         time: getCurrentTimeStr()
                     }
                 ]
@@ -1197,23 +1401,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    document.querySelectorAll('.approve-file-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const cardTitle = btn.closest('.service-card').querySelector('h3').innerText;
-            btn.innerText = 'Zaakceptowano ✓';
-            btn.disabled = true;
-            currentClientCache.messages = currentClientCache.messages || [];
-            currentClientCache.messages.push({
-                sender: 'client',
-                author: currentClientCache.clientName,
-                text: `✅ Zaakceptowałem materiał w panelu: „${cardTitle}”.`,
-                time: getCurrentTimeStr()
-            });
-            renderClientUI(currentClientCache);
-            await saveClientData(currentClientId, currentClientCache);
-        });
-    });
-
     if (adminProgressSlider && adminProgressVal) {
         adminProgressSlider.addEventListener('input', () => { adminProgressVal.innerText = `${adminProgressSlider.value}%`; });
     }
@@ -1246,6 +1433,77 @@ document.addEventListener('DOMContentLoaded', async () => {
                 status: document.getElementById('newTaskStatus').value
             });
             adminAddTaskForm.reset();
+            renderAdminUI(selectedAdminClientData);
+            await saveClientData(selectedAdminClientId, selectedAdminClientData);
+        });
+    }
+
+    // DODAWANIE KONTENERA PLIKÓW DO AKCEPTACJI PRZEZ ADMINA
+    if (adminAddFilePackageForm) {
+        adminAddFilePackageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('pkgTitle').value.trim();
+            const category = document.getElementById('pkgCategory').value.trim();
+            const description = document.getElementById('pkgDescription').value.trim();
+            const rawLinks = document.getElementById('pkgLinksText').value.trim();
+            const fileInput = document.getElementById('pkgLocalFile');
+
+            const filesArray = [];
+
+            if (rawLinks) {
+                rawLinks.split('\n').forEach(line => {
+                    const trimmed = line.trim();
+                    if (!trimmed) return;
+                    if (trimmed.includes('|')) {
+                        const parts = trimmed.split('|');
+                        filesArray.push({
+                            name: parts[0].trim(),
+                            url: parts.slice(1).join('|').trim()
+                        });
+                    } else {
+                        filesArray.push({
+                            name: trimmed.split('/').pop() || 'Plik projektu',
+                            url: trimmed
+                        });
+                    }
+                });
+            }
+
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                const f = fileInput.files[0];
+                if (f.size <= 750 * 1024) {
+                    try {
+                        const dataUrl = await readFileAsDataURL(f);
+                        filesArray.push({
+                            name: f.name,
+                            url: dataUrl
+                        });
+                    } catch (err) {}
+                } else {
+                    alert('Wybrany plik z dysku przekracza 750 KB. Dla większych plików wideo/ZIP wklej link (np. Google Drive) w polu powyżej.');
+                }
+            }
+
+            selectedAdminClientData.filePackages = selectedAdminClientData.filePackages || [];
+            selectedAdminClientData.filePackages.unshift({
+                id: 'pkg_' + Date.now(),
+                title,
+                category,
+                description,
+                files: filesArray,
+                status: 'pending',
+                createdAt: getCurrentTimeStr()
+            });
+
+            selectedAdminClientData.messages = selectedAdminClientData.messages || [];
+            selectedAdminClientData.messages.push({
+                sender: 'agency',
+                author: 'Wake The Brand ⚡ (Zespół)',
+                text: `📁 Udostępniliśmy nowy kontener z materiałami w zakładce „Pliki do akceptacji”: „${title}”.`,
+                time: getCurrentTimeStr()
+            });
+
+            adminAddFilePackageForm.reset();
             renderAdminUI(selectedAdminClientData);
             await saveClientData(selectedAdminClientId, selectedAdminClientData);
         });
@@ -1297,6 +1555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 paymentStatus: '⏳ Oczekuje na płatność',
                 adBudget: '0 zł',
                 tasks: [],
+                filePackages: [],
                 finances: []
             };
             renderAdminUI(cleanAccount);
