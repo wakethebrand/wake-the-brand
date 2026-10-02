@@ -4,7 +4,7 @@
 :root {
     --bg-main: #07080c;
     --bg-secondary: #0c0e15;
-    --bg-card: rgba(17, 20, 30, 0.78);
+    --bg-card: rgba(17, 20, 30, 0.74);
     --border-color: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(212, 255, 0, 0.45);
     --text-main: #f3f4f6;
@@ -28,14 +28,83 @@ html {
 
 body {
     background-color: var(--bg-main);
-    background-image:
-        radial-gradient(circle at 15% 10%, rgba(212, 255, 0, 0.05), transparent 35%),
-        radial-gradient(circle at 85% 80%, rgba(255, 107, 0, 0.04), transparent 35%);
     color: var(--text-main);
     font-family: var(--font-body);
     line-height: 1.6;
     overflow-x: hidden;
     min-height: 100vh;
+    position: relative;
+    z-index: 0;
+}
+
+/* =========================================================
+   ANIMOWANE TŁO: PŁYWAJĄCA ZORZA / LIQUID NEON
+   ========================================================= */
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    inset: -25%;
+    pointer-events: none;
+    z-index: -2;
+    filter: blur(95px);
+    will-change: transform;
+}
+
+/* Warstwa 1: Limonkowa energia + ciepły pomarańcz */
+body::before {
+    background:
+        radial-gradient(circle at 22% 28%, rgba(212, 255, 0, 0.14) 0%, transparent 42%),
+        radial-gradient(circle at 78% 72%, rgba(255, 107, 0, 0.11) 0%, transparent 45%);
+    animation: auroraFlowPrimary 18s ease-in-out infinite alternate;
+}
+
+/* Warstwa 2: Kontrująca poświata dająca efekt płynnego przenikania */
+body::after {
+    background:
+        radial-gradient(circle at 75% 22%, rgba(212, 255, 0, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 25% 80%, rgba(56, 189, 248, 0.07) 0%, transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.06) 0%, transparent 50%);
+    animation: auroraFlowSecondary 24s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes auroraFlowPrimary {
+    0% {
+        transform: translate3d(0%, 0%, 0) scale(1) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(6%, 4%, 0) scale(1.12) rotate(4deg);
+    }
+    100% {
+        transform: translate3d(-5%, -6%, 0) scale(0.96) rotate(-4deg);
+    }
+}
+
+@keyframes auroraFlowSecondary {
+    0% {
+        transform: translate3d(0%, 0%, 0) scale(1) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(-7%, 5%, 0) scale(1.15) rotate(-6deg);
+    }
+    100% {
+        transform: translate3d(5%, -5%, 0) scale(1.04) rotate(5deg);
+    }
+}
+
+@keyframes heroGlowPulse {
+    0% {
+        transform: translateX(-50%) scale(0.92);
+        opacity: 0.65;
+    }
+    50% {
+        transform: translateX(-46%) scale(1.18);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-54%) scale(0.98);
+        opacity: 0.75;
+    }
 }
 
 h1, h2, h3, h4 {
@@ -174,8 +243,8 @@ ul {
    ========================================================= */
 .glass-card {
     background: var(--bg-card);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 2rem;
@@ -291,15 +360,21 @@ ul {
 
 .hero-glow {
     position: absolute;
-    top: 15%;
+    top: 8%;
     left: 50%;
     transform: translateX(-50%);
-    width: 520px;
-    height: 280px;
-    background: radial-gradient(circle, rgba(212, 255, 0, 0.14) 0%, transparent 70%);
-    filter: blur(70px);
+    width: 620px;
+    height: 340px;
+    background: radial-gradient(
+        circle,
+        rgba(212, 255, 0, 0.22) 0%,
+        rgba(255, 107, 0, 0.12) 45%,
+        transparent 72%
+    );
+    filter: blur(75px);
     pointer-events: none;
     z-index: -1;
+    animation: heroGlowPulse 10s ease-in-out infinite alternate;
 }
 
 .hero-badge {
