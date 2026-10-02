@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const LEADS_STORAGE_KEY = 'wtb_hq_leads_v1';
     const WORKSPACE_STORAGE_KEY = 'wtb_hq_workspace_v1';
 
+    let auth = null;
+    let db = null;
+    let fbFns = {};
+    let firebaseReady = false;
+
     const defaultWorkspace = {
         tasks: [
             {
@@ -73,6 +78,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
     }
 
+    // Sprawdza, czy założyciel jest już zalogowany
+    function isAdminCurrentlyLoggedIn() {
+        const savedEmail = localStorage.getItem('wtb_admin_email');
+        if (savedEmail && isOwnerEmail(savedEmail)) return true;
+        if (firebaseReady && auth && auth.currentUser && isOwnerEmail(auth.currentUser.email)) return true;
+        return false;
+    }
+
+    // Przenosi bezpośrednio do admin.html (jeśli zalogowany) lub do logowanie.html
+    function navigateToAdminOrLogin() {
+        if (isAdminCurrentlyLoggedIn()) {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'logowanie.html';
+        }
+    }
+
     function getLocalWorkspace() {
         const raw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
         if (!raw) return JSON.parse(JSON.stringify(defaultWorkspace));
@@ -98,25 +120,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 1. UKRYTE WEJŚCIA DO PANELU LOGOWANIA (BOSS KEY + 3x KLIK)
+    // 1. KŁÓDKA W STOPCE (1 KLIK = GÓRA, PRZYTRZYMANIE = HQ) + SKRÓT
     // =========================================================
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') || (e.altKey && e.key.toLowerCase() === 'l')) {
             e.preventDefault();
-            window.location.href = 'logowanie.html';
+            navigateToAdminOrLogin();
         }
     });
 
-    let secretClickCount = 0;
-    let secretClickTimer = null;
-    document.querySelectorAll('.logo .dot, .footer-bottom span').forEach(el => {
-        el.addEventListener('click', (e) => {
-            secretClickCount++;
-            clearTimeout(secretClickTimer);
-            secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 900);
-            if (secretClickCount >= 3) {
-                e.preventDefault();
-                window.location.href = 'logowanie.html';
+    const HOLD_DURATION_MS = 1200; // 1.2 sekundy przytrzymania kłódki
+
+    document.querySelectorAll('.discreet-admin-lock').forEach(lockBtn => {
+        let holdTimer = null;
+        let holdTriggered = false;
+
+        const startHold = (e) => {
+            if (e.type === 'mousedown' && e.button !== 0) return;
+            holdTriggered = false;
+            lockBtn.classList.add('holding');
+
+            clearTimeout(holdTimer);
+            holdTimer = setTimeout(() => {
+                holdTriggered = true;
+                lockBtn.classList.remove('holding');
+                navigateToAdminOrLogin();
+            }, HOLD_DURATION_MS);
+        };
+
+        const cancelHold = () => {
+            clearTimeout(holdTimer);
+            lockBtn.classList.remove('holding');
+        };
+
+        lockBtn.addEventListener('mousedown', startHold);
+        lockBtn.addEventListener('touchstart', startHold, { passive: true });
+
+        lockBtn.addEventListener('mouseup', cancelHold);
+        lockBtn.addEventListener('mouseleave', cancelHold);
+        lockBtn.addEventListener('touchend', cancelHold);
+        lockBtn.addEventListener('touchcancel', cancelHold);
+
+        // Pojedyncze kliknięcie (bez przytrzymania przez 1.2s) przewija na samą górę strony
+        lockBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!holdTriggered) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
     });
@@ -293,12 +342,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 4. POŁĄCZENIE Z FIREBASE (LOGOWANIE, KONTAKT & PANEL HQ)
+    // 4. DANE WORKSPACE & SYNCHRONIZACJA Z CHMURĄ
     // =========================================================
-    let auth = null;
-    let db = null;
-    let fbFns = {};
-    let firebaseReady = false;
     let workspaceCache = getLocalWorkspace();
     let leadsCache = getLocalLeads();
 
@@ -380,7 +425,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }).catch(() => {});
             }
 
-            formFeedback.innerText = `Dzięki, ${name}! Zapytanie zostało wysłane. Odezwiemy się maksymalnie w 24h ⚡`;
+            formFeedback.innerText = `Dziękujemy, ${name}! Zapytanie zostało wysłane. Odpowiemy maksymalnie w ciągu 24h ⚡`;
             contactForm.reset();
         });
     }
@@ -390,6 +435,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =========================================================
     const loginForm = document.getElementById('loginForm');
     const forgotPassBtn = document.getElementById('forgotPassBtn');
+
+    // Jeśli założyciel jest już zalogowany i wejdzie na logowanie.html -> od razu przenieś do admin.html
+    if (loginForm && isAdminCurrentlyLoggedIn()) {
+        window.location.href = 'admin.html';
+    }
 
     if (forgotPassBtn) {
         forgotPassBtn.addEventListener('click', async () => {
@@ -450,6 +500,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminLogoutBtn = document.getElementById('adminLogoutBtn');
     if (adminLogoutBtn) {
         adminLogoutBtn.addEventListener('click', async () => {
+            localStorage.removeItem('wtb_admin_email');
             if (firebaseReady && auth) {
                 try { await fbFns.signOut(auth); } catch (e) {}
             }
@@ -799,7 +850,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (hqQuoteReadyText) {
             hqQuoteReadyText.value =
-`Cześć! Przygotowaliśmy indywidualną wycenę współpracy dla ${clientLabel} w Wake The Brand ⚡
+`Dzień dobry! Przygotowaliśmy indywidualną wycenę współpracy dla ${clientLabel} w Wake The Brand ⚡
 
 Wybrany zakres usług:
 ${servicesLines}
@@ -807,7 +858,7 @@ ${servicesLines}
 💰 Koszt realizacji: ${finalTotal.toLocaleString('pl-PL')} zł${discountPct > 0 ? ` (po uwzględnieniu ${discountPct}% rabatu)` : ''}
 📈 Rekomendowany budżet mediowy na kampanie Ads: ok. ${suggestedAds.toLocaleString('pl-PL')} zł / mies.
 
-Daj znać, czy taki zakres jest dla Ciebie odpowiedni – możemy startować!
+W razie pytań pozostajemy do dyspozycji – możemy rozpoczynać wdrożenie!
 Zespół Wake The Brand`;
         }
 
@@ -1220,7 +1271,7 @@ Zespół Wake The Brand`;
                 </div>
 
                 <div class="print-signatures-row">
-                    <div class="print-sign-box">Zatwierdził (Mateusz Bugajski / Bartek Koczara)</div>
+                    <div class="print-sign-box">Zatwierdził (Mateusz Bugajski / Bartosz Koczara)</div>
                     <div class="print-sign-box">Potwierdzenie odbioru</div>
                 </div>
 
@@ -1351,7 +1402,7 @@ Zespół Wake The Brand`;
             workspaceCache.chatMessages.push({
                 id: 'msg_' + Date.now(),
                 senderKey,
-                author: senderKey === 'Bartek' ? '🔵 Bartek Koczara' : '🟢 Mateusz Bugajski',
+                author: senderKey === 'Bartek' ? '🔵 Bartosz Koczara' : '🟢 Mateusz Bugajski',
                 text,
                 time: getCurrentTimeStr()
             });
@@ -1394,6 +1445,9 @@ Zespół Wake The Brand`;
             if (adminEmailLabelEl) adminEmailLabelEl.innerText = email;
             if (hqChatSenderSelect && email.includes('bkoczara')) {
                 hqChatSenderSelect.value = 'Bartek';
+            }
+            if (loginForm) {
+                window.location.href = 'admin.html';
             }
         }
 
