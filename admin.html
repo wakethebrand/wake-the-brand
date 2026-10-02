@@ -13,23 +13,23 @@
     <style>
         .accounts-toolbar {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
         .accounts-search-box {
             flex: 1;
-            min-width: 260px;
+            min-width: 240px;
             position: relative;
         }
         .accounts-search-box input {
             width: 100%;
-            padding: 0.9rem 1.2rem 0.9rem 2.6rem;
+            padding: 0.85rem 1.2rem 0.85rem 2.6rem;
             background: rgba(0, 0, 0, 0.45);
             border: 1px solid var(--border-color);
             border-radius: 14px;
             color: var(--text-main);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
         .accounts-search-box input:focus {
             outline: none;
@@ -48,11 +48,11 @@
             justify-content: space-between;
             align-items: center;
             gap: 1.2rem;
-            padding: 1.3rem 1.5rem;
+            padding: 1.25rem 1.4rem;
             background: rgba(0, 0, 0, 0.38);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            margin-bottom: 0.9rem;
+            margin-bottom: 0.85rem;
             transition: var(--transition);
             flex-wrap: wrap;
         }
@@ -67,20 +67,20 @@
         .account-main-info {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.35rem;
             min-width: 240px;
             flex: 1;
         }
         .account-title-line {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.55rem;
             flex-wrap: wrap;
         }
         .role-pill {
-            padding: 0.2rem 0.7rem;
+            padding: 0.2rem 0.65rem;
             border-radius: 20px;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -100,23 +100,28 @@
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.5);
         }
+        .role-pill.guardian-pill {
+            background: rgba(56, 189, 248, 0.15);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
         .account-meta-line {
-            font-size: 0.83rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             display: flex;
-            gap: 1rem;
+            gap: 0.95rem;
             flex-wrap: wrap;
         }
         .account-actions {
             display: flex;
             align-items: center;
-            gap: 0.55rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
         .btn-mini {
-            padding: 0.45rem 0.85rem;
+            padding: 0.45rem 0.8rem;
             border-radius: 10px;
-            font-size: 0.78rem;
+            font-size: 0.77rem;
             font-weight: 600;
             cursor: pointer;
             border: 1px solid var(--border-color);
@@ -147,7 +152,7 @@
             flex-wrap: wrap;
             gap: 1rem;
             padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.8rem;
             background: rgba(212, 255, 0, 0.07);
             border: 1px solid rgba(212, 255, 0, 0.35);
             border-radius: 16px;
@@ -155,7 +160,62 @@
         .sidebar-divider {
             height: 1px;
             background: var(--border-color);
-            margin: 1rem 0;
+            margin: 0.9rem 0;
+        }
+        .global-announcement-editor {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 1.1rem 1.4rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 107, 0, 0.4);
+            background: rgba(255, 107, 0, 0.06);
+            border-radius: 16px;
+        }
+        .global-announcement-editor input[type="text"] {
+            flex: 1;
+            min-width: 240px;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+        .private-notes-card {
+            border: 1px solid rgba(255, 107, 0, 0.45);
+            background: linear-gradient(145deg, rgba(255, 107, 0, 0.07), rgba(0, 0, 0, 0.4));
+        }
+        .color-swatch-row {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .color-swatch-preview {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.25);
+            flex-shrink: 0;
+        }
+        .brief-answer-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+        .brief-answer-box small {
+            color: var(--accent-lime);
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .template-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
         }
     </style>
 </head>
@@ -165,11 +225,11 @@
     <header class="dash-topbar">
         <div class="dash-topbar-left">
             <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
-            <span class="dash-badge admin-badge">⚙️ Centrum Dowodzenia Admina</span>
+            <span class="dash-badge admin-badge">⚙️ Centrum Dowodzenia HQ</span>
         </div>
         <div class="dash-topbar-right">
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-                <span style="font-size: 0.8rem; color: var(--text-muted);">Zalogowany Admin:</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Zalogowany Właściciel:</span>
                 <strong id="loggedInAdminEmail" style="font-size: 0.85rem; color: var(--accent-lime);">Weryfikacja...</strong>
             </div>
             <a href="panel-klienta.html" class="btn btn-outline btn-sm">👁️ Podgląd Klienta</a>
@@ -183,20 +243,20 @@
         <!-- BOCZNY PASEK NAWIGACJI -->
         <aside class="dash-sidebar">
             <div>
-                <div class="sidebar-section-label">1. Baza Główna</div>
+                <div class="sidebar-section-label">1. Baza Główna & CRM</div>
                 <nav class="dash-nav">
                     <button type="button" class="dash-nav-btn active" data-tab="admin-tab-accounts">
-                        <span>👥</span> Wszystkie Konta
+                        <span>👥</span> Wszystkie Konta & Przychód
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-leads">
-                        <span>📬</span> Zapytania z Kontaktu
+                        <span>📬</span> Zapytania CRM (<span id="sidebarLeadsCount">0</span>)
                     </button>
                 </nav>
 
                 <div class="sidebar-divider"></div>
 
-                <div class="sidebar-section-label">2. Edycja Wybranego Konta</div>
-                <div style="padding: 0 0.6rem 0.8rem;">
+                <div class="sidebar-section-label">2. Zarządzanie Klientem</div>
+                <div style="padding: 0 0.6rem 0.7rem;">
                     <select id="adminClientSelector" class="admin-select" style="padding: 0.55rem 0.8rem; font-size: 0.82rem;">
                         <option value="demo_client">Wczytywanie kont...</option>
                     </select>
@@ -204,19 +264,22 @@
 
                 <nav class="dash-nav">
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-status">
-                        <span>🎛️</span> Status & Postęp Klienta
+                        <span>🎛️</span> Status, Opiekun & Notatki
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-tasks">
-                        <span>✅</span> Zarządzaj Zadaniami
+                        <span>✅</span> Zadania & Szablony
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-files">
                         <span>📁</span> Pliki do Akceptacji
                     </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-brand">
+                        <span>🎨</span> Marka, Brief & Materiały
+                    </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-finances">
-                        <span>🧾</span> Wystaw Rozliczenie
+                        <span>🧾</span> Rozliczenia & Płatności
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-chat">
-                        <span>💬</span> Odpisz na Czacie 1:1
+                        <span>💬</span> Czat 1:1 z Klientem
                     </button>
                 </nav>
             </div>
@@ -235,53 +298,78 @@
             <!-- PASEK INFORMUJĄCY, KTÓRYM KLIENTEM AKTUALNIE ZARZĄDZASZ -->
             <div class="active-client-banner hidden" id="activeClientBanner">
                 <div>
-                    <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Aktualnie edytujesz konto:</span>
+                    <span style="font-size: 0.76rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Aktualnie zarządzasz klientem:</span>
                     <h3 id="bannerClientName" style="color: var(--accent-lime); margin-top: 0.15rem;">Marka Klienta</h3>
                 </div>
-                <button type="button" class="btn btn-outline btn-sm" id="backToAccountsBtn">← Wróć do listy wszystkich kont</button>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-primary btn-sm" id="sendEmailNotifyQuickBtn">
+                        📧 Wyślij powiadomienie na maila klienta
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" id="backToAccountsBtn">← Lista wszystkich kont</button>
+                </div>
             </div>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 0: WSZYSTKIE KONTA W BAZIE
+                 ZAKŁADKA ADMINA 0: WSZYSTKIE KONTA, PRZYCHÓD AGENCJI & OGŁOSZENIE GLOBALNE
                  ========================================== -->
             <section class="dash-tab-content active" id="admin-tab-accounts">
                 <div class="dash-section-title">
-                    <span class="section-tag">Zarządzanie Użytkownikami & Uprawnieniami</span>
-                    <h2>Wszystkie konta zarejestrowane w systemie</h2>
-                    <p>Wyszukaj konto klienta, przejdź jednym kliknięciem do zarządzania jego projektem lub zmień uprawnienia Administratora (chronione Twoim hasłem).</p>
+                    <span class="section-tag">Centrum Dowodzenia Właścicieli (Mateusz & Bartek)</span>
+                    <h2>Finanse Agencji, Ogłoszenia i Baza Kont</h2>
+                    <p>Podsumowanie przychodów ze wszystkich aktywnych klientów, pasek ogłoszeń globalnych oraz wyszukiwarka kont.</p>
                 </div>
 
+                <!-- FUNKCJA #7: KALKULATOR PRZYCHODU AGENCJI NA GÓRZE HQ -->
                 <div class="dash-kpi-grid">
                     <div class="dash-kpi-card glass-card">
-                        <span class="kpi-label">Wszystkie konta w bazie</span>
-                        <div class="kpi-val" id="statTotalAccounts">1</div>
-                        <span class="kpi-sub">Zarejestrowane profile</span>
+                        <span class="kpi-label">Przychód Opłacony (Bieżący)</span>
+                        <div class="kpi-val" id="statPaidRevenue" style="color: var(--accent-lime);">0 zł</div>
+                        <span class="kpi-sub" id="statSplitPerOwner">Podział 50/50: po 0 zł / właściciel</span>
                     </div>
                     <div class="dash-kpi-card glass-card">
-                        <span class="kpi-label">Konta Klientów</span>
-                        <div class="kpi-val" id="statClientAccounts">1</div>
-                        <span class="kpi-sub">Aktywne projekty</span>
+                        <span class="kpi-label">Oczekujące Wpłaty (Do zapłaty)</span>
+                        <div class="kpi-val" id="statPendingRevenue" style="color: #ffb074;">0 zł</div>
+                        <span class="kpi-sub">Wystawione rachunki / w toku</span>
                     </div>
                     <div class="dash-kpi-card glass-card">
-                        <span class="kpi-label">Administratorzy (HQ)</span>
-                        <div class="kpi-val" id="statAdminAccounts" style="color: var(--accent-lime);">1</div>
-                        <span class="kpi-sub">Pełny dostęp do systemu</span>
+                        <span class="kpi-label">Konta w Bazie (Klienci / Admini)</span>
+                        <div class="kpi-val"><span id="statClientAccounts">0</span> / <span id="statAdminAccounts" style="color: var(--accent-lime);">0</span></div>
+                        <span class="kpi-sub">Wszystkich profili: <strong id="statTotalAccounts">0</strong></span>
                     </div>
                     <div class="dash-kpi-card glass-card">
-                        <span class="kpi-label">Zapytania z Formularza</span>
+                        <span class="kpi-label">Zapytania CRM (Nowe Leady)</span>
                         <div class="kpi-val" id="statTotalLeads">0</div>
-                        <span class="kpi-sub">W zakładce Kontakt</span>
+                        <span class="kpi-sub">Z formularza kontaktowego</span>
                     </div>
                 </div>
 
+                <!-- FUNKCJA #9: GLOBALNE OGŁOSZENIE (PASEK INFORMACYJNY U WSZYSTKICH KLIENTÓW) -->
+                <form class="global-announcement-editor" id="globalAnnouncementForm">
+                    <span style="font-weight: 700; color: #ffb074;">📢 Pasek Ogłoszeń (u wszystkich klientów):</span>
+                    <input type="text" id="globalAnnouncementInput" placeholder="Wpisz komunikat dla klientów (np. W piątek pracujemy do 15:00 / Ruszyły pakiety świąteczne Ads)...">
+                    <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+                        <input type="checkbox" id="globalAnnouncementActive" checked>
+                        <span>Pokazuj pasek</span>
+                    </label>
+                    <button type="submit" class="btn-mini btn-manage">Zapisz ogłoszenie ⚡</button>
+                    <small id="globalAnnouncementFeedback" style="color: var(--accent-lime);"></small>
+                </form>
+
+                <!-- WYSZUKIWARKA KONT + FILTR RÓL + FILTR OPIEKUNA -->
                 <div class="glass-card">
                     <div class="accounts-toolbar">
                         <div class="accounts-search-box">
                             <span class="accounts-search-icon">🔍</span>
                             <input type="text" id="adminAccountSearch" placeholder="Szukaj konta po nazwie marki, imieniu, e-mailu lub pakiecie...">
                         </div>
-                        <select id="adminRoleFilter" class="admin-select" style="width: auto; min-width: 210px;">
-                            <option value="all">Wszystkie konta (Role)</option>
+                        <select id="adminGuardianFilter" class="admin-select" style="width: auto; min-width: 185px;">
+                            <option value="all">🤝 Wszyscy Opiekunowie</option>
+                            <option value="Mateusz">🟢 Opiekun: Mateusz</option>
+                            <option value="Bartek">🔵 Opiekun: Bartek</option>
+                            <option value="Wspólny">⚡ Opiekun: Wspólny</option>
+                        </select>
+                        <select id="adminRoleFilter" class="admin-select" style="width: auto; min-width: 185px;">
+                            <option value="all">Wszystkie Role</option>
                             <option value="client">👤 Tylko Klienci</option>
                             <option value="admin">👑 Tylko Administratorzy</option>
                             <option value="blocked">⛔ Zablokowane konta</option>
@@ -294,19 +382,32 @@
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 1: STATUS, PAKIET I POSTĘP
+                 ZAKŁADKA ADMINA 1: STATUS, OPIEKUN & PRYWATNE NOTATKI WEWNĘTRZNE
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-status">
                 <div class="dash-section-title">
                     <span class="section-tag">Centrum Sterowania Projektu</span>
-                    <h2>Edytuj główne wskaźniki wybranego klienta</h2>
+                    <h2>Status Klienta, Opiekun Projektu & Notatki Wewnętrzne</h2>
                 </div>
 
                 <div class="dash-two-cols">
+                    <!-- Lewa kolumna: Status, Pakiet, Opiekun (#3) -->
                     <form class="glass-card" id="adminStatusForm">
+                        <h3 style="margin-bottom: 1.1rem;">🎛️ Główne parametry konta</h3>
+
                         <div class="form-group">
                             <label for="adminClientName">Nazwa marki / klienta</label>
                             <input type="text" id="adminClientName" required>
+                        </div>
+
+                        <!-- FUNKCJA #3: PRZYPISANIE OPIEKUNA PROJEKTU -->
+                        <div class="form-group">
+                            <label for="adminProjectGuardian">🤝 Opiekun prowadzący ten projekt (Mateusz / Bartek)</label>
+                            <select id="adminProjectGuardian" class="admin-select">
+                                <option value="Wspólny">⚡ Wspólny projekt (Mateusz & Bartek)</option>
+                                <option value="Mateusz">🟢 Mateusz Bugajski (mbugajski)</option>
+                                <option value="Bartek">🔵 Bartek Koczara (bkoczara)</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -320,7 +421,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="adminCurrentCost">Koszt obsługi w bieżącym okresie</label>
+                            <label for="adminCurrentCost">Koszt obsługi w bieżącym okresie (np. 2 100 zł)</label>
                             <input type="text" id="adminCurrentCost" required>
                         </div>
 
@@ -329,7 +430,7 @@
                             <select id="adminPaymentStatus" class="admin-select">
                                 <option value="⏳ Oczekuje na płatność">⏳ Oczekuje na płatność</option>
                                 <option value="🧾 Wysłano rachunek / Useme">🧾 Wysłano rachunek / Useme</option>
-                                <option value="● Opłacone">● Opłacone (Zielony)</option>
+                                <option value="● Opłacone">● Opłacone (Zliczane do przychodu HQ)</option>
                             </select>
                         </div>
 
@@ -338,37 +439,72 @@
                             <input type="text" id="adminAdBudget" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-full">Zapisz zmiany na koncie klienta ⚡</button>
+                        <button type="submit" class="btn btn-primary btn-full">Zapisz parametry klienta ⚡</button>
                         <div class="form-feedback" id="adminStatusFeedback"></div>
                     </form>
 
-                    <div class="glass-card">
-                        <h3>⚡ Szybkie akcje na tym koncie</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.8rem 0 1.4rem;">
-                            Przejdź bezpośrednio do wybranego modułu tego klienta:
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 0.7rem;">
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-tasks">✅ Zarządzaj zadaniami klienta →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-files">📁 Dodaj pliki do akceptacji →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-finances">🧾 Wystaw rozliczenie klientowi →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-chat">💬 Otwórz czat z tym klientem →</button>
+                    <!-- Prawa kolumna: Prywatne Notatki Wewnętrzne (#2) + Powiadomienie Mailowe (#1) -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        
+                        <!-- FUNKCJA #2: PRYWATNE NOTATKI WEWNĘTRZNE (NIEWIDOCZNE DLA KLIENTA) -->
+                        <form class="glass-card private-notes-card" id="adminInternalNotesForm">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                                <h3>🔒 Prywatne Notatki Wewnętrzne</h3>
+                                <span class="role-pill admin-role">Tylko dla Adminów</span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.84rem; margin-bottom: 1rem;">
+                                Klient NIGDY nie widzi tej sekcji. Zapisujcie tu ustalenia między sobą, linki do roboczej Figmy/Canvy, hasła lub preferencje klienta.
+                            </p>
+                            <div class="form-group">
+                                <textarea id="adminInternalNotesInput" rows="6" placeholder="Np. Klient dzwonił 02.10 – prosił o utrzymanie ciemnej stylistyki retro. Link do roboczego folderu: https://..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline btn-sm btn-full">💾 Zapisz tajną notatkę dla zespołu</button>
+                            <div class="form-feedback" id="adminNotesFeedback"></div>
+                        </form>
+
+                        <!-- FUNKCJA #1: WYSYŁKA POWIADOMIENIA NA MAILA KLIENTA -->
+                        <div class="glass-card">
+                            <h3 style="margin-bottom: 0.5rem;">📧 Powiadom klienta na jego E-mail</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                                Wyślij klientowi wiadomość e-mail z informacją, że w jego Panelu Klienta pojawiły się nowe materiały, zadania lub rozliczenie.
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                                <button type="button" class="btn btn-primary btn-sm btn-full" id="notifyClientStatusBtn">
+                                    📧 Wyślij maila: „Zaktualizowaliśmy status Twojego projektu”
+                                </button>
+                                <button type="button" class="btn btn-outline btn-sm btn-full" data-go-tab="admin-tab-brand">
+                                    🎨 Otwórz Brief, Brandboard i materiały od tego klienta →
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 2: ZARZĄDZANIE ZADANIAMI
+                 ZAKŁADKA ADMINA 2: ZADANIA, OPIEKUN ZADANIA & SZABLONY 1-CLICK
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-tasks">
                 <div class="dash-section-title">
-                    <span class="section-tag">Lista Zadań („Co już zrobiliśmy”)</span>
-                    <h2>Dodawaj i aktualizuj zadania dla wybranego klienta</h2>
+                    <span class="section-tag">Harmonogram Prac & Automatyzacja</span>
+                    <h2>Zarządzaj zadaniami klienta i przypisuj wykonawcę</h2>
+                </div>
+
+                <!-- Szybkie szablony zadań 1-Click -->
+                <div class="glass-card" style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 0.6rem; color: var(--accent-lime);">⚡ Szybkie wczytanie szablonu zadań (1-Click Onboarding):</h4>
+                    <div class="template-chips">
+                        <button type="button" class="btn-mini" data-load-template="www">🌐 + Pakiet Strona WWW (4 zadania)</button>
+                        <button type="button" class="btn-mini" data-load-template="social">📱 + Social Media & Reels (4 zadania)</button>
+                        <button type="button" class="btn-mini" data-load-template="branding">🎨 + Branding & Logo (3 zadania)</button>
+                        <button type="button" class="btn-mini" data-load-template="ads">🚀 + Kampania Meta/Google Ads (3 zadania)</button>
+                    </div>
                 </div>
 
                 <div class="dash-two-cols">
                     <form class="glass-card" id="adminAddTaskForm">
-                        <h3 style="margin-bottom: 1.2rem;">➕ Dodaj nowe zadanie</h3>
+                        <h3 style="margin-bottom: 1.2rem;">➕ Dodaj pojedyncze zadanie</h3>
                         <div class="form-group">
                             <label for="newTaskTitle">Nazwa zadania / wykonanej pracy</label>
                             <input type="text" id="newTaskTitle" required placeholder="np. Montaż 2 Rolek promocyjnych (Reels)">
@@ -377,6 +513,15 @@
                         <div class="form-group">
                             <label for="newTaskCategory">Kategoria / Obszar</label>
                             <input type="text" id="newTaskCategory" required placeholder="np. Social Media / Strona WWW / Branding">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newTaskAssignee">Wykonawca zadania (Mateusz / Bartek)</label>
+                            <select id="newTaskAssignee" class="admin-select">
+                                <option value="Wspólnie">⚡ Wspólnie</option>
+                                <option value="Mateusz">🟢 Mateusz</option>
+                                <option value="Bartek">🔵 Bartek</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -392,20 +537,20 @@
                     </form>
 
                     <div class="glass-card">
-                        <h3 style="margin-bottom: 1.2rem;">📋 Aktualna lista zadań klienta (kliknij status, aby zmienić)</h3>
+                        <h3 style="margin-bottom: 1.2rem;">📋 Lista zadań klienta (kliknij status, aby przełączyć)</h3>
                         <ul class="dash-task-list" id="adminTaskList"></ul>
                     </div>
                 </div>
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 3: PLIKI DO AKCEPTACJI
+                 ZAKŁADKA ADMINA 3: PLIKI DO AKCEPTACJI + POWIADOMIENIE NA MAILA
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-files">
                 <div class="dash-section-title">
                     <span class="section-tag">Kontenery Materiałów dla Klienta</span>
                     <h2>Wgraj paczkę plików do akceptacji</h2>
-                    <p>Utwórz kontener z tytułem, szczegółowym opisem oraz plikami do pobrania. Klient będzie mógł otworzyć ten kontener u siebie w panelu, pobrać pliki i kliknąć „Akceptuję”.</p>
+                    <p>Utwórz kontener z tytułem, opisem i plikami do pobrania oraz wyślij klientowi powiadomienie na maila.</p>
                 </div>
 
                 <div class="dash-two-cols">
@@ -424,17 +569,16 @@
 
                         <div class="form-group">
                             <label for="pkgDescription">Szczegółowy opis (widoczny po otwarciu kontenera)</label>
-                            <textarea id="pkgDescription" rows="4" required placeholder="Opisz klientowi, co znajduje się w paczce, na co zwrócić uwagę i jakie formaty plików załączono..."></textarea>
+                            <textarea id="pkgDescription" rows="3" required placeholder="Opisz klientowi, co znajduje się w paczce i na co zwrócić uwagę..."></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="pkgLinksText">Pliki do pobrania (1 linijka = Nazwa pliku | Link URL do pobrania)</label>
-                            <textarea id="pkgLinksText" rows="3" placeholder="Księga_Znaku_PDF.pdf | https://twojlink.pl/plik.pdf&#10;Rolka_Promo_v1.mp4 | https://drive.google.com/..."></textarea>
-                            <small style="color: var(--text-muted); display: block; margin-top: 0.3rem;">Możesz wpisać: <strong>Nazwa pliku | Link do Google Drive / Dropbox / serwera</strong></small>
+                            <label for="pkgLinksText">Pliki do pobrania (1 linijka = Nazwa pliku | Link URL)</label>
+                            <textarea id="pkgLinksText" rows="3" placeholder="Księga_Znaku_PDF.pdf | https://twojlink.pl/plik.pdf"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="pkgLocalFile">Lub załącz bezpośrednio plik z komputera (do 700 KB – np. grafika PNG/JPG/PDF)</label>
+                            <label for="pkgLocalFile">Lub załącz bezpośrednio plik z dysku (do 700 KB)</label>
                             <input type="file" id="pkgLocalFile" style="padding: 0.6rem; background: rgba(0,0,0,0.4);">
                         </div>
 
@@ -442,19 +586,103 @@
                     </form>
 
                     <div class="glass-card">
-                        <h3 style="margin-bottom: 1.2rem;">📦 Udostępnione kontenery plików tego klienta</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <h3>📦 Udostępnione kontenery</h3>
+                            <button type="button" class="btn-mini btn-manage" id="notifyClientFilesBtn">
+                                📧 Wyślij maila: „Nowe pliki czekają na akceptację”
+                            </button>
+                        </div>
                         <ul class="dash-task-list" id="adminFilePackagesList"></ul>
                     </div>
                 </div>
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 4: ROZLICZENIA I KOSZTY
+                 NOWA ZAKŁADKA ADMINA 4: KARTA MARKI (#4), BRIEF STARTOWY (#5) & MATERIAŁY OD KLIENTA (#6)
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-brand">
+                <div class="dash-section-title">
+                    <span class="section-tag">Identyfikacja Wizualna, Brief & Pliki Klienta</span>
+                    <h2>Karta Marki (Brandboard), Ankieta Startowa i Materiały od Klienta</h2>
+                </div>
+
+                <div class="dash-two-cols">
+                    <!-- FUNKCJA #4: EDYTOR KARTY MARKI KLIENTA (MINI BRANDBOARD) -->
+                    <form class="glass-card" id="adminBrandboardForm">
+                        <h3 style="margin-bottom: 0.5rem;">🎨 Karta Marki Klienta (Mini Brandboard)</h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.2rem;">
+                            Wpisz kolory HEX, czcionki i linki wypracowane dla klienta – pojawią się one w jego Panelu Klienta jako interaktywna ściągawka.
+                        </p>
+
+                        <div class="form-group">
+                            <label>Kolor Główny (Primary HEX) & Kolor Akcentowy (Accent HEX)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                                <div class="color-swatch-row">
+                                    <span class="color-swatch-preview" id="previewPrimarySwatch" style="background: #d4ff00;"></span>
+                                    <input type="text" id="brandPrimaryColor" value="#D4FF00" placeholder="#D4FF00">
+                                </div>
+                                <div class="color-swatch-row">
+                                    <span class="color-swatch-preview" id="previewAccentSwatch" style="background: #ff6b00;"></span>
+                                    <input type="text" id="brandAccentColor" value="#FF6B00" placeholder="#FF6B00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="brandFonts">Główne Czcionki Marki (Nagłówki / Tekst)</label>
+                            <input type="text" id="brandFonts" placeholder="np. Space Grotesk Bold + Inter Regular">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="brandWebsite">Adres strony WWW klienta / Domena</label>
+                            <input type="text" id="brandWebsite" placeholder="np. https://twojamarka.pl">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="brandSocialLinks">Profile Social Media (Instagram / TikTok / FB)</label>
+                            <input type="text" id="brandSocialLinks" placeholder="np. @twojamarka_official">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="brandTone">Styl komunikacji / Hasło przewodnie marki</label>
+                            <input type="text" id="brandTone" placeholder="np. Nowoczesny, bezpośredni, estetyka retro">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Zapisz Brandboard w Panelu Klienta ⚡</button>
+                        <div class="form-feedback" id="adminBrandFeedback"></div>
+                    </form>
+
+                    <!-- PRAWA KOLUMNA: FUNKCJA #5 (ANKIETA BRIEF) + FUNKCJA #6 (MATERIAŁY OD KLIENTA) -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        
+                        <!-- FUNKCJA #5: ODPOWIEDZI KLIENTA Z ANKIETY STARTOWEJ (BRIEFU) -->
+                        <div class="glass-card">
+                            <h3 style="margin-bottom: 0.8rem;">📋 Wypełniona Ankieta Startowa (Brief od Klienta)</h3>
+                            <div id="adminClientBriefView">
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Klient nie wypełnił jeszcze Ankiety Startowej w swoim panelu.</p>
+                            </div>
+                        </div>
+
+                        <!-- FUNKCJA #6: REPOZYTORIUM MATERIAŁÓW PRZESŁANYCH OD KLIENTA -->
+                        <div class="glass-card">
+                            <h3 style="margin-bottom: 0.8rem;">📤 Surowe materiały przesłane OD Klienta</h3>
+                            <p style="color: var(--text-muted); font-size: 0.84rem; margin-bottom: 1rem;">
+                                Linki do zdjęć, wideo i dokumentów wgrane przez klienta w jego panelu:
+                            </p>
+                            <ul class="dash-task-list" id="adminClientUploadsList"></ul>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 5: ROZLICZENIA I LINKI DO PŁATNOŚCI
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-finances">
                 <div class="dash-section-title">
                     <span class="section-tag">Finanse Klienta</span>
-                    <h2>Dodaj pozycję kosztową lub rozliczenie</h2>
+                    <h2>Wystaw rozliczenie z linkiem do opłacenia</h2>
                 </div>
 
                 <div class="dash-two-cols">
@@ -485,6 +713,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="finPaymentLink">Link do opłacenia / pobrania faktury (opcjonalnie)</label>
+                            <input type="url" id="finPaymentLink" placeholder="https://useme.com/... lub link do PDF">
+                        </div>
+
+                        <div class="form-group">
                             <label for="finStatus">Status płatności</label>
                             <select id="finStatus" class="admin-select">
                                 <option value="Do zapłaty ⏳">Do zapłaty ⏳</option>
@@ -496,14 +729,19 @@
                     </form>
 
                     <div class="glass-card">
-                        <h3 style="margin-bottom: 1.2rem;">📊 Obecne pozycje w tabeli klienta</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <h3>📊 Pozycje w tabeli klienta</h3>
+                            <button type="button" class="btn-mini btn-manage" id="notifyClientFinanceBtn">
+                                📧 Wyślij maila: „Wystawiliśmy nowe rozliczenie”
+                            </button>
+                        </div>
                         <ul class="dash-task-list" id="adminFinanceList"></ul>
                     </div>
                 </div>
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 5: CZAT Z KLIENTEM
+                 ZAKŁADKA ADMINA 6: CZAT Z KLIENTEM + SZYBKIE ODPOWIEDZI
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-chat">
                 <div class="dash-section-title">
@@ -514,6 +752,12 @@
                 <div class="chat-container glass-card">
                     <div class="chat-messages" id="adminChatBox"></div>
 
+                    <div class="template-chips" style="margin: 0.8rem 0 0.4rem;">
+                        <button type="button" class="btn-mini quick-chat-reply">👍 Dzięki, przyjęte do realizacji!</button>
+                        <button type="button" class="btn-mini quick-chat-reply">📁 Wrzuciliśmy nowe pliki do zakładki „Pliki do akceptacji”!</button>
+                        <button type="button" class="btn-mini quick-chat-reply">🧾 Wystawiliśmy podsumowanie w zakładce „Koszty & Faktury”.</button>
+                    </div>
+
                     <form class="chat-input-row" id="adminChatForm">
                         <input type="text" id="adminChatInput" required placeholder="Wpisz odpowiedź dla klienta jako Wake The Brand...">
                         <button type="submit" class="btn btn-primary">Wyślij jako Admin ⚡</button>
@@ -522,12 +766,13 @@
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 6: ZAPYTANIA Z FORMULARZA KONTAKTOWEGO
+                 ZAKŁADKA ADMINA 7: ZAPYTANIA Z KONTAKTU (MINI-CRM ZE STATUSAMI #8)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-leads">
                 <div class="dash-section-title">
-                    <span class="section-tag">Skrzynka Odbiorcza Formularza</span>
-                    <h2>Wiadomości wysłane przez podstronę Kontakt</h2>
+                    <span class="section-tag">Mini-CRM & Skrzynka Formularza</span>
+                    <h2>Zapytania ze strony Kontakt ze statusami realizacji</h2>
+                    <p>Zmieniaj statusy zapytań (🔥 Nowe → 📞 W kontakcie → ✅ Klient), abyście obaj wiedzieli, kto już dostał odpowiedź.</p>
                 </div>
 
                 <div class="glass-card">
