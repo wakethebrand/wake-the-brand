@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 createdAt: 'Start'
             }
         ],
-        scratchpad: ' Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze lub pomysły na rolki...',
+        scratchpad: 'Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze lub pomysły na rolki...',
         driveFiles: [
             {
                 id: 'd_start_1',
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const filterValue = btn.getAttribute('data-filter');
                 portfolioCards.forEach(card => {
                     const cat = card.getAttribute('data-category');
-                    card.style.display = (filterValue === 'all' || filterValue === cat) ? 'block' : 'none';
+                    card.style.display = (filterValue === 'all' || filterValue === cat) ? 'flex' : 'none';
                 });
             });
         });
@@ -341,7 +341,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             topicPills.forEach(p => { if (p.classList.contains('active')) activeTopics.push(p.innerText); });
             const topicsStr = activeTopics.join(', ') || 'Ogólne zapytanie';
 
-            formFeedback.style.color = '#d4ff00';
             formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
 
             const leadObj = {
@@ -381,7 +380,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }).catch(() => {});
             }
 
-            formFeedback.style.color = '#d4ff00';
             formFeedback.innerText = `Dzięki, ${name}! Wiadomość została wysłana. Odezwiemy się maksymalnie w 24h ⚡`;
             contactForm.reset();
         });
@@ -398,17 +396,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const emailVal = document.getElementById('loginEmail').value.trim();
             const loginFeedback = document.getElementById('loginFeedback');
             if (!emailVal) {
-                loginFeedback.style.color = '#ffb074';
                 loginFeedback.innerText = 'Wpisz najpierw swój służbowy e-mail powyżej.';
                 return;
             }
             if (firebaseReady && auth) {
                 try {
                     await fbFns.sendPasswordResetEmail(auth, emailVal);
-                    loginFeedback.style.color = '#d4ff00';
                     loginFeedback.innerText = `Link do resetu hasła wysłano na: ${emailVal} ⚡`;
                 } catch (err) {
-                    loginFeedback.style.color = '#fca5a5';
                     loginFeedback.innerText = 'Nie znaleziono konta o tym adresie w Firebase Auth.';
                 }
             }
@@ -423,12 +418,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const loginFeedback = document.getElementById('loginFeedback');
 
             if (!isOwnerEmail(email)) {
-                loginFeedback.style.color = '#fca5a5';
                 loginFeedback.innerText = '⛔ Dostęp wyłącznie dla autoryzowanych adresów Założycieli Wake The Brand.';
                 return;
             }
 
-            loginFeedback.style.color = '#d4ff00';
             loginFeedback.innerText = 'Weryfikacja dostępu HQ... ⚡';
 
             if (firebaseReady && auth) {
@@ -437,7 +430,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     localStorage.setItem('wtb_admin_email', email);
                     window.location.href = 'admin.html';
                 } catch (err) {
-                    // Jeśli właściciel loguje się pierwszy raz na nowy adres z białej listy, utwórz konto w Auth
                     if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
                         try {
                             await fbFns.createUserWithEmailAndPassword(auth, email, password);
@@ -446,7 +438,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             return;
                         } catch (createErr) {}
                     }
-                    loginFeedback.style.color = '#fca5a5';
                     loginFeedback.innerText = 'Błędne hasło lub dane autoryzacji.';
                 }
             } else {
@@ -514,8 +505,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hqQuoteReadyText = document.getElementById('hqQuoteReadyText');
     const copyQuoteTextBtn = document.getElementById('copyQuoteTextBtn');
     const saveQuoteHistoryBtn = document.getElementById('saveQuoteHistoryBtn');
+    const sendCalcToPrintBtn = document.getElementById('sendCalcToPrintBtn');
     const hqQuoteFeedback = document.getElementById('hqQuoteFeedback');
     const hqSavedQuotesList = document.getElementById('hqSavedQuotesList');
+
+    // Elementy Generatora Druków A4
+    const docTemplateSelect = document.getElementById('docTemplateSelect');
+    const docDateInput = document.getElementById('docDateInput');
+    const docOwnerInput = document.getElementById('docOwnerInput');
+    const docClientName = document.getElementById('docClientName');
+    const docClientNip = document.getElementById('docClientNip');
+    const docClientContact = document.getElementById('docClientContact');
+    const docClientIndustry = document.getElementById('docClientIndustry');
+    const docMainGoal = document.getElementById('docMainGoal');
+    const docScopeItems = document.getElementById('docScopeItems');
+    const docTotalPrice = document.getElementById('docTotalPrice');
+    const docDeadline = document.getElementById('docDeadline');
+    const docExtraNotes = document.getElementById('docExtraNotes');
+    const docClearAllBtn = document.getElementById('docClearAllBtn');
+    const triggerPrintDocBtn = document.getElementById('triggerPrintDocBtn');
+    const printableDocumentArea = document.getElementById('printableDocumentArea');
 
     const hqInternalChatBox = document.getElementById('hqInternalChatBox');
     const hqInternalChatForm = document.getElementById('hqInternalChatForm');
@@ -548,25 +557,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!adminLeadsList) return;
 
         if (count === 0) {
-            adminLeadsList.innerHTML = `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zapytań z formularza kontaktowego. Gdy klient wyśle formularz na stronie Kontakt, wiadomość pojawi się tutaj automatycznie.</span></li>`;
+            adminLeadsList.innerHTML = `<li class="dash-task-item"><span class="task-meta">Brak zapytań z formularza kontaktowego. Gdy klient wyśle formularz na stronie Kontakt, wiadomość pojawi się tutaj automatycznie.</span></li>`;
             return;
         }
 
         adminLeadsList.innerHTML = leadsCache.map(lead => `
-            <li class="dash-task-item" style="align-items:flex-start;">
+            <li class="dash-task-item">
                 <div class="task-meta">
-                    <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.3rem;">
-                        <strong style="font-size:1rem;">${lead.name}</strong>
-                        <span style="color:var(--accent-lime);font-size:0.85rem;">(${lead.email})</span>
+                    <div>
+                        <strong>${lead.name}</strong>
+                        <span class="hq-pill mateusz">${lead.email}</span>
                         ${leadStatusBadgeHTML(lead.crmStatus)}
                     </div>
-                    <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.35rem;">
-                        Wybrane obszary: <strong style="color:#fff;">${lead.topics || 'Ogólne'}</strong> • Wysłano: ${lead.createdAt || ''}
-                    </div>
-                    <p style="margin:0.4rem 0;color:#e5e7eb;line-height:1.55;">„${lead.message}”</p>
+                    <small>Wybrane obszary: <strong>${lead.topics || 'Ogólne'}</strong> • Wysłano: ${lead.createdAt || ''}</small>
+                    <p>„${lead.message}”</p>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;">
-                    <button type="button" class="btn-mini btn-accent" data-quote-lead="${lead.name}">🧮 Zrób wycenę →</button>
+                <div class="cookie-actions">
+                    <button type="button" class="btn-mini btn-accent" data-quote-lead="${lead.name}">🧮 Wycena</button>
+                    <button type="button" class="btn-mini" data-print-lead="${lead.id}">🖨️ Karta do druku</button>
                     <button type="button" class="btn-mini" data-cycle-lead="${lead.id}">🔄 Status</button>
                     <a href="mailto:${lead.email}?subject=Oferta współpracy Wake The Brand" class="btn-mini">✉️ Odpisz</a>
                     <button type="button" class="btn-mini btn-danger" data-del-lead="${lead.id}">🗑️</button>
@@ -582,6 +590,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                     recalculateInternalQuote();
                 }
                 activateHQTab('hq-tab-pricing');
+            });
+        });
+
+        adminLeadsList.querySelectorAll('[data-print-lead]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-print-lead');
+                const lead = leadsCache.find(l => l.id === id);
+                if (!lead) return;
+                if (docTemplateSelect) docTemplateSelect.value = 'brief';
+                if (docClientName) docClientName.value = lead.name || '';
+                if (docClientContact) docClientContact.value = lead.email || '';
+                if (docClientIndustry) docClientIndustry.value = lead.topics || '';
+                if (docMainGoal) docMainGoal.value = lead.message || '';
+                renderPrintableDocument();
+                activateHQTab('hq-tab-docs');
             });
         });
 
@@ -625,28 +648,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (statDriveFiles) statDriveFiles.innerText = driveFiles.length;
         if (statSavedQuotes) statSavedQuotes.innerText = savedQuotes.length;
 
-        // Scratchpad
         if (hqScratchpadInput && !hqScratchpadInput.dataset.editing) {
             hqScratchpadInput.value = workspaceCache.scratchpad || '';
         }
 
-        // Planer zadań
         if (hqPlannerList) {
             const ownerFilter = planFilterOwner ? planFilterOwner.value : 'all';
             const filteredTasks = tasks.filter(t => ownerFilter === 'all' || t.owner === ownerFilter);
 
             hqPlannerList.innerHTML = filteredTasks.length === 0
-                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zadań dla wybranego filtra.</span></li>`
+                ? `<li class="dash-task-item"><span class="task-meta">Brak zadań dla wybranego filtra.</span></li>`
                 : filteredTasks.map(t => `
                     <li class="dash-task-item">
                         <div class="task-meta">
-                            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                            <div>
                                 <strong>${t.title}</strong>
                                 ${ownerPillHTML(t.owner)}
                             </div>
                             <small>${t.project || 'Ogólne'} • Dodano: ${t.createdAt || 'Teraz'}</small>
                         </div>
-                        <div style="display:flex;align-items:center;gap:0.45rem;">
+                        <div class="cookie-actions">
                             <button type="button" class="btn-mini" data-cycle-hq-task="${t.id}">${taskStatusBadgeHTML(t.status)}</button>
                             <button type="button" class="btn-mini btn-danger" data-del-hq-task="${t.id}">🗑️</button>
                         </div>
@@ -672,7 +693,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Katalog Google Drive
         if (hqDriveList) {
             const q = (driveSearchInput ? driveSearchInput.value : '').trim().toLowerCase();
             const filteredDrive = driveFiles.filter(d => {
@@ -681,17 +701,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             hqDriveList.innerHTML = filteredDrive.length === 0
-                ? `<div class="drive-card-row"><span style="color:var(--text-muted);">Brak podpiętych plików pasujących do wyszukiwania.</span></div>`
+                ? `<div class="drive-card-row"><span class="task-meta">Brak podpiętych plików pasujących do wyszukiwania.</span></div>`
                 : filteredDrive.map(d => `
                     <div class="drive-card-row">
-                        <div>
-                            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.25rem;">
+                        <div class="task-meta">
+                            <div>
                                 <span class="hq-pill mateusz">${d.category}</span>
-                                <strong style="font-size:1rem;">${d.title}</strong>
+                                <strong>${d.title}</strong>
                             </div>
-                            <small style="color:var(--text-muted);">${d.note || 'Brak opisu'} • Dodano: ${d.createdAt}</small>
+                            <small>${d.note || 'Brak opisu'} • Dodano: ${d.createdAt}</small>
                         </div>
-                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <div class="cookie-actions">
                             <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️ Otwórz w Drive →</a>
                             <button type="button" class="btn-mini btn-danger" data-del-drive="${d.id}">🗑️</button>
                         </div>
@@ -707,14 +727,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Zapisane wyceny
         if (hqSavedQuotesList) {
             hqSavedQuotesList.innerHTML = savedQuotes.length === 0
-                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zapisanych wycen. Użyj kalkulatora obok i kliknij „Zapisz wycenę na liście”.</span></li>`
+                ? `<li class="dash-task-item"><span class="task-meta">Brak zapisanych wycen. Użyj kalkulatora obok i kliknij „Zapisz wycenę na liście”.</span></li>`
                 : savedQuotes.map(qItem => `
                     <li class="dash-task-item">
                         <div class="task-meta">
-                            <strong>${qItem.client} – <span style="color:var(--accent-lime);">${qItem.total}</span></strong>
+                            <strong>${qItem.client} – ${qItem.total}</strong>
                             <small>${qItem.services} • Podział 50/50: ${qItem.split} • ${qItem.date}</small>
                         </div>
                         <button type="button" class="btn-mini btn-danger" data-del-quote="${qItem.id}">🗑️</button>
@@ -730,7 +749,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Wewnętrzny czat założycieli
         if (hqInternalChatBox) {
             hqInternalChatBox.innerHTML = chatMessages.map(m => `
                 <div class="chat-bubble ${m.senderKey === 'Bartek' ? 'from-agency' : 'from-client'}">
@@ -747,15 +765,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!hqCalcTotal) return;
         let baseSum = 0;
         const selectedNames = [];
+        const selectedWithPrices = [];
 
         hqCalcChecks.forEach(ch => {
             if (ch.checked) {
-                baseSum += parseInt(ch.value, 10) || 0;
-                selectedNames.push(ch.getAttribute('data-name'));
+                const price = parseInt(ch.value, 10) || 0;
+                const name = ch.getAttribute('data-name');
+                baseSum += price;
+                selectedNames.push(name);
+                selectedWithPrices.push(`${name} - ${price} zł`);
             }
         });
 
         const customAdd = parseInt(calcCustomAdd?.value, 10) || 0;
+        if (customAdd > 0) {
+            selectedWithPrices.push(`Dodatkowe prace wdrożeniowe - ${customAdd} zł`);
+        }
+
         const discountPct = Math.min(80, Math.max(0, parseInt(calcDiscountPercent?.value, 10) || 0));
         const suggestedAds = parseInt(calcSuggestedAds?.value, 10) || 0;
 
@@ -788,6 +814,7 @@ Zespół Wake The Brand`;
         return {
             client: clientLabel,
             services: selectedNames.join(' + ') || 'Wycena indywidualna',
+            scopeLines: selectedWithPrices.join('\n'),
             total: `${finalTotal.toLocaleString('pl-PL')} zł`,
             split: `po ${perOwner.toLocaleString('pl-PL')} zł`
         };
@@ -805,7 +832,6 @@ Zespół Wake The Brand`;
         copyQuoteTextBtn.addEventListener('click', () => {
             navigator.clipboard?.writeText(hqQuoteReadyText.value);
             if (hqQuoteFeedback) {
-                hqQuoteFeedback.style.color = '#d4ff00';
                 hqQuoteFeedback.innerText = '📋 Skopiowano gotową treść oferty do schowka!';
                 setTimeout(() => { hqQuoteFeedback.innerText = ''; }, 2500);
             }
@@ -818,19 +844,441 @@ Zespół Wake The Brand`;
             workspaceCache.savedQuotes = workspaceCache.savedQuotes || [];
             workspaceCache.savedQuotes.unshift({
                 id: 'q_' + Date.now(),
-                ...summary,
+                client: summary.client,
+                services: summary.services,
+                total: summary.total,
+                split: summary.split,
                 date: getCurrentTimeStr()
             });
             syncWorkspaceToCloud(workspaceCache);
             if (hqQuoteFeedback) {
-                hqQuoteFeedback.style.color = '#d4ff00';
                 hqQuoteFeedback.innerText = '💾 Zapisano wycenę na liście poniżej!';
                 setTimeout(() => { hqQuoteFeedback.innerText = ''; }, 2500);
             }
         });
     }
 
-    // 7D. Obsługa formularzy w admin.html (Planer, Notatnik, Drive, Czat)
+    if (sendCalcToPrintBtn) {
+        sendCalcToPrintBtn.addEventListener('click', () => {
+            const summary = recalculateInternalQuote();
+            if (docTemplateSelect) docTemplateSelect.value = 'quote';
+            if (docClientName) docClientName.value = (calcClientName?.value || '').trim();
+            if (docScopeItems) docScopeItems.value = summary.scopeLines || '';
+            if (docTotalPrice) docTotalPrice.value = summary.total || '';
+            renderPrintableDocument();
+            activateHQTab('hq-tab-docs');
+        });
+    }
+
+    // =========================================================
+    // 7D. GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF
+    // =========================================================
+    function valOrBlankLine(val, placeholderDots = '........................................................................................') {
+        const cleaned = (val || '').trim();
+        return cleaned ? cleaned : placeholderDots;
+    }
+
+    function valOrNotesLines(val, linesCount = 4) {
+        const cleaned = (val || '').trim();
+        if (cleaned) {
+            return `<div class="print-notes-box">${cleaned.replace(/\n/g, '<br>')}</div>`;
+        }
+        let linesHTML = '';
+        for (let i = 0; i < linesCount; i++) {
+            linesHTML += `<span class="print-dotted-line"></span>`;
+        }
+        return `<div class="print-notes-box">${linesHTML}</div>`;
+    }
+
+    function buildDocHeaderHTML(docCode, pageBadge = '') {
+        const dateVal = valOrBlankLine(docDateInput?.value, '.........................');
+        const ownerVal = valOrBlankLine(docOwnerInput?.value, '.......................................');
+
+        return `
+            <div class="print-doc-header">
+                <div>
+                    <div class="print-brand-title">WAKE THE BRAND.</div>
+                    <div class="print-brand-sub">Kreatywne Studio Digital & E-commerce • kontakt@wakethebrand.pl</div>
+                </div>
+                <div class="print-meta-box">
+                    <div><strong>Dokument:</strong> ${docCode} ${pageBadge}</div>
+                    <div><strong>Data:</strong> ${dateVal}</div>
+                    <div><strong>Sporządził:</strong> ${ownerVal}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPrintableDocument() {
+        if (!printableDocumentArea) return;
+        const tpl = docTemplateSelect ? docTemplateSelect.value : 'brief';
+
+        const cName = valOrBlankLine(docClientName?.value);
+        const cNip = valOrBlankLine(docClientNip?.value);
+        const cContact = valOrBlankLine(docClientContact?.value);
+        const cIndustry = valOrBlankLine(docClientIndustry?.value);
+        const totalPrice = valOrBlankLine(docTotalPrice?.value, '....................................... PLN');
+        const deadline = valOrBlankLine(docDeadline?.value, '.......................................');
+
+        const rawScope = (docScopeItems?.value || '').trim();
+        const scopeArr = rawScope ? rawScope.split('\n').map(s => s.trim()).filter(Boolean) : [];
+
+        // SZABLON 1: KARTA BRIEFU I INFORMACJI OD KLIENTA (1 STRONA A4)
+        if (tpl === 'brief') {
+            const scopeBlockHTML = scopeArr.length > 0
+                ? `<div class="print-notes-box">${scopeArr.map(item => `• ${item}`).join('<br>')}</div>`
+                : `
+                    <div class="print-check-grid">
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Budowa Sklepu Internetowego (E-commerce)</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Nowoczesna Strona WWW / Landing Page</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Montaż Wideo (Rolki Reels / TikTok)</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Branding & Identyfikacja Wizualna</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Kampanie Meta Ads / Google Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Inne: .........................................................</div>
+                    </div>
+                `;
+
+            printableDocumentArea.innerHTML = `
+                <div class="print-page-a4">
+                    ${buildDocHeaderHTML('WTB / BRIEF KLIENTA')}
+
+                    <div class="print-doc-banner">
+                        <h2>Karta Briefu i Informacji od Klienta</h2>
+                        <p>Arkusz ustaleń projektowych, celów marki oraz wymagań wdrożeniowych</p>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">1. Dane Klienta / Marki</div>
+                        <div class="print-grid-2">
+                            <div class="print-field-row">
+                                <span class="print-field-label">Nazwa Klienta / Marki / Firmy</span>
+                                <span class="print-field-value">${cName}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">NIP / Adres / Obecna strona WWW</span>
+                                <span class="print-field-value">${cNip}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">E-mail / Telefon kontaktowy</span>
+                                <span class="print-field-value">${cContact}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">Branża / Profil działalności</span>
+                                <span class="print-field-value">${cIndustry}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">2. Obszary Współpracy & Zakres Zainteresowania</div>
+                        ${scopeBlockHTML}
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">3. Główny Cel Projektu & Informacje od Klienta</div>
+                        ${valOrNotesLines(docMainGoal?.value, 4)}
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">4. Szacowany Budżet & Planowany Termin</div>
+                        <div class="print-grid-2">
+                            <div class="print-field-row">
+                                <span class="print-field-label">Ustalony / Deklarowany budżet</span>
+                                <span class="print-field-value">${totalPrice}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">Oczekiwany termin realizacji / Startu</span>
+                                <span class="print-field-value">${deadline}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">5. Dodatkowe Notatki z Rozmowy / Inspiracje / Dostępy</div>
+                        ${valOrNotesLines(docExtraNotes?.value, 4)}
+                    </div>
+
+                    <div class="print-signatures-row">
+                        <div class="print-sign-box">Podpis Przedstawiciela Wake The Brand</div>
+                        <div class="print-sign-box">Podpis Klienta (opcjonalnie)</div>
+                    </div>
+
+                    <div class="print-footer-note">
+                        <span>Wake The Brand — Kreatywne Studio Digital & E-commerce</span>
+                        <span>Strona 1 z 1</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // SZABLON 2: KOSZTORYS, WYCENA I ZAKRES PRAC (2 STRONY A4)
+        if (tpl === 'quote') {
+            let tableRowsHTML = '';
+            if (scopeArr.length > 0) {
+                tableRowsHTML = scopeArr.map((line, idx) => {
+                    const parts = line.split('-');
+                    const itemName = parts[0] ? parts[0].trim() : line;
+                    const itemPrice = parts.length > 1 ? parts.slice(1).join('-').trim() : 'W cenie pakietu';
+                    return `
+                        <tr>
+                            <td>${idx + 1}.</td>
+                            <td><strong>${itemName}</strong></td>
+                            <td>${itemPrice}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                for (let i = 1; i <= 7; i++) {
+                    tableRowsHTML += `
+                        <tr>
+                            <td>${i}.</td>
+                            <td><span class="print-dotted-line"></span></td>
+                            <td><span class="print-dotted-line"></span></td>
+                        </tr>
+                    `;
+                }
+            }
+
+            printableDocumentArea.innerHTML = `
+                <!-- STRONA 1 Z 2: DANE KLIENTA I TABELA KOSZTORYSU -->
+                <div class="print-page-a4 page-break-after">
+                    ${buildDocHeaderHTML('WTB / KOSZTORYS', '(Strona 1/2)')}
+
+                    <div class="print-doc-banner">
+                        <h2>Kosztorys, Wycena i Zakres Prac</h2>
+                        <p>Indywidualna specyfikacja usług oraz wycena realizacji dla klienta</p>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">1. Zamawiający (Klient)</div>
+                        <div class="print-grid-2">
+                            <div class="print-field-row">
+                                <span class="print-field-label">Nazwa Klienta / Marki / Firmy</span>
+                                <span class="print-field-value">${cName}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">NIP / Adres / Strona WWW</span>
+                                <span class="print-field-value">${cNip}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">Dane kontaktowe (E-mail / Telefon)</span>
+                                <span class="print-field-value">${cContact}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">Branża / Projekt</span>
+                                <span class="print-field-value">${cIndustry}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">2. Opis Projektu i Cel Wdrożenia</div>
+                        ${valOrNotesLines(docMainGoal?.value, 3)}
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">3. Szczegółowe Zestawienie Kosztorysu</div>
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">Lp.</th>
+                                    <th>Nazwa usługi / Etap prac wdrożeniowych</th>
+                                    <th style="width: 160px;">Wycena / Koszt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRowsHTML}
+                            </tbody>
+                        </table>
+
+                        <div class="print-total-bar">
+                            <span>CAŁKOWITA KWOTA REALIZACJI:</span>
+                            <span>${totalPrice}</span>
+                        </div>
+                    </div>
+
+                    <div class="print-footer-note">
+                        <span>Wake The Brand — Kosztorys Indywidualny</span>
+                        <span>Strona 1 z 2 (Ciąg dalszy na stronie 2)</span>
+                    </div>
+                </div>
+
+                <!-- STRONA 2 Z 2: HARMONOGRAM, ZAŁĄCZONE DOKUMENTY (RĘCZNIE) I PODPISY -->
+                <div class="print-page-a4">
+                    ${buildDocHeaderHTML('WTB / KOSZTORYS', '(Strona 2/2)')}
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">4. Harmonogram, Termin Realizacji i Warunki Płatności</div>
+                        <div class="print-grid-2">
+                            <div class="print-field-row">
+                                <span class="print-field-label">Przewidywany czas realizacji</span>
+                                <span class="print-field-value">${deadline}</span>
+                            </div>
+                            <div class="print-field-row">
+                                <span class="print-field-label">Sposób rozliczenia (np. zaliczka / etapy)</span>
+                                <span class="print-field-value">........................................................................................</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">5. Dodatkowe Ustalenia Techniczne i Uwagi</div>
+                        ${valOrNotesLines(docExtraNotes?.value, 5)}
+                    </div>
+
+                    <div class="print-section-block">
+                        <div class="print-section-heading">6. Załączone Dokumenty (Do wpisania ręcznego)</div>
+                        <div class="print-notes-box">
+                            <span class="print-dotted-line"></span>
+                            <span class="print-dotted-line"></span>
+                            <span class="print-dotted-line"></span>
+                            <span class="print-dotted-line"></span>
+                        </div>
+                    </div>
+
+                    <div class="print-signatures-row">
+                        <div class="print-sign-box">Podpis Wykonawcy (Wake The Brand)</div>
+                        <div class="print-sign-box">Akceptacja i Podpis Zamawiającego (Klienta)</div>
+                    </div>
+
+                    <div class="print-footer-note">
+                        <span>Wake The Brand — Kreatywne Studio Digital & E-commerce</span>
+                        <span>Strona 2 z 2</span>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // SZABLON 3: KARTA PROJEKTU & CHECKLISTA WDROŻENIOWA (1 STRONA A4)
+        const checklistRowsHTML = scopeArr.length > 0
+            ? scopeArr.map(item => `<div class="print-check-item"><span class="print-checkbox-square"></span> ${item}</div>`).join('')
+            : `
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Zebranie materiałów (logo, zdjęcia, wideo) od klienta</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Konfiguracja domeny, hostingu i certyfikatu SSL</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Projekt UX/UI sklepu lub strony WWW (Mobile-First)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Wdrożenie koszyka, płatności BLIK oraz dostaw</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Montaż i akceptacja rolek produktowych (Reels / TikTok)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Instalacja Meta Pixel oraz Google Analytics 4</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Testy szybkości ładowania i odbiór końcowy projektu</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> ................................................................................................</div>
+            `;
+
+        printableDocumentArea.innerHTML = `
+            <div class="print-page-a4">
+                ${buildDocHeaderHTML('WTB / KARTA WDROŻENIA')}
+
+                <div class="print-doc-banner">
+                    <h2>Karta Projektu & Checklista Wdrożeniowa</h2>
+                    <p>Wewnętrzny arkusz kontrolny realizacji projektu w Wake The Brand</p>
+                </div>
+
+                <div class="print-section-block">
+                    <div class="print-section-heading">1. Informacje o Projekcie</div>
+                    <div class="print-grid-2">
+                        <div class="print-field-row">
+                            <span class="print-field-label">Klient / Marka</span>
+                            <span class="print-field-value">${cName}</span>
+                        </div>
+                        <div class="print-field-row">
+                            <span class="print-field-label">Adres docelowej domeny / WWW</span>
+                            <span class="print-field-value">${cNip}</span>
+                        </div>
+                        <div class="print-field-row">
+                            <span class="print-field-label">Kontakt do klienta</span>
+                            <span class="print-field-value">${cContact}</span>
+                        </div>
+                        <div class="print-field-row">
+                            <span class="print-field-label">Termin oddania projektu</span>
+                            <span class="print-field-value">${deadline}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="print-section-block">
+                    <div class="print-section-heading">2. Lista Kontrolna Etapów Wdrożenia (Checklista)</div>
+                    <div class="print-notes-box">
+                        ${checklistRowsHTML}
+                    </div>
+                </div>
+
+                <div class="print-section-block">
+                    <div class="print-section-heading">3. Specyfikacja Techniczna / Notatki Zespołu</div>
+                    ${valOrNotesLines(docMainGoal?.value, 4)}
+                </div>
+
+                <div class="print-section-block">
+                    <div class="print-section-heading">4. Uwagi Końcowe & Potwierdzenie Odbioru</div>
+                    ${valOrNotesLines(docExtraNotes?.value, 3)}
+                </div>
+
+                <div class="print-signatures-row">
+                    <div class="print-sign-box">Zatwierdził (Mateusz Bugajski / Bartek Koczara)</div>
+                    <div class="print-sign-box">Potwierdzenie odbioru</div>
+                </div>
+
+                <div class="print-footer-note">
+                    <span>Wake The Brand — Wewnętrzna Dokumentacja Wdrożeniowa</span>
+                    <span>Strona 1 z 1</span>
+                </div>
+            </div>
+        `;
+    }
+
+    if (printableDocumentArea) {
+        [
+            docTemplateSelect,
+            docDateInput,
+            docOwnerInput,
+            docClientName,
+            docClientNip,
+            docClientContact,
+            docClientIndustry,
+            docMainGoal,
+            docScopeItems,
+            docTotalPrice,
+            docDeadline,
+            docExtraNotes
+        ].forEach(el => {
+            if (el) {
+                el.addEventListener('input', renderPrintableDocument);
+                el.addEventListener('change', renderPrintableDocument);
+            }
+        });
+
+        if (docClearAllBtn) {
+            docClearAllBtn.addEventListener('click', () => {
+                [
+                    docDateInput,
+                    docOwnerInput,
+                    docClientName,
+                    docClientNip,
+                    docClientContact,
+                    docClientIndustry,
+                    docMainGoal,
+                    docScopeItems,
+                    docTotalPrice,
+                    docDeadline,
+                    docExtraNotes
+                ].forEach(el => { if (el) el.value = ''; });
+                renderPrintableDocument();
+            });
+        }
+
+        if (triggerPrintDocBtn) {
+            triggerPrintDocBtn.addEventListener('click', () => {
+                renderPrintableDocument();
+                window.print();
+            });
+        }
+
+        renderPrintableDocument();
+    }
+
+    // =========================================================
+    // 7E. OBSŁUGA FORMULARZY W ADMIN.HTML (PLANER, DRIVE, CZAT)
+    // =========================================================
     if (hqPlannerForm) {
         hqPlannerForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -861,7 +1309,7 @@ Zespół Wake The Brand`;
             syncWorkspaceToCloud(workspaceCache);
             if (scratchpadSavedInfo) {
                 scratchpadSavedInfo.innerText = '✓ Zapisano!';
-                setTimeout(() => { scratchpadSavedInfo.innerText = ''; }, 2000);
+                setTimeout(() => { scratchpadSavedInfo.innerText = 'Notatnik HQ'; }, 2000);
             }
         });
     }
@@ -929,7 +1377,6 @@ Zespół Wake The Brand`;
 
         const statusEl = document.getElementById('firebaseStatusText');
         if (statusEl) {
-            statusEl.style.color = '#d4ff00';
             statusEl.innerText = '● Połączono z chmurą Firebase HQ';
         }
 
@@ -945,7 +1392,6 @@ Zespół Wake The Brand`;
         }
 
         if (adminLeadsList || hqPlannerList) {
-            // Synchronizacja wewnętrznego obszaru roboczego HQ (Planer, Drive, Wyceny, Czat)
             fbFns.onSnapshot(fbFns.doc(db, 'settings', 'hq_workspace'), (docSnap) => {
                 if (docSnap.exists()) {
                     workspaceCache = { ...defaultWorkspace, ...docSnap.data() };
@@ -956,7 +1402,6 @@ Zespół Wake The Brand`;
                 }
             });
 
-            // Synchronizacja wiadomości z formularza kontaktowego
             fbFns.onSnapshot(fbFns.collection(db, 'contact_leads'), (colSnap) => {
                 if (!colSnap.empty) {
                     const arr = [];
