@@ -11,17 +11,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const CONTACT_RECEIVER_EMAIL = "kontakt@wakethebrand.pl";
+
+    // Pełna lista kont właścicieli / głównych administratorów
     const ADMIN_EMAILS = [
+        'mbugajski@wakethebrand.pl',
+        'bkoczara@wakethebrand.pl',
         'kontakt@wakethebrand.pl',
         'contact@wakethebrand.pl',
         'mateuszbugecik@gmail.com'
     ];
 
-    const STORAGE_KEY = 'wtb_portal_data_v4';
+    const STORAGE_KEY = 'wtb_portal_data_v5';
     const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
-    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v4';
+    const ACCOUNTS_CACHE_KEY = 'wtb_accounts_cache_v5';
+    const MAILS_STORAGE_KEY = 'wtb_admin_mails_v1';
 
-    // CZYSTY SZABLON DLA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, brak zadań, brak plików – wszystko ustala Admin)
+    // CZYSTY SZABLON DLA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, brak zadań i plików – wszystko ustala Admin)
     const defaultClientData = {
         clientName: 'Nowy Klient (Oczekuje na aktywację)',
         userName: 'Klient',
@@ -97,11 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function getLocalLeads() {
         const raw = localStorage.getItem(LEADS_STORAGE_KEY);
         if (!raw) return [];
-        try {
-            return JSON.parse(raw);
-        } catch (e) {
-            return [];
-        }
+        try { return JSON.parse(raw); } catch (e) { return []; }
     }
 
     function saveLocalLead(leadObj) {
@@ -110,7 +111,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(current));
     }
 
-    // Pomocniczy konwerter małego pliku z dysku do DataURL (do bezpośredniego pobrania przez klienta)
+    function getLocalMails() {
+        const raw = localStorage.getItem(MAILS_STORAGE_KEY);
+        if (!raw) {
+            const starterMails = [
+                {
+                    id: 'welcome_mbugajski',
+                    to: 'mbugajski@wakethebrand.pl',
+                    from: 'System Wake The Brand <system@wakethebrand.pl>',
+                    subject: '⚡ Twoja imienna skrzynka mbugajski@wakethebrand.pl jest aktywna!',
+                    body: 'Cześć Mateusz!\n\nTwoja indywidualna skrzynka właściciela w Panelu Administratora działa poprawnie. Wszystkie wiadomości wysłane na adres mbugajski@wakethebrand.pl będą pojawiać się wyłącznie tutaj po zalogowaniu na Twoje konto.',
+                    createdAt: getCurrentTimeStr(),
+                    timestamp: Date.now(),
+                    read: false
+                },
+                {
+                    id: 'welcome_bkoczara',
+                    to: 'bkoczara@wakethebrand.pl',
+                    from: 'System Wake The Brand <system@wakethebrand.pl>',
+                    subject: '⚡ Twoja imienna skrzynka bkoczara@wakethebrand.pl jest aktywna!',
+                    body: 'Cześć!\n\nTwoja indywidualna skrzynka właściciela w Panelu Administratora działa poprawnie. Wszystkie wiadomości wysłane na adres bkoczara@wakethebrand.pl będą pojawiać się wyłącznie tutaj po zalogowaniu na Twoje konto.',
+                    createdAt: getCurrentTimeStr(),
+                    timestamp: Date.now(),
+                    read: false
+                }
+            ];
+            localStorage.setItem(MAILS_STORAGE_KEY, JSON.stringify(starterMails));
+            return starterMails;
+        }
+        try { return JSON.parse(raw); } catch (e) { return []; }
+    }
+
+    function saveLocalMails(arr) {
+        try { localStorage.setItem(MAILS_STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+    }
+
     function readFileAsDataURL(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -134,9 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resetCookiesBtn = document.getElementById('resetCookiesBtn');
 
     if (cookieBanner) {
-        if (!localStorage.getItem('wtb_cookie_consent')) {
-            cookieBanner.classList.remove('hidden');
-        }
+        if (!localStorage.getItem('wtb_cookie_consent')) cookieBanner.classList.remove('hidden');
         if (cookieEssentialBtn) {
             cookieEssentialBtn.addEventListener('click', () => {
                 localStorage.setItem('wtb_cookie_consent', 'essential');
@@ -149,9 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 cookieBanner.classList.add('hidden');
             });
         }
-        if (openCookiesBtn) {
-            openCookiesBtn.addEventListener('click', () => cookieBanner.classList.remove('hidden'));
-        }
+        if (openCookiesBtn) openCookiesBtn.addEventListener('click', () => cookieBanner.classList.remove('hidden'));
         if (resetCookiesBtn) {
             resetCookiesBtn.addEventListener('click', () => {
                 localStorage.removeItem('wtb_cookie_consent');
@@ -252,9 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (closeModal && modal) {
         closeModal.addEventListener('click', () => modal.classList.remove('open'));
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('open');
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
     }
 
     // 3. KALKULATOR WYCENY (wycena.html)
@@ -307,9 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function buildQuoteObject() {
             const selected = [];
-            checkboxes.forEach(box => {
-                if (box.checked) selected.push(box.getAttribute('data-name'));
-            });
+            checkboxes.forEach(box => { if (box.checked) selected.push(box.getAttribute('data-name')); });
             const servicesText = selected.length > 0 ? selected.join(' + ') : 'Pakiet Indywidualny';
             return {
                 servicesText,
@@ -362,7 +389,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let db = null;
     let fbFns = {};
     let firebaseReady = false;
-    let currentLoggedInAdminEmail = localStorage.getItem('wtb_admin_email') || CONTACT_RECEIVER_EMAIL;
+    let currentLoggedInAdminEmail = (localStorage.getItem('wtb_admin_email') || 'mbugajski@wakethebrand.pl').toLowerCase();
 
     const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
     if (adminEmailLabelEl) adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
@@ -395,7 +422,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 6. RENDEROWANIE PANELU KLIENTA (W TYM OTWIERANE KONTENERY PLIKÓW DO POBRANIA)
+    // 6. PANEL KLIENTA + OTWIERANE KONTENERY PLIKÓW
     const clientTopName = document.getElementById('clientTopName');
     const clientWelcomeTitle = document.getElementById('clientWelcomeTitle');
     const clientActivePackage = document.getElementById('clientActivePackage');
@@ -413,7 +440,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const clientChatInput = document.getElementById('clientChatInput');
     const latestMsgPreview = document.getElementById('latestMsgPreview');
 
-    // Modal otwieranego kontenera plików u klienta
     const clientFileModal = document.getElementById('clientFileModal');
     const closeClientFileModal = document.getElementById('closeClientFileModal');
     const modalFileCategory = document.getElementById('modalFileCategory');
@@ -443,14 +469,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const files = pkg.files || [];
         if (modalDownloadList) {
-            if (files.length === 0) {
-                modalDownloadList.innerHTML = `
-                    <div class="download-file-row">
-                        <span style="color:var(--text-muted);">Brak załączonych plików bezpośrednich w tym kontenerze.</span>
-                    </div>
-                `;
-            } else {
-                modalDownloadList.innerHTML = files.map(f => `
+            modalDownloadList.innerHTML = files.length === 0
+                ? `<div class="download-file-row"><span style="color:var(--text-muted);">Brak załączonych plików bezpośrednich.</span></div>`
+                : files.map(f => `
                     <div class="download-file-row">
                         <div style="display:flex;align-items:center;gap:0.6rem;">
                             <span>📄</span>
@@ -461,27 +482,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </a>
                     </div>
                 `).join('');
-            }
         }
 
         if (modalApprovePackageBtn) {
-            if (pkg.status === 'approved') {
-                modalApprovePackageBtn.innerText = '✓ Materiał został już zaakceptowany';
-                modalApprovePackageBtn.disabled = true;
-            } else {
-                modalApprovePackageBtn.innerText = '✅ Akceptuję ten materiał';
-                modalApprovePackageBtn.disabled = false;
-            }
+            modalApprovePackageBtn.innerText = pkg.status === 'approved' ? '✓ Materiał został już zaakceptowany' : '✅ Akceptuję ten materiał';
+            modalApprovePackageBtn.disabled = pkg.status === 'approved';
         }
-
         clientFileModal.classList.add('open');
     }
 
     if (closeClientFileModal && clientFileModal) {
         closeClientFileModal.addEventListener('click', () => clientFileModal.classList.remove('open'));
-        clientFileModal.addEventListener('click', (e) => {
-            if (e.target === clientFileModal) clientFileModal.classList.remove('open');
-        });
+        clientFileModal.addEventListener('click', (e) => { if (e.target === clientFileModal) clientFileModal.classList.remove('open'); });
     }
 
     if (modalApprovePackageBtn) {
@@ -556,15 +568,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 : emptyTasksHTML;
         }
 
-        // Renderowanie kontenerów plików do akceptacji (puste na starcie, dopóki Admin nie wgra)
         const filePackages = data.filePackages || [];
         if (clientFilesGrid) {
             if (filePackages.length === 0) {
                 clientFilesGrid.innerHTML = `
-                    <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem;">
-                        <span style="font-size: 2.4rem; display: block; margin-bottom: 0.8rem;">📁</span>
+                    <div class="glass-card" style="grid-column:1/-1;text-align:center;padding:3rem 1.5rem;">
+                        <span style="font-size:2.4rem;display:block;margin-bottom:0.8rem;">📁</span>
                         <h3>Brak materiałów oczekujących na akceptację</h3>
-                        <p style="color: var(--text-muted); max-width: 520px; margin: 0.6rem auto 0;">
+                        <p style="color:var(--text-muted);max-width:520px;margin:0.6rem auto 0;">
                             Gdy nasz zespół przygotuje dla Ciebie projekty graficzne, wideo lub podgląd strony WWW, Administrator udostępni je tutaj w formie gotowych kontenerów do pobrania.
                         </p>
                     </div>
@@ -572,10 +583,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 clientFilesGrid.innerHTML = filePackages.map(pkg => {
                     const filesCount = (pkg.files || []).length;
-                    const shortDesc = (pkg.description || '').length > 110
-                        ? pkg.description.slice(0, 110) + '...'
-                        : (pkg.description || '');
-
+                    const shortDesc = (pkg.description || '').length > 110 ? pkg.description.slice(0, 110) + '...' : (pkg.description || '');
                     return `
                         <div class="service-card glass-card file-package-card" data-open-pkg="${pkg.id}">
                             <div>
@@ -588,9 +596,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                             </div>
                             <div>
                                 <div style="font-size:0.8rem;color:var(--accent-lime);margin-bottom:0.9rem;">
-                                    📎 Załączone pliki do pobrania: <strong>${filesCount}</strong> • Dodano: ${pkg.createdAt || 'Teraz'}
+                                    📎 Załączone pliki: <strong>${filesCount}</strong> • Dodano: ${pkg.createdAt || 'Teraz'}
                                 </div>
-                                <button type="button" class="btn btn-primary btn-sm btn-full" data-open-pkg-btn="${pkg.id}">
+                                <button type="button" class="btn btn-primary btn-sm btn-full">
                                     📂 Otwórz kontener i pobierz pliki →
                                 </button>
                             </div>
@@ -599,9 +607,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }).join('');
 
                 clientFilesGrid.querySelectorAll('[data-open-pkg]').forEach(card => {
-                    card.addEventListener('click', () => {
-                        openClientFilePackageModal(card.getAttribute('data-open-pkg'));
-                    });
+                    card.addEventListener('click', () => openClientFilePackageModal(card.getAttribute('data-open-pkg')));
                 });
             }
         }
@@ -626,7 +632,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (clientActivePackage) renderClientUI(currentClientCache);
 
-    // 7. ELEMENTY I LOGIKA PANELU ADMINA (W TYM WGRYWANIE KONTENERÓW PLIKÓW)
+    // 7. PANEL ADMINA + INDYWIDUALNA SKRZYNKA POCZTOWA WŁAŚCICIELA (mbugajski@ / bkoczara@)
     const adminStatusForm = document.getElementById('adminStatusForm');
     const adminClientSelector = document.getElementById('adminClientSelector');
     const bannerClientName = document.getElementById('bannerClientName');
@@ -661,6 +667,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminLeadsList = document.getElementById('adminLeadsList');
     const resetDemoDataBtn = document.getElementById('resetDemoDataBtn');
 
+    // Elementy Skrzynki Pocztowej Admina (admin-tab-mail)
+    const sidebarUnreadCount = document.getElementById('sidebarUnreadCount');
+    const currentMailboxAddress = document.getElementById('currentMailboxAddress');
+    const filterMyDirectMailBtn = document.getElementById('filterMyDirectMailBtn');
+    const filterGeneralMailBtn = document.getElementById('filterGeneralMailBtn');
+    const openComposeMailBtn = document.getElementById('openComposeMailBtn');
+    const mailboxListTitle = document.getElementById('mailboxListTitle');
+    const adminMailSearch = document.getElementById('adminMailSearch');
+    const adminMailboxList = document.getElementById('adminMailboxList');
+
+    const adminMailReadModal = document.getElementById('adminMailReadModal');
+    const closeMailReadModal = document.getElementById('closeMailReadModal');
+    const mailReadSubject = document.getElementById('mailReadSubject');
+    const mailReadFrom = document.getElementById('mailReadFrom');
+    const mailReadTo = document.getElementById('mailReadTo');
+    const mailReadDate = document.getElementById('mailReadDate');
+    const mailReadBody = document.getElementById('mailReadBody');
+    const mailReplyMailtoBtn = document.getElementById('mailReplyMailtoBtn');
+    const deleteSingleMailBtn = document.getElementById('deleteSingleMailBtn');
+
+    const adminComposeMailModal = document.getElementById('adminComposeMailModal');
+    const closeComposeMailModal = document.getElementById('closeComposeMailModal');
+    const adminComposeMailForm = document.getElementById('adminComposeMailForm');
+    const composeToEmail = document.getElementById('composeToEmail');
+    const composeSubject = document.getElementById('composeSubject');
+    const composeBody = document.getElementById('composeBody');
+
     const adminSecurityModal = document.getElementById('adminSecurityModal');
     const closeSecurityModal = document.getElementById('closeSecurityModal');
     const cancelSecurityBtn = document.getElementById('cancelSecurityBtn');
@@ -672,10 +705,218 @@ document.addEventListener('DOMContentLoaded', async () => {
     const securityModalFeedback = document.getElementById('securityModalFeedback');
 
     let allAccountsCache = getCachedAccounts();
+    let allMailsCache = getLocalMails();
+    let mailFilterMode = 'direct'; // 'direct' = tylko na adres zalogowanego Admina, 'general' = kontakt@ / contact@
+    let openedMailId = null;
+
     let selectedAdminClientId = localStorage.getItem('wtb_active_uid') || allAccountsCache[0].id || 'demo_client';
     let selectedAdminClientData = allAccountsCache.find(a => a.id === selectedAdminClientId) || getLocalData();
     let unsubscribeAdminClient = null;
     let pendingSecurityAction = null;
+
+    // Funkcja zapisu wiadomości e-mail do bazy Firebase (kolekcja admin_emails)
+    async function saveAdminMail(mailObj) {
+        const current = getLocalMails();
+        const existingIdx = current.findIndex(m => m.id === mailObj.id);
+        if (existingIdx >= 0) current[existingIdx] = mailObj;
+        else current.unshift(mailObj);
+        saveLocalMails(current);
+        allMailsCache = current;
+        renderAdminMailbox();
+
+        if (firebaseReady && db && mailObj.id) {
+            try {
+                await fbFns.setDoc(fbFns.doc(db, 'admin_emails', String(mailObj.id)), mailObj, { merge: true });
+            } catch (e) {
+                console.warn('Błąd zapisu maila do Firestore:', e);
+            }
+        }
+    }
+
+    // Renderowanie Skrzynki Pocztowej dla aktualnie zalogowanego Właściciela / Admina
+    function renderAdminMailbox() {
+        if (!adminMailboxList) return;
+
+        const myEmail = (currentLoggedInAdminEmail || '').trim().toLowerCase();
+        if (currentMailboxAddress) {
+            currentMailboxAddress.innerText = mailFilterMode === 'direct'
+                ? `${myEmail} (Twoja osobista skrzynka)`
+                : `kontakt@wakethebrand.pl / contact@wakethebrand.pl (Skrzynka ogólna)`;
+        }
+        if (mailboxListTitle) {
+            mailboxListTitle.innerText = mailFilterMode === 'direct'
+                ? `📥 Wiadomości wysłane bezpośrednio na: ${myEmail}`
+                : `🌐 Wiadomości wysłane na ogólne adresy agencji`;
+        }
+
+        // Policz nieprzeczytane wiadomości zaadresowane bezpośrednio na zalogowanego Admina
+        const myUnread = allMailsCache.filter(m => {
+            const recipient = (m.to || '').toLowerCase();
+            return recipient.includes(myEmail) && !m.read;
+        }).length;
+        if (sidebarUnreadCount) sidebarUnreadCount.innerText = myUnread;
+
+        const query = (adminMailSearch ? adminMailSearch.value : '').trim().toLowerCase();
+
+        const filteredMails = allMailsCache.filter(m => {
+            const recipient = (m.to || '').toLowerCase();
+            if (mailFilterMode === 'direct') {
+                if (!recipient.includes(myEmail)) return false;
+            } else {
+                const isGeneral = recipient.includes('kontakt@wakethebrand.pl') || recipient.includes('contact@wakethebrand.pl');
+                if (!isGeneral) return false;
+            }
+
+            if (query) {
+                const hay = `${m.from || ''} ${m.subject || ''} ${m.body || ''} ${m.to || ''}`.toLowerCase();
+                if (!hay.includes(query)) return false;
+            }
+            return true;
+        });
+
+        filteredMails.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        if (filteredMails.length === 0) {
+            adminMailboxList.innerHTML = `
+                <div class="mail-row-item">
+                    <span style="color:var(--text-muted);">
+                        Brak wiadomości w widoku „${mailFilterMode === 'direct' ? myEmail : 'Ogólne'}”.
+                    </span>
+                </div>
+            `;
+            return;
+        }
+
+        adminMailboxList.innerHTML = filteredMails.map(m => {
+            const isUnread = !m.read;
+            const snippet = (m.body || '').replace(/\n/g, ' ').slice(0, 95);
+            return `
+                <div class="mail-row-item ${isUnread ? 'unread-mail' : ''}" data-open-mail="${m.id}">
+                    <div style="flex:1;min-width:240px;">
+                        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem;flex-wrap:wrap;">
+                            ${isUnread ? '<span class="role-pill client-role">● Nowa</span>' : ''}
+                            <strong style="font-size:1rem;color:#fff;">${m.subject || '(Bez tematu)'}</strong>
+                        </div>
+                        <div style="font-size:0.84rem;color:var(--accent-lime);margin-bottom:0.25rem;">
+                            Od: <strong>${m.from || 'Nieznany nadawca'}</strong> → Do: ${m.to}
+                        </div>
+                        <div style="font-size:0.83rem;color:var(--text-muted);">
+                            ${snippet}...
+                        </div>
+                    </div>
+                    <div style="text-align:right;min-width:110px;">
+                        <small style="display:block;color:var(--text-muted);margin-bottom:0.4rem;">${m.createdAt || ''}</small>
+                        <span class="btn-mini">📖 Otwórz maila</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        adminMailboxList.querySelectorAll('[data-open-mail]').forEach(row => {
+            row.addEventListener('click', async () => {
+                const mailId = row.getAttribute('data-open-mail');
+                const mailObj = allMailsCache.find(x => String(x.id) === String(mailId));
+                if (!mailObj || !adminMailReadModal) return;
+
+                openedMailId = mailObj.id;
+                mailReadSubject.innerText = mailObj.subject || '(Bez tematu)';
+                mailReadFrom.innerText = mailObj.from || '';
+                mailReadTo.innerText = mailObj.to || '';
+                mailReadDate.innerText = mailObj.createdAt || '';
+                mailReadBody.innerText = mailObj.body || '';
+
+                const replyEmailMatch = (mailObj.from || '').match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+                const replyAddress = replyEmailMatch ? replyEmailMatch[1] : (mailObj.from || '');
+                if (mailReplyMailtoBtn) {
+                    mailReplyMailtoBtn.href = `mailto:${replyAddress}?subject=Re: ${encodeURIComponent(mailObj.subject || '')}`;
+                }
+
+                adminMailReadModal.classList.add('open');
+
+                if (!mailObj.read) {
+                    mailObj.read = true;
+                    await saveAdminMail(mailObj);
+                }
+            });
+        });
+    }
+
+    if (filterMyDirectMailBtn && filterGeneralMailBtn) {
+        filterMyDirectMailBtn.addEventListener('click', () => {
+            mailFilterMode = 'direct';
+            filterMyDirectMailBtn.classList.add('btn-manage');
+            filterGeneralMailBtn.classList.remove('btn-manage');
+            renderAdminMailbox();
+        });
+        filterGeneralMailBtn.addEventListener('click', () => {
+            mailFilterMode = 'general';
+            filterGeneralMailBtn.classList.add('btn-manage');
+            filterMyDirectMailBtn.classList.remove('btn-manage');
+            renderAdminMailbox();
+        });
+    }
+
+    if (adminMailSearch) {
+        adminMailSearch.addEventListener('input', renderAdminMailbox);
+    }
+
+    if (closeMailReadModal && adminMailReadModal) {
+        closeMailReadModal.addEventListener('click', () => adminMailReadModal.classList.remove('open'));
+        adminMailReadModal.addEventListener('click', (e) => { if (e.target === adminMailReadModal) adminMailReadModal.classList.remove('open'); });
+    }
+
+    if (deleteSingleMailBtn) {
+        deleteSingleMailBtn.addEventListener('click', async () => {
+            if (!openedMailId) return;
+            allMailsCache = allMailsCache.filter(m => String(m.id) !== String(openedMailId));
+            saveLocalMails(allMailsCache);
+            renderAdminMailbox();
+            if (adminMailReadModal) adminMailReadModal.classList.remove('open');
+            if (firebaseReady && db) {
+                try { await fbFns.deleteDoc(fbFns.doc(db, 'admin_emails', String(openedMailId))); } catch (e) {}
+            }
+        });
+    }
+
+    if (openComposeMailBtn && adminComposeMailModal) {
+        openComposeMailBtn.addEventListener('click', () => {
+            if (composeToEmail) {
+                composeToEmail.value = currentLoggedInAdminEmail === 'mbugajski@wakethebrand.pl'
+                    ? 'bkoczara@wakethebrand.pl'
+                    : 'mbugajski@wakethebrand.pl';
+            }
+            adminComposeMailModal.classList.add('open');
+        });
+    }
+
+    if (closeComposeMailModal && adminComposeMailModal) {
+        closeComposeMailModal.addEventListener('click', () => adminComposeMailModal.classList.remove('open'));
+        adminComposeMailModal.addEventListener('click', (e) => { if (e.target === adminComposeMailModal) adminComposeMailModal.classList.remove('open'); });
+    }
+
+    if (adminComposeMailForm) {
+        adminComposeMailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const toAddr = composeToEmail.value.trim().toLowerCase();
+            const subj = composeSubject.value.trim();
+            const bodyTxt = composeBody.value.trim();
+
+            const newMail = {
+                id: 'mail_' + Date.now(),
+                to: toAddr,
+                from: `${currentLoggedInAdminEmail}`,
+                subject: subj,
+                body: bodyTxt,
+                createdAt: getCurrentTimeStr(),
+                timestamp: Date.now(),
+                read: false
+            };
+
+            await saveAdminMail(newMail);
+            adminComposeMailForm.reset();
+            if (adminComposeMailModal) adminComposeMailModal.classList.remove('open');
+        });
+    }
 
     function openSecurityPrompt({ title, description, onConfirm }) {
         if (!adminSecurityModal) return;
@@ -908,7 +1149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminPaymentStatus.value = data.paymentStatus || '⏳ Oczekuje na płatność';
         adminAdBudget.value = data.adBudget || '0 zł';
 
-        // Lista zadań w Adminie
         const tasks = data.tasks || [];
         if (adminTaskList) {
             adminTaskList.innerHTML = tasks.length === 0
@@ -943,7 +1183,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Lista kontenerów plików w Adminie
         const filePackages = data.filePackages || [];
         if (adminFilePackagesList) {
             adminFilePackagesList.innerHTML = filePackages.length === 0
@@ -972,7 +1211,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Lista finansów w Adminie
         const finances = data.finances || [];
         if (adminFinanceList) {
             adminFinanceList.innerHTML = finances.length === 0
@@ -1019,6 +1257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminStatusForm) {
         populateSelectorFromCache();
         renderAllAccountsList();
+        renderAdminMailbox();
         renderAdminUI(selectedAdminClientData);
         renderLeadsListUI(getLocalLeads());
     }
@@ -1027,7 +1266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminRoleFilter) adminRoleFilter.addEventListener('change', renderAllAccountsList);
     if (adminClientSelector) adminClientSelector.addEventListener('change', () => subscribeToSelectedClient(adminClientSelector.value));
 
-    // 8. SZYBKIE POŁĄCZENIE Z FIREBASE (PROMISE.ALL + BRAVE LONG-POLLING)
+    // 8. POŁĄCZENIE Z FIREBASE (PROMISE.ALL + BRAVE LONG-POLLING)
     try {
         const [appMod, authMod, firestoreMod] = await Promise.all([
             import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
@@ -1050,9 +1289,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof auth.authStateReady === 'function') await auth.authStateReady();
 
         if (auth.currentUser && auth.currentUser.email) {
-            currentLoggedInAdminEmail = auth.currentUser.email;
-            localStorage.setItem('wtb_admin_email', auth.currentUser.email);
+            currentLoggedInAdminEmail = auth.currentUser.email.toLowerCase();
+            localStorage.setItem('wtb_admin_email', currentLoggedInAdminEmail);
             if (adminEmailLabelEl) adminEmailLabelEl.innerText = currentLoggedInAdminEmail;
+            renderAdminMailbox();
         }
 
         if (clientActivePackage) {
@@ -1083,6 +1323,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                     selectedAdminClientId = activeDoc.id;
                     renderAdminUI(activeDoc);
                 }
+            });
+
+            // Nasłuch na żywo kolekcji poczty właścicieli (admin_emails)
+            fbFns.onSnapshot(fbFns.collection(db, 'admin_emails'), async (mailSnap) => {
+                if (mailSnap.empty) {
+                    const starter = getLocalMails();
+                    for (const m of starter) {
+                        await fbFns.setDoc(fbFns.doc(db, 'admin_emails', String(m.id)), m);
+                    }
+                    return;
+                }
+                const mailsArr = [];
+                mailSnap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    mailsArr.push({
+                        id: docSnap.id,
+                        to: d.to || 'kontakt@wakethebrand.pl',
+                        from: d.from || 'Nadawca',
+                        subject: d.subject || '(Bez tematu)',
+                        body: d.body || '',
+                        createdAt: d.createdAt || '',
+                        timestamp: d.timestamp || Date.now(),
+                        read: Boolean(d.read)
+                    });
+                });
+                allMailsCache = mailsArr;
+                saveLocalMails(mailsArr);
+                renderAdminMailbox();
             });
 
             if (adminLeadsList) {
@@ -1136,6 +1404,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             saveLocalLead(leadObj);
+
+            // Zapisz również jako wiadomość e-mail w zakładce Poczta (skrzynka kontakt@wakethebrand.pl)
+            await saveAdminMail({
+                id: 'form_mail_' + Date.now(),
+                to: 'kontakt@wakethebrand.pl',
+                from: `${name} <${email}>`,
+                subject: `⚡ Zapytanie ze strony [${topicsStr}] od: ${name}`,
+                body: msgVal,
+                createdAt: getCurrentTimeStr(),
+                timestamp: Date.now(),
+                read: false
+            });
+
             if (firebaseReady && db) {
                 try { await fbFns.addDoc(fbFns.collection(db, 'contact_leads'), leadObj); } catch (err) {}
             }
@@ -1266,12 +1547,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     loginFeedback.innerText = 'Błędny e-mail lub hasło.';
                 }
             } else {
+                localStorage.setItem('wtb_admin_email', email);
                 window.location.href = isOwnerEmail(email) ? 'admin.html' : 'panel-klienta.html';
             }
         });
     }
 
-    // REJESTRACJA NOWEGO KLIENTA (0% postępu, 0 zł budżetu, pusta lista zadań i plików)
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1294,7 +1575,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 isAdminRole: isInitialAdmin,
                 isBlocked: false,
                 createdAt: getCurrentTimeStr(),
-                packageName: `${requestedPkg} (Oczekuje na zatwierdzenie)`,
+                packageName: isInitialAdmin ? 'Konto Właściciela (HQ) 👑' : `${requestedPkg} (Oczekuje na zatwierdzenie)`,
                 progressPercent: 0,
                 currentCost: '0 zł (Ustalany po opłaceniu)',
                 paymentStatus: '⏳ Oczekuje na płatność',
@@ -1438,7 +1719,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // DODAWANIE KONTENERA PLIKÓW DO AKCEPTACJI PRZEZ ADMINA
     if (adminAddFilePackageForm) {
         adminAddFilePackageForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1449,22 +1729,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const fileInput = document.getElementById('pkgLocalFile');
 
             const filesArray = [];
-
             if (rawLinks) {
                 rawLinks.split('\n').forEach(line => {
                     const trimmed = line.trim();
                     if (!trimmed) return;
                     if (trimmed.includes('|')) {
                         const parts = trimmed.split('|');
-                        filesArray.push({
-                            name: parts[0].trim(),
-                            url: parts.slice(1).join('|').trim()
-                        });
+                        filesArray.push({ name: parts[0].trim(), url: parts.slice(1).join('|').trim() });
                     } else {
-                        filesArray.push({
-                            name: trimmed.split('/').pop() || 'Plik projektu',
-                            url: trimmed
-                        });
+                        filesArray.push({ name: trimmed.split('/').pop() || 'Plik projektu', url: trimmed });
                     }
                 });
             }
@@ -1474,13 +1747,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (f.size <= 750 * 1024) {
                     try {
                         const dataUrl = await readFileAsDataURL(f);
-                        filesArray.push({
-                            name: f.name,
-                            url: dataUrl
-                        });
+                        filesArray.push({ name: f.name, url: dataUrl });
                     } catch (err) {}
                 } else {
-                    alert('Wybrany plik z dysku przekracza 750 KB. Dla większych plików wideo/ZIP wklej link (np. Google Drive) w polu powyżej.');
+                    alert('Wybrany plik z dysku przekracza 750 KB. Dla większych plików wklej link w polu powyżej.');
                 }
             }
 
