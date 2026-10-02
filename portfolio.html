@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio & Realizacje | Wake The Brand</title>
+    <meta name="description" content="Zobacz nasze realizacje: nowoczesne sklepy internetowe, strony WWW, wideo produktowe Reels/TikTok oraz identyfikacje wizualne.">
+    <!-- Czcionki Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Główny arkusz stylów -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .discreet-admin-lock {
+            opacity: 0.22;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            margin-left: 0.4rem;
+            display: inline-block;
+        }
+        .discreet-admin-lock:hover {
+            opacity: 0.9;
+            transform: scale(1.15);
+        }
+        .portfolio-filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.8rem;
+        }
+        .filter-btn {
+            padding: 0.65rem 1.35rem;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent-lime);
+            color: #08090d;
+            border-color: var(--accent-lime);
+        }
+        .portfolio-preview-banner {
+            height: 190px;
+            border-radius: 14px;
+            margin-bottom: 1.3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .preview-ecom-1 {
+            background: radial-gradient(circle at top right, rgba(212, 255, 0, 0.28), rgba(12, 14, 20, 0.95));
+        }
+        .preview-ecom-2 {
+            background: radial-gradient(circle at top right, rgba(255, 107, 0, 0.28), rgba(12, 14, 20, 0.95));
+        }
+        .preview-video-1 {
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.28), rgba(12, 14, 20, 0.95));
+        }
+        .preview-brand-1 {
+            background: radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.28), rgba(12, 14, 20, 0.95));
+        }
+        .portfolio-metric-pill {
+            align-self: flex-start;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.65);
+            color: var(--accent-lime);
+            border: 1px solid rgba(212, 255, 0, 0.35);
+        }
+        .portfolio-tags-row {
+            display: flex;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin: 1rem 0 1.3rem;
+        }
+        .portfolio-mini-tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GÓRNY PASEK NAWIGACJI -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html">Start</a>
+                <a href="index.html#uslugi">Usługi</a>
+                <a href="koncepty.html">Sklepy Internetowe</a>
+                <a href="portfolio.html" class="active">Portfolio</a>
+                <a href="index.html#proces">Proces</a>
+                <a href="kontakt.html" class="btn btn-primary btn-sm">Bezpłatna Konsultacja →</a>
+            </nav>
+
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- NAGŁÓWEK PODSTRONY PORTFOLIO -->
+    <section class="page-header section-padding" style="padding-top: 8rem; padding-bottom: 2.5rem;">
+        <div class="container" style="text-align: center;">
+            <span class="section-tag">Nasze Realizacje & Koncepty Wdrożeniowe</span>
+            <h1 style="font-size: clamp(2.2rem, 5vw, 3.5rem); margin: 0.8rem 0 1.2rem;">
+                Zobacz projekty, które<br><span class="gradient-text">budzą marki do życia</span>
+            </h1>
+            <p style="color: var(--text-muted); max-width: 660px; margin: 0 auto 2.2rem; font-size: 1.05rem;">
+                Stawiamy na wyrazisty design, błyskawiczne działanie na urządzeniach mobilnych oraz materiały wideo, które od pierwszej sekundy zatrzymują uwagę odbiorcy.
+            </p>
+
+            <!-- PRZYCISKI FILTROWANIA PORTFOLIO -->
+            <div class="portfolio-filters">
+                <button type="button" class="filter-btn active" data-filter="all">Wszystkie realizacje</button>
+                <button type="button" class="filter-btn" data-filter="ecommerce">🛒 Sklepy Internetowe & WWW</button>
+                <button type="button" class="filter-btn" data-filter="video">🎬 Wideo Reels & TikTok</button>
+                <button type="button" class="filter-btn" data-filter="branding">🎨 Branding & Kampanie Ads</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SIATKA PROJEKTÓW PORTFOLIO -->
+    <section class="section-padding" style="padding-top: 0;">
+        <div class="container">
+            <div class="services-grid">
+
+                <!-- PROJEKT 1: SKLEP STREETWEAR -->
+                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
+                    <div class="portfolio-preview-banner preview-ecom-1">
+                        <span class="portfolio-metric-pill">⚡ Czas ładowania: 0.8s</span>
+                        <div style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: #fff;">
+                            VINTAGE DROP STORE
+                        </div>
+                    </div>
+                    <span class="section-tag">E-commerce • Moda & Streetwear</span>
+                    <h3 style="margin: 0.5rem 0;">Sklep internetowy pod limitowane dropy odzieży</h3>
+                    <p style="color: var(--text-muted); font-size: 0.92rem;">
+                        Zaprojektowanie ciemnego, wyrazistego interfejsu mobile-first z licznikiem czasu do premiery kolekcji, szybkim koszykiem BLIK i integracją InPost.
+                    </p>
+                    <div class="portfolio-tags-row">
+                        <span class="portfolio-mini-tag">UX/UI Design</span>
+                        <span class="portfolio-mini-tag">Sklep Online</span>
+                        <span class="portfolio-mini-tag">Optymalizacja Mobile</span>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="port-1">
+                        Zobacz szczegóły projektu →
+                    </button>
+                </div>
+
+                <!-- PROJEKT 2: KAMPANIA REELS & TIKTOK DLA MARKI HANDMADE -->
+                <div class="service-card glass-card portfolio-card" data-category="video">
+                    <div class="portfolio-preview-banner preview-video-1">
+                        <span class="portfolio-metric-pill">🎬 Seria 8 Rolek Produktowych</span>
+                        <div style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: #fff;">
+                            CLAY & CRAFT STUDIO
+                        </div>
+                    </div>
+                    <span class="section-tag">Wideo Reels / TikTok • Rękodzieło</span>
+                    <h3 style="margin: 0.5rem 0;">Dynamiczne rolki „Behind The Scenes” i pakowanie zamówień</h3>
+                    <p style="color: var(--text-muted); font-size: 0.92rem;">
+                        Montaż krótkich form wideo pokazujących proces ręcznego tworzenia biżuterii i akcesoriów, z dynamicznymi napisami, sound designem i przekierowaniem do sklepu.
+                    </p>
+                    <div class="portfolio-tags-row">
+                        <span class="portfolio-mini-tag">Montaż Reels / TikTok</span>
+                        <span class="portfolio-mini-tag">Scenariusze Hook</span>
+                        <span class="portfolio-mini-tag">Rolki Sprzedażowe</span>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="port-2">
+                        Zobacz szczegóły projektu →
+                    </button>
+                </div>
+
+                <!-- PROJEKT 3: SKLEP INTERNETOWY Z AKCESORIAMI -->
+                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
+                    <div class="portfolio-preview-banner preview-ecom-2">
+                        <span class="portfolio-metric-pill">🛒 Wzrost konwersji koszyka</span>
+                        <div style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: #fff;">
+                            NEON GEAR E-SHOP
+                        </div>
+                    </div>
+                    <span class="section-tag">E-commerce • Produkty & Gadżety</span>
+                    <h3 style="margin: 0.5rem 0;">Przebudowa sklepu internetowego i kart produktowych</h3>
+                    <p style="color: var(--text-muted); font-size: 0.92rem;">
+                        Uproszczenie procesu zakupowego z 5 kroków do 1 ekranu, dodanie wideo-prezentacji na karcie produktu oraz automatycznych rekomendacji w koszyku.
+                    </p>
+                    <div class="portfolio-tags-row">
+                        <span class="portfolio-mini-tag">Redesign Sklepu</span>
+                        <span class="portfolio-mini-tag">Karty Produktowe</span>
+                        <span class="portfolio-mini-tag">Analityka GA4</span>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="port-3">
+                        Zobacz szczegóły projektu →
+                    </button>
+                </div>
+
+                <!-- PROJEKT 4: BRANDING & KAMPANIA ADS -->
+                <div class="service-card glass-card portfolio-card" data-category="branding">
+                    <div class="portfolio-preview-banner preview-brand-1">
+                        <span class="portfolio-metric-pill">🎨 Pełny Rebranding + Meta Ads</span>
+                        <div style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; color: #fff;">
+                            PULSE COFFEE ROASTERS
+                        </div>
+                    </div>
+                    <span class="section-tag">Branding & Ads • Sklep Rzemieślniczy</span>
+                    <h3 style="margin: 0.5rem 0;">Identyfikacja wizualna i kampania dla sklepu z kawą</h3>
+                    <p style="color: var(--text-muted); font-size: 0.92rem;">
+                        Stworzenie nowego logo, księgi znaku, projektów opakowań oraz uruchomienie celowanej kampanii reklamowej Meta Ads na zestawy degustacyjne.
+                    </p>
+                    <div class="portfolio-tags-row">
+                        <span class="portfolio-mini-tag">Logo & Brandboard</span>
+                        <span class="portfolio-mini-tag">Kreacje Reklamowe</span>
+                        <span class="portfolio-mini-tag">Meta Ads Remarketing</span>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="port-4">
+                        Zobacz szczegóły projektu →
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- DOLNE CTA -->
+    <section class="cta-section section-padding">
+        <div class="container">
+            <div class="cta-box glass-card" style="text-align: center; padding: 3.5rem 2rem;">
+                <span class="section-tag">Chcesz podobny efekt u siebie?</span>
+                <h2 style="font-size: 2.2rem; margin: 0.8rem 0 1rem;">Stwórzmy projekt dopasowany do Twojej marki</h2>
+                <p style="color: var(--text-muted); max-width: 580px; margin: 0 auto 2rem;">
+                    Napisz do nas, czym się zajmujesz. Przygotujemy indywidualną propozycję sklepu, kreacji wideo lub kampanii reklamowej.
+                </p>
+                <a href="kontakt.html" class="btn btn-primary">Porozmawiajmy o Twoim projekcie →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL SZCZEGÓŁÓW PROJEKTU Z PORTFOLIO -->
+    <div class="modal-overlay" id="conceptModal">
+        <div class="modal-content glass-card">
+            <button class="modal-close" id="closeModal" aria-label="Zamknij">&times;</button>
+            <span class="section-tag" id="modalTag">Case Study</span>
+            <h2 id="modalTitle" style="margin-bottom: 1.2rem;">Szczegóły realizacji</h2>
+            <div id="modalSteps"></div>
+            <div style="margin-top: 1.8rem;">
+                <a href="kontakt.html" class="btn btn-primary btn-full" style="text-align: center;">Zapytaj o podobną realizację dla siebie →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- STOPKA Z DYSKRETNĄ KŁÓDKĄ DLA WŁAŚCICIELI -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+                <p>Nowoczesna agencja kreatywna. Sklepy internetowe, strony WWW, wideo i skuteczny marketing.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Nawigacja</h4>
+                <a href="index.html">Start</a>
+                <a href="index.html#uslugi">Usługi</a>
+                <a href="koncepty.html">Sklepy Internetowe</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="kontakt.html">Kontakt</a>
+            </div>
+            <div class="footer-links">
+                <h4>Kontakt bezpośredni</h4>
+                <a href="mailto:kontakt@wakethebrand.pl">kontakt@wakethebrand.pl</a>
+                <a href="polityka-prywatnosci.html">Polityka Prywatności & Cookies</a>
+                <button type="button" id="openCookiesBtn" class="footer-cookie-btn">⚙️ Ustawienia Cookies</button>
+            </div>
+        </div>
+        <div class="container footer-bottom" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <span>&copy; 2026 Wake The Brand. Wszelkie prawa zastrzeżone.</span>
+            <a href="logowanie.html" class="discreet-admin-lock" title="Strefa Założycieli (HQ)">🔒</a>
+        </div>
+    </footer>
+
+    <!-- BANER COOKIES -->
+    <div id="cookieBanner" class="cookie-banner hidden">
+        <div class="cookie-content">
+            <h4>🍪 Dbamy o Twoją prywatność</h4>
+            <p>Używamy plików cookies niezbędnych do prawidłowego działania strony. Szczegóły znajdziesz w <a href="polityka-prywatnosci.html">Polityce Prywatności</a>.</p>
+        </div>
+        <div class="cookie-actions">
+            <button type="button" id="cookieEssentialBtn" class="btn btn-outline btn-sm">Tylko niezbędne</button>
+            <button type="button" id="cookieAcceptAllBtn" class="btn btn-primary btn-sm">Akceptuję wszystkie ⚡</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
