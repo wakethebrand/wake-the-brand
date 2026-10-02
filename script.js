@@ -31,15 +31,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     let fbFns = {};
     let firebaseReady = false;
 
+    const nowInit = new Date();
+    const todayKeyInit = `${nowInit.getFullYear()}-${String(nowInit.getMonth() + 1).padStart(2, '0')}-${String(nowInit.getDate()).padStart(2, '0')}`;
+
     const defaultWorkspace = {
         tasks: [
             {
                 id: 't_start_1',
+                date: todayKeyInit,
+                time: '10:00',
                 title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny (1-10 usług)',
                 project: 'Wake The Brand HQ',
                 owner: 'Wspólnie',
-                status: 'todo',
-                createdAt: 'Start'
+                priority: 'high',
+                status: 'todo'
             }
         ],
         scratchpad: 'Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze, wnioski z audytów kont lub listy słów kluczowych...',
@@ -78,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
     }
 
-    // Sprawdza, czy założyciel jest już zalogowany
     function isAdminCurrentlyLoggedIn() {
         const savedEmail = localStorage.getItem('wtb_admin_email');
         if (savedEmail && isOwnerEmail(savedEmail)) return true;
@@ -86,7 +90,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return false;
     }
 
-    // Przenosi bezpośrednio do admin.html (jeśli zalogowany) lub do logowanie.html
     function navigateToAdminOrLogin() {
         if (isAdminCurrentlyLoggedIn()) {
             window.location.href = 'admin.html';
@@ -129,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    const HOLD_DURATION_MS = 1200; // 1.2 sekundy przytrzymania kłódki
+    const HOLD_DURATION_MS = 1200;
 
     document.querySelectorAll('.discreet-admin-lock').forEach(lockBtn => {
         let holdTimer = null;
@@ -161,7 +164,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         lockBtn.addEventListener('touchend', cancelHold);
         lockBtn.addEventListener('touchcancel', cancelHold);
 
-        // Pojedyncze kliknięcie (bez przytrzymania przez 1.2s) przewija na samą górę strony
         lockBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (!holdTriggered) {
@@ -342,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 4. DANE WORKSPACE & SYNCHRONIZACJA Z CHMURĄ
+    // 4. DANE WORKSPACE & MOSTEK DLA PLANNER.JS (window.WTB_HQ)
     // =========================================================
     let workspaceCache = getLocalWorkspace();
     let leadsCache = getLocalLeads();
@@ -357,6 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         workspaceCache = updatedWorkspace;
         saveLocalWorkspace(updatedWorkspace);
         renderHQWorkspaceUI();
+        window.dispatchEvent(new CustomEvent('wtb:workspace-updated'));
 
         if (firebaseReady && db) {
             try {
@@ -366,6 +369,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
+
+    // Udostępnienie prostego interfejsu dla osobnego pliku planner.js
+    window.WTB_HQ = {
+        getTasks: () => workspaceCache.tasks || [],
+        saveTasks: (updatedTasksArray) => {
+            workspaceCache.tasks = updatedTasksArray;
+            syncWorkspaceToCloud(workspaceCache);
+        }
+    };
 
     // =========================================================
     // 5. FORMULARZ KONTAKTOWY (kontakt.html)
@@ -436,7 +448,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loginForm = document.getElementById('loginForm');
     const forgotPassBtn = document.getElementById('forgotPassBtn');
 
-    // Jeśli założyciel jest już zalogowany i wejdzie na logowanie.html -> od razu przenieś do admin.html
     if (loginForm && isAdminCurrentlyLoggedIn()) {
         window.location.href = 'admin.html';
     }
@@ -535,9 +546,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statSavedQuotes = document.getElementById('statSavedQuotes');
 
     const adminLeadsList = document.getElementById('adminLeadsList');
-    const hqPlannerForm = document.getElementById('hqPlannerForm');
-    const hqPlannerList = document.getElementById('hqPlannerList');
-    const planFilterOwner = document.getElementById('planFilterOwner');
     const hqScratchpadForm = document.getElementById('hqScratchpadForm');
     const hqScratchpadInput = document.getElementById('hqScratchpadInput');
     const scratchpadSavedInfo = document.getElementById('scratchpadSavedInfo');
@@ -581,18 +589,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hqInternalChatForm = document.getElementById('hqInternalChatForm');
     const hqChatSenderSelect = document.getElementById('hqChatSenderSelect');
     const hqInternalChatInput = document.getElementById('hqInternalChatInput');
-
-    function ownerPillHTML(owner) {
-        if (owner === 'Mateusz') return '<span class="hq-pill mateusz">🟢 Mateusz</span>';
-        if (owner === 'Bartek') return '<span class="hq-pill bartek">🔵 Bartek</span>';
-        return '<span class="hq-pill wspolnie">⚡ Wspólnie</span>';
-    }
-
-    function taskStatusBadgeHTML(status) {
-        if (status === 'done') return '<span class="badge-status done">✓ Gotowe</span>';
-        if (status === 'progress') return '<span class="badge-status progress">⏳ W trakcie</span>';
-        return '<span class="badge-status todo">📋 Do zrobienia</span>';
-    }
 
     function leadStatusBadgeHTML(crmStatus) {
         if (crmStatus === 'client') return '<span class="badge-status done">✅ Dogadane</span>';
@@ -687,7 +683,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 7B. Renderowanie Planera, Dysku Google, Historii Wycen i Czatu
+    // 7B. Renderowanie KPI, Notatnika, Dysku Google, Historii Wycen i Czatu
     function renderHQWorkspaceUI() {
         const tasks = workspaceCache.tasks || [];
         const driveFiles = workspaceCache.driveFiles || [];
@@ -701,47 +697,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (hqScratchpadInput && !hqScratchpadInput.dataset.editing) {
             hqScratchpadInput.value = workspaceCache.scratchpad || '';
-        }
-
-        if (hqPlannerList) {
-            const ownerFilter = planFilterOwner ? planFilterOwner.value : 'all';
-            const filteredTasks = tasks.filter(t => ownerFilter === 'all' || t.owner === ownerFilter);
-
-            hqPlannerList.innerHTML = filteredTasks.length === 0
-                ? `<li class="dash-task-item"><span class="task-meta">Brak zadań dla wybranego filtra.</span></li>`
-                : filteredTasks.map(t => `
-                    <li class="dash-task-item">
-                        <div class="task-meta">
-                            <div>
-                                <strong>${t.title}</strong>
-                                ${ownerPillHTML(t.owner)}
-                            </div>
-                            <small>${t.project || 'Ogólne'} • Dodano: ${t.createdAt || 'Teraz'}</small>
-                        </div>
-                        <div class="cookie-actions">
-                            <button type="button" class="btn-mini" data-cycle-hq-task="${t.id}">${taskStatusBadgeHTML(t.status)}</button>
-                            <button type="button" class="btn-mini btn-danger" data-del-hq-task="${t.id}">🗑️</button>
-                        </div>
-                    </li>
-                `).join('');
-
-            hqPlannerList.querySelectorAll('[data-cycle-hq-task]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-cycle-hq-task');
-                    const task = workspaceCache.tasks.find(x => x.id === id);
-                    if (!task) return;
-                    task.status = task.status === 'todo' ? 'progress' : (task.status === 'progress' ? 'done' : 'todo');
-                    syncWorkspaceToCloud(workspaceCache);
-                });
-            });
-
-            hqPlannerList.querySelectorAll('[data-del-hq-task]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-del-hq-task');
-                    workspaceCache.tasks = workspaceCache.tasks.filter(x => x.id !== id);
-                    syncWorkspaceToCloud(workspaceCache);
-                });
-            });
         }
 
         if (hqDriveList) {
@@ -1334,29 +1289,8 @@ Zespół Wake The Brand`;
     }
 
     // =========================================================
-    // 7E. OBSŁUGA FORMULARZY W ADMIN.HTML (PLANER, DRIVE, CZAT)
+    // 7E. OBSŁUGA FORMULARZY W ADMIN.HTML (NOTATNIK, DRIVE, CZAT)
     // =========================================================
-    if (hqPlannerForm) {
-        hqPlannerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            workspaceCache.tasks = workspaceCache.tasks || [];
-            workspaceCache.tasks.unshift({
-                id: 'task_' + Date.now(),
-                title: document.getElementById('planTaskTitle').value.trim(),
-                project: document.getElementById('planTaskProject').value.trim() || 'Wake The Brand',
-                owner: document.getElementById('planTaskOwner').value,
-                status: document.getElementById('planTaskPriority').value,
-                createdAt: getCurrentTimeStr()
-            });
-            hqPlannerForm.reset();
-            syncWorkspaceToCloud(workspaceCache);
-        });
-    }
-
-    if (planFilterOwner) {
-        planFilterOwner.addEventListener('change', renderHQWorkspaceUI);
-    }
-
     if (hqScratchpadForm && hqScratchpadInput) {
         hqScratchpadInput.addEventListener('focus', () => { hqScratchpadInput.dataset.editing = '1'; });
         hqScratchpadInput.addEventListener('blur', () => { delete hqScratchpadInput.dataset.editing; });
@@ -1411,7 +1345,7 @@ Zespół Wake The Brand`;
         });
     }
 
-    if (adminLeadsList || hqPlannerList) {
+    if (adminLeadsList || statActiveTasks) {
         renderLeadsUI();
         renderHQWorkspaceUI();
     }
@@ -1451,12 +1385,13 @@ Zespół Wake The Brand`;
             }
         }
 
-        if (adminLeadsList || hqPlannerList) {
+        if (adminLeadsList || statActiveTasks) {
             fbFns.onSnapshot(fbFns.doc(db, 'settings', 'hq_workspace'), (docSnap) => {
                 if (docSnap.exists()) {
                     workspaceCache = { ...defaultWorkspace, ...docSnap.data() };
                     saveLocalWorkspace(workspaceCache);
                     renderHQWorkspaceUI();
+                    window.dispatchEvent(new CustomEvent('wtb:workspace-updated'));
                 } else {
                     syncWorkspaceToCloud(workspaceCache);
                 }
