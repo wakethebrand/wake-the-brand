@@ -1465,6 +1465,245 @@ ul {
     border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
+/* =========================================================
+   8B. INTERAKTYWNY KALENDARZ MIESIĘCZNY & MODAL DNIA (planner.js)
+   ========================================================= */
+.cal-wrapper-card {
+    margin-bottom: 1.5rem;
+}
+
+.cal-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.cal-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.cal-month-heading {
+    font-size: 1.35rem;
+    min-width: 185px;
+    text-align: center;
+}
+
+.cal-filter-group {
+    min-width: 220px;
+}
+
+.cal-weekdays-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+}
+
+.cal-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.55rem;
+}
+
+.cal-day-cell {
+    min-height: 112px;
+    padding: 0.6rem;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cal-day-cell:hover {
+    border-color: var(--border-hover);
+    background: rgba(212, 255, 0, 0.04);
+    transform: translateY(-2px);
+}
+
+.cal-day-cell.cal-day-outside {
+    opacity: 0.28;
+    cursor: default;
+    pointer-events: none;
+}
+
+.cal-day-cell.is-today {
+    border-color: var(--accent-lime);
+    box-shadow: inset 0 0 14px rgba(212, 255, 0, 0.12);
+}
+
+.cal-day-cell.is-selected {
+    background: rgba(212, 255, 0, 0.07);
+    border-color: var(--accent-lime);
+}
+
+.cal-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.cal-day-num {
+    font-family: var(--font-heading);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cal-day-cell.is-today .cal-day-num {
+    color: var(--accent-lime);
+}
+
+.cal-day-count {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 20px;
+    background: rgba(212, 255, 0, 0.16);
+    color: var(--accent-lime);
+}
+
+.cal-day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cal-task-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.18rem 0.45rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-task-pill.pill-prio-high {
+    background: rgba(255, 107, 0, 0.2);
+    color: #ffb074;
+    border-left: 2px solid var(--accent-orange);
+}
+
+.cal-task-pill.pill-prio-medium {
+    background: rgba(212, 255, 0, 0.14);
+    color: var(--accent-lime);
+    border-left: 2px solid var(--accent-lime);
+}
+
+.cal-task-pill.pill-prio-low {
+    background: rgba(56, 189, 248, 0.14);
+    color: #7dd3fc;
+    border-left: 2px solid #38bdf8;
+}
+
+.cal-task-pill.is-done {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.cal-more-tasks {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    padding-left: 0.25rem;
+}
+
+/* Modal Wybranego Dnia */
+.cal-day-modal-box {
+    max-width: 880px;
+}
+
+.cal-modal-sub {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.cal-modal-columns {
+    margin-top: 0.5rem;
+}
+
+.cal-modal-form {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.35rem;
+}
+
+.cal-modal-form h4,
+.cal-modal-list-heading {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.cal-task-row-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.2rem;
+}
+
+.cal-prio-badge {
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.cal-prio-badge.prio-high {
+    background: rgba(255, 107, 0, 0.18);
+    color: #ffb074;
+    border: 1px solid rgba(255, 107, 0, 0.4);
+}
+
+.cal-prio-badge.prio-medium {
+    background: rgba(212, 255, 0, 0.13);
+    color: var(--accent-lime);
+    border: 1px solid rgba(212, 255, 0, 0.35);
+}
+
+.cal-prio-badge.prio-low {
+    background: rgba(56, 189, 248, 0.14);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.cal-time-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.18rem 0.5rem;
+    border-radius: 8px;
+}
+
+.cal-task-row-done {
+    opacity: 0.65;
+}
+
+.text-strike {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
 /* Wewnętrzny Kalkulator Wyceny w HQ */
 .calc-service-row {
     display: flex;
@@ -1877,6 +2116,14 @@ ul {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
     }
+
+    .cal-days-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cal-weekdays-row {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1907,7 +2154,8 @@ ul {
 
     .two-inputs-grid,
     .print-grid-2,
-    .print-check-grid {
+    .print-check-grid,
+    .cal-days-grid {
         grid-template-columns: 1fr;
     }
 
