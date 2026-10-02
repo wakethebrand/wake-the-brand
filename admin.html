@@ -11,7 +11,6 @@
     <!-- Wspólny arkusz stylów -->
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Dodatkowe style dla Centrum Kont i Autoryzacji Admina */
         .accounts-toolbar {
             display: flex;
             gap: 1rem;
@@ -136,17 +135,10 @@
             border-color: var(--accent-lime);
             font-weight: 700;
         }
-        .btn-mini.btn-manage:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 255, 0, 0.25);
-        }
         .btn-mini.btn-danger {
             background: rgba(239, 68, 68, 0.12);
             color: #fca5a5;
             border-color: rgba(239, 68, 68, 0.35);
-        }
-        .btn-mini.btn-danger:hover {
-            background: rgba(239, 68, 68, 0.25);
         }
         .active-client-banner {
             display: flex;
@@ -217,6 +209,9 @@
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-tasks">
                         <span>✅</span> Zarządzaj Zadaniami
                     </button>
+                    <button type="button" class="dash-nav-btn" data-tab="admin-tab-files">
+                        <span>📁</span> Pliki do Akceptacji
+                    </button>
                     <button type="button" class="dash-nav-btn" data-tab="admin-tab-finances">
                         <span>🧾</span> Wystaw Rozliczenie
                     </button>
@@ -230,14 +225,14 @@
             <div class="sidebar-help-box glass-card">
                 <strong>☁️ Baza: wake-the-brand</strong>
                 <p id="firebaseStatusText" style="margin-bottom: 0.8rem;">Łączenie z chmurą Firebase...</p>
-                <button type="button" class="btn btn-outline btn-sm btn-full" id="resetDemoDataBtn">Resetuj dane wybranego konta</button>
+                <button type="button" class="btn btn-outline btn-sm btn-full" id="resetDemoDataBtn">Wyzeruj dane wybranego konta</button>
             </div>
         </aside>
 
         <!-- GŁÓWNA ZAWARTOŚĆ ADMINA -->
         <main class="dash-main">
 
-            <!-- PASEK INFORMUJĄCY, KTÓRYM KLIENTEM AKTUALNIE ZARZĄDZASZ (ukryty w zakładce Wszystkie Konta) -->
+            <!-- PASEK INFORMUJĄCY, KTÓRYM KLIENTEM AKTUALNIE ZARZĄDZASZ -->
             <div class="active-client-banner hidden" id="activeClientBanner">
                 <div>
                     <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Aktualnie edytujesz konto:</span>
@@ -247,7 +242,7 @@
             </div>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 0 (GŁÓWNA): WSZYSTKIE KONTA W BAZIE
+                 ZAKŁADKA ADMINA 0: WSZYSTKIE KONTA W BAZIE
                  ========================================== -->
             <section class="dash-tab-content active" id="admin-tab-accounts">
                 <div class="dash-section-title">
@@ -256,7 +251,6 @@
                     <p>Wyszukaj konto klienta, przejdź jednym kliknięciem do zarządzania jego projektem lub zmień uprawnienia Administratora (chronione Twoim hasłem).</p>
                 </div>
 
-                <!-- 4 KARTY STATYSTYK SYSTEMU -->
                 <div class="dash-kpi-grid">
                     <div class="dash-kpi-card glass-card">
                         <span class="kpi-label">Wszystkie konta w bazie</span>
@@ -280,7 +274,6 @@
                     </div>
                 </div>
 
-                <!-- WYSZUKIWARKA I FILTR RÓL -->
                 <div class="glass-card">
                     <div class="accounts-toolbar">
                         <div class="accounts-search-box">
@@ -296,60 +289,53 @@
                     </div>
 
                     <div id="adminAccountActionFeedback" class="form-feedback" style="margin-bottom: 1rem;"></div>
-
-                    <!-- LISTA KONT GENEROWANA PRZEZ SCRIPT.JS -->
-                    <div id="adminAccountsList">
-                        <div class="account-card-row">
-                            <span>Wczytywanie listy kont z bazy Firebase...</span>
-                        </div>
-                    </div>
+                    <div id="adminAccountsList"></div>
                 </div>
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 1: STATUS, PAKIET I POSTĘP WYBRANEGO KLIENTA
+                 ZAKŁADKA ADMINA 1: STATUS, PAKIET I POSTĘP
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-status">
                 <div class="dash-section-title">
                     <span class="section-tag">Centrum Sterowania Projektu</span>
                     <h2>Edytuj główne wskaźniki wybranego klienta</h2>
-                    <p>Każda zmiana zapisana poniżej zaktualizuje się u tego klienta w ułamku sekundy.</p>
                 </div>
 
                 <div class="dash-two-cols">
                     <form class="glass-card" id="adminStatusForm">
                         <div class="form-group">
                             <label for="adminClientName">Nazwa marki / klienta</label>
-                            <input type="text" id="adminClientName" required value="Marka Klienta">
+                            <input type="text" id="adminClientName" required>
                         </div>
 
                         <div class="form-group">
                             <label for="adminPackageName">Aktywny Pakiet Klienta</label>
-                            <input type="text" id="adminPackageName" required value="Podwójny Shot ⚡">
+                            <input type="text" id="adminPackageName" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="adminProgressSlider">Procent wykonania prac w tym miesiącu: <strong id="adminProgressVal">65%</strong></label>
-                            <input type="range" id="adminProgressSlider" min="0" max="100" step="5" value="65" style="width: 100%; accent-color: var(--accent-lime);">
+                            <label for="adminProgressSlider">Procent wykonania prac: <strong id="adminProgressVal">0%</strong></label>
+                            <input type="range" id="adminProgressSlider" min="0" max="100" step="5" value="0" style="width: 100%; accent-color: var(--accent-lime);">
                         </div>
 
                         <div class="form-group">
                             <label for="adminCurrentCost">Koszt obsługi w bieżącym okresie</label>
-                            <input type="text" id="adminCurrentCost" required value="2 100 zł">
+                            <input type="text" id="adminCurrentCost" required>
                         </div>
 
                         <div class="form-group">
                             <label for="adminPaymentStatus">Status płatności bieżącej</label>
                             <select id="adminPaymentStatus" class="admin-select">
-                                <option value="● Opłacone">● Opłacone (Zielony)</option>
                                 <option value="⏳ Oczekuje na płatność">⏳ Oczekuje na płatność</option>
                                 <option value="🧾 Wysłano rachunek / Useme">🧾 Wysłano rachunek / Useme</option>
+                                <option value="● Opłacone">● Opłacone (Zielony)</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="adminAdBudget">Budżet reklamowy Ads</label>
-                            <input type="text" id="adminAdBudget" required value="1 000 zł">
+                            <input type="text" id="adminAdBudget" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-full">Zapisz zmiany na koncie klienta ⚡</button>
@@ -359,13 +345,13 @@
                     <div class="glass-card">
                         <h3>⚡ Szybkie akcje na tym koncie</h3>
                         <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.8rem 0 1.4rem;">
-                            Zarządzasz obecnie profilem wybranym z listy. Możesz szybko przejść do jego pozostałych modułów:
+                            Przejdź bezpośrednio do wybranego modułu tego klienta:
                         </p>
                         <div style="display: flex; flex-direction: column; gap: 0.7rem;">
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-tasks">✅ Przejdź do zadań tego klienta →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-finances">🧾 Wystaw rozliczenie temu klientowi →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-chat">💬 Napisz na czacie do tego klienta →</button>
-                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-accounts">👥 Wróć do wyszukiwarki wszystkich kont</button>
+                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-tasks">✅ Zarządzaj zadaniami klienta →</button>
+                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-files">📁 Dodaj pliki do akceptacji →</button>
+                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-finances">🧾 Wystaw rozliczenie klientowi →</button>
+                            <button type="button" class="btn btn-outline btn-sm" data-go-tab="admin-tab-chat">💬 Otwórz czat z tym klientem →</button>
                         </div>
                     </div>
                 </div>
@@ -396,9 +382,9 @@
                         <div class="form-group">
                             <label for="newTaskStatus">Status zadania</label>
                             <select id="newTaskStatus" class="admin-select">
-                                <option value="done">✓ Zrobione (Ukończone)</option>
-                                <option value="progress">⏳ W trakcie realizacji</option>
                                 <option value="todo">📋 Zaplanowane w kolejce</option>
+                                <option value="progress">⏳ W trakcie realizacji</option>
+                                <option value="done">✓ Zrobione (Ukończone)</option>
                             </select>
                         </div>
 
@@ -413,7 +399,57 @@
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 3: ROZLICZENIA I KOSZTY
+                 ZAKŁADKA ADMINA 3 (NOWA!): PLIKI DO AKCEPTACJI
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="admin-tab-files">
+                <div class="dash-section-title">
+                    <span class="section-tag">Kontenery Materiałów dla Klienta</span>
+                    <h2>Wgraj paczkę plików do akceptacji</h2>
+                    <p>Utwórz kontener z tytułem, szczegółowym opisem oraz plikami do pobrania. Klient będzie mógł otworzyć ten kontener u siebie w panelu, pobrać pliki i kliknąć „Akceptuję”.</p>
+                </div>
+
+                <div class="dash-two-cols">
+                    <form class="glass-card" id="adminAddFilePackageForm">
+                        <h3 style="margin-bottom: 1.2rem;">📁 Nowy kontener plików dla klienta</h3>
+
+                        <div class="form-group">
+                            <label for="pkgTitle">Tytuł kontenera / projektu</label>
+                            <input type="text" id="pkgTitle" required placeholder="np. Projekt Logo + Paleta Barw (Wersja 1)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pkgCategory">Kategoria (Tag)</label>
+                            <input type="text" id="pkgCategory" required placeholder="np. Branding / Wideo Reels / Strona WWW">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pkgDescription">Szczegółowy opis (widoczny po otwarciu kontenera)</label>
+                            <textarea id="pkgDescription" rows="4" required placeholder="Opisz klientowi, co znajduje się w paczce, na co zwrócić uwagę i jakie formaty plików załączono..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pkgLinksText">Pliki do pobrania (1 linijka = Nazwa pliku | Link URL do pobrania)</label>
+                            <textarea id="pkgLinksText" rows="3" placeholder="Księga_Znaku_PDF.pdf | https://twojlink.pl/plik.pdf&#10;Rolka_Promo_v1.mp4 | https://drive.google.com/..."></textarea>
+                            <small style="color: var(--text-muted); display: block; margin-top: 0.3rem;">Możesz wpisać samą nazwę pliku lub: <strong>Nazwa pliku | Link do Google Drive / Dropbox / serwera</strong></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pkgLocalFile">Lub załącz bezpośrednio plik z komputera (do 700 KB – np. grafika PNG/JPG/PDF)</label>
+                            <input type="file" id="pkgLocalFile" style="padding: 0.6rem; background: rgba(0,0,0,0.4);">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Udostępnij kontener na koncie klienta ⚡</button>
+                    </form>
+
+                    <div class="glass-card">
+                        <h3 style="margin-bottom: 1.2rem;">📦 Udostępnione kontenery plików tego klienta</h3>
+                        <ul class="dash-task-list" id="adminFilePackagesList"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 ZAKŁADKA ADMINA 4: ROZLICZENIA I KOSZTY
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-finances">
                 <div class="dash-section-title">
@@ -451,8 +487,8 @@
                         <div class="form-group">
                             <label for="finStatus">Status płatności</label>
                             <select id="finStatus" class="admin-select">
-                                <option value="Opłacone ✓">Opłacone ✓</option>
                                 <option value="Do zapłaty ⏳">Do zapłaty ⏳</option>
+                                <option value="Opłacone ✓">Opłacone ✓</option>
                             </select>
                         </div>
 
@@ -467,7 +503,7 @@
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 4: CZAT Z KLIENTEM
+                 ZAKŁADKA ADMINA 5: CZAT Z KLIENTEM
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-chat">
                 <div class="dash-section-title">
@@ -486,35 +522,30 @@
             </section>
 
             <!-- ==========================================
-                 ZAKŁADKA ADMINA 5: ZAPYTANIA Z FORMULARZA KONTAKTOWEGO
+                 ZAKŁADKA ADMINA 6: ZAPYTANIA Z FORMULARZA KONTAKTOWEGO
                  ========================================== -->
             <section class="dash-tab-content hidden" id="admin-tab-leads">
                 <div class="dash-section-title">
                     <span class="section-tag">Skrzynka Odbiorcza Formularza</span>
                     <h2>Wiadomości wysłane przez podstronę Kontakt</h2>
-                    <p>Tutaj trafiają wszystkie zapytania od osób, które wypełniły formularz na stronie kontakt.html.</p>
                 </div>
 
                 <div class="glass-card">
-                    <ul class="dash-task-list" id="adminLeadsList">
-                        <li class="dash-task-item"><span>Brak nowych zgłoszeń lub wczytywanie z bazy...</span></li>
-                    </ul>
+                    <ul class="dash-task-list" id="adminLeadsList"></ul>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- =========================================================
-         MODAL BEZPIECZEŃSTWA: POTWIERDZENIE HASŁEM ADMINISTRATORA
-         ========================================================= -->
+    <!-- MODAL BEZPIECZEŃSTWA: POTWIERDZENIE HASŁEM ADMINISTRATORA -->
     <div class="modal-overlay" id="adminSecurityModal">
         <div class="modal-content glass-card" style="max-width: 480px;">
             <button class="modal-close" id="closeSecurityModal" aria-label="Zamknij">&times;</button>
             <span class="section-tag">🔒 Wymagana Autoryzacja Admina</span>
             <h3 id="securityModalTitle" style="font-size: 1.4rem; margin-bottom: 0.6rem;">Potwierdź zmianę uprawnień</h3>
             <p id="securityModalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.4rem;">
-                Aby zmienić rolę tego konta lub wykonać operację wrażliwą, wpisz hasło swojego aktualnie zalogowanego konta Administratora.
+                Wpisz hasło swojego aktualnie zalogowanego konta Administratora.
             </p>
 
             <form id="adminSecurityForm">
@@ -525,14 +556,13 @@
 
                 <div style="display: flex; gap: 0.8rem; margin-top: 1.5rem;">
                     <button type="button" class="btn btn-outline btn-full" id="cancelSecurityBtn">Anuluj</button>
-                    <button type="submit" class="btn btn-primary btn-full" id="confirmSecuritySubmitBtn">Potwierdź hasłem ⚡</button>
+                    <button type="submit" class="btn btn-primary btn-full">Potwierdź hasłem ⚡</button>
                 </div>
                 <div class="form-feedback" id="securityModalFeedback"></div>
             </form>
         </div>
     </div>
 
-    <!-- Wspólny plik JS (z wbudowanym Firebase) -->
     <script src="script.js"></script>
 </body>
 </html>
