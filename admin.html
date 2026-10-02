@@ -45,6 +45,9 @@
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-pricing">
                         <span>🧮</span> Wewnętrzna Wycena
                     </button>
+                    <button type="button" class="dash-nav-btn" data-tab="hq-tab-docs">
+                        <span>🖨️</span> Generator Druków A4
+                    </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-chat">
                         <span>💬</span> Nasz Wewnętrzny Czat
                     </button>
@@ -55,7 +58,7 @@
                 <strong>☁️ Synchronizacja HQ</strong>
                 <p id="firebaseStatusText">Łączenie z bazą Firebase...</p>
                 <a href="https://mail.google.com/" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-full">
-                    ✉️ Otwórz Gmaila WTB →
+                    ✉️️ Otwórz Gmaila WTB →
                 </a>
             </div>
         </aside>
@@ -94,7 +97,7 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Pierwszy Kontakt od Klienta</span>
                     <h2>📬 Wiadomości przesłane przez formularz na stronie</h2>
-                    <p>Tutaj trafiają wszystkie zapytania z podstrony Kontakt. Możesz zmieniać ich status, przejść od razu do kalkulatora wyceny lub odpisać na maila.</p>
+                    <p>Tutaj trafiają wszystkie zapytania z podstrony Kontakt. Możesz zmieniać ich status, przejść do kalkulatora wyceny lub jednym kliknięciem wygenerować Kartę Klienta do druku.</p>
                 </div>
 
                 <div class="glass-card">
@@ -194,7 +197,6 @@
                 </div>
 
                 <div class="dash-two-cols">
-                    <!-- Formularz dodawania pliku / folderu z Google Drive -->
                     <form class="glass-card" id="hqDriveForm">
                         <div class="card-header-between">
                             <h3>➕ Podepnij plik lub folder z Drive</h3>
@@ -235,7 +237,6 @@
                         </div>
                     </form>
 
-                    <!-- Lista podpiętych plików i folderów Google Drive -->
                     <div class="glass-card">
                         <div class="card-header-between">
                             <h3>📂 Katalog plików w Google Drive</h3>
@@ -255,11 +256,10 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Wewnętrzny System Kosztorysowania</span>
                     <h2>🧮 Kalkulator Wyceny dla Klienta (Tylko dla nas)</h2>
-                    <p>Złóż indywidualną wycenę podczas rozmowy lub pisania maila. System od razu liczy kwotę końcową, podział 50/50 dla Mateusza i Bartka oraz generuje gotową wiadomość z ofertą.</p>
+                    <p>Złóż indywidualną wycenę podczas rozmowy lub pisania maila. Możesz też jednym kliknięciem przenieść wycenę do Generatora Druków A4.</p>
                 </div>
 
                 <div class="dash-two-cols">
-                    <!-- Lewa kolumna: Wybór elementów wyceny -->
                     <div class="glass-card">
                         <div class="card-header-between">
                             <h3>1. Wybierz usługi projektu</h3>
@@ -335,7 +335,6 @@
                         </div>
                     </div>
 
-                    <!-- Prawa kolumna: Wynik wyceny, podział 50/50 i historia -->
                     <div class="dash-task-list">
                         <div class="calc-summary-box">
                             <span class="section-tag">Podsumowanie Kosztorysu</span>
@@ -357,6 +356,11 @@
                                     💾 Zapisz wycenę na liście
                                 </button>
                             </div>
+                            <div class="section-cta-row">
+                                <button type="button" class="btn btn-outline btn-sm btn-full" id="sendCalcToPrintBtn">
+                                    🖨️ Przenieś ten kosztorys do Generatora Druków A4 →
+                                </button>
+                            </div>
                             <div id="hqQuoteFeedback" class="form-feedback"></div>
                         </div>
 
@@ -371,7 +375,105 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 5: WEWNĘTRZNY CZAT ZAŁOŻYCIELI
+                 MODUŁ 5: GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="hq-tab-docs">
+                <div class="dash-section-title">
+                    <span class="section-tag">System Dokumentacji Wake The Brand</span>
+                    <h2>🖨️ Generator Dokumentów do Druku / PDF</h2>
+                    <p>Wypełnij wybrane pola poniżej – pojawią się one od razu na dokumencie. Pola, które zostawisz <strong>puste</strong>, automatycznie zamienią się w wykropkowane linie do ręcznego wpisania długopisem po wydruku.</p>
+                </div>
+
+                <div class="dash-two-cols">
+                    <!-- LEWA KOLUMNA: FORMULARZ GENERATORA (UKRYWANY W TRAKCIE DRUKU) -->
+                    <div class="glass-card no-print">
+                        <div class="card-header-between">
+                            <h3>⚙️ Konfiguracja Dokumentu</h3>
+                            <button type="button" class="btn-mini" id="docClearAllBtn">🧹 Wyczyść pod pusty druk</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="docTemplateSelect">Wybierz rodzaj dokumentu do wygenerowania</label>
+                            <select id="docTemplateSelect" class="admin-select">
+                                <option value="brief">📋 1. Karta Briefu i Informacji od Klienta (1 strona A4)</option>
+                                <option value="quote">💰 2. Kosztorys, Wycena i Zakres Prac (2 strony A4)</option>
+                                <option value="checklist">🚀 3. Karta Projektu & Checklista Wdrożeniowa (1 strona A4)</option>
+                            </select>
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="docDateInput">Data dokumentu (puste = wykropkowane)</label>
+                                <input type="text" id="docDateInput" placeholder="np. 02.10.2026">
+                            </div>
+                            <div class="form-group">
+                                <label for="docOwnerInput">Opiekun / Sporządził (puste = wykropkowane)</label>
+                                <input type="text" id="docOwnerInput" placeholder="np. Mateusz Bugajski / Bartek Koczara">
+                            </div>
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="docClientName">Nazwa Klienta / Marki / Firmy</label>
+                                <input type="text" id="docClientName" placeholder="Zostaw puste, aby wpisać ręcznie po wydruku">
+                            </div>
+                            <div class="form-group">
+                                <label for="docClientNip">NIP / Adres / Strona WWW klienta</label>
+                                <input type="text" id="docClientNip" placeholder="Zostaw puste, aby wpisać ręcznie">
+                            </div>
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="docClientContact">E-mail / Telefon kontaktowy klienta</label>
+                                <input type="text" id="docClientContact" placeholder="Zostaw puste, aby wpisać ręcznie">
+                            </div>
+                            <div class="form-group">
+                                <label for="docClientIndustry">Branża / Rodzaj sklepu lub działalności</label>
+                                <input type="text" id="docClientIndustry" placeholder="np. Sklep odzieżowy / E-commerce">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="docMainGoal">Główny cel projektu / Informacje od klienta</label>
+                            <textarea id="docMainGoal" rows="3" placeholder="Jeśli zostawisz puste, na wydruku pojawią się linie do odręcznych notatek..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="docScopeItems">Zakres prac / Pozycje kosztorysu (każda pozycja w nowej linii)</label>
+                            <textarea id="docScopeItems" rows="4" placeholder="np. Budowa sklepu internetowego - 3200 zł&#10;Montaż 4 rolek Reels/TikTok - 1200 zł&#10;(Zostaw puste, aby mieć pustą tabelę do wypełnienia długopisem)"></textarea>
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="docTotalPrice">Kwota całkowita / Budżet</label>
+                                <input type="text" id="docTotalPrice" placeholder="np. 4 400 zł (lub puste)">
+                            </div>
+                            <div class="form-group">
+                                <label for="docDeadline">Planowany termin realizacji / Etapy</label>
+                                <input type="text" id="docDeadline" placeholder="np. 14 dni roboczych (lub puste)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="docExtraNotes">Dodatkowe ustalenia / Uwagi</label>
+                            <textarea id="docExtraNotes" rows="2" placeholder="Zostaw puste pod odręczne zapiski..."></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-full" id="triggerPrintDocBtn">
+                            🖨️ Drukuj dokument / Zapisz jako PDF (A4)
+                        </button>
+                    </div>
+
+                    <!-- PRAWA KOLUMNA: PODGLĄD WYDRUKU A4 NA ŻYWO (TO SIĘ DRUKUJE) -->
+                    <div class="print-preview-wrapper">
+                        <div id="printableDocumentArea" class="print-sheet-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 MODUŁ 6: WEWNĘTRZNY CZAT ZAŁOŻYCIELI
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-chat">
                 <div class="dash-section-title">
