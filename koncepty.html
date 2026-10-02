@@ -5,60 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sklepy Internetowe & E-commerce | Wake The Brand</title>
     <meta name="description" content="Kompleksowe wsparcie dla sklepów internetowych. Projektowanie e-commerce, wideo produktowe Reels/TikTok i kampanie skalujące sprzedaż.">
-    <!-- Czcionki Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Główny arkusz stylów -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        .discreet-admin-lock {
-            opacity: 0.22;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-            margin-left: 0.4rem;
-            display: inline-block;
-        }
-        .discreet-admin-lock:hover {
-            opacity: 0.9;
-            transform: scale(1.15);
-        }
-        .ecom-highlight-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2.5rem;
-        }
-        .ecom-metric-box {
-            padding: 1.8rem;
-            text-align: center;
-            border: 1px solid rgba(212, 255, 0, 0.25);
-            background: rgba(212, 255, 0, 0.04);
-            border-radius: 18px;
-        }
-        .ecom-metric-box strong {
-            display: block;
-            font-family: var(--font-heading);
-            font-size: 2.2rem;
-            color: var(--accent-lime);
-            margin-bottom: 0.4rem;
-        }
-    </style>
 </head>
 <body>
 
-    <!-- GÓRNY PASEK NAWIGACJI -->
+    <!-- GÓRNY PASEK NAWIGACJI (4 CZYSTE PODSTRONY) -->
     <header class="navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
 
             <nav class="nav-links" id="navLinks">
                 <a href="index.html">Start</a>
-                <a href="index.html#uslugi">Usługi</a>
                 <a href="koncepty.html" class="active">Sklepy Internetowe</a>
                 <a href="portfolio.html">Portfolio</a>
-                <a href="index.html#proces">Proces</a>
                 <a href="kontakt.html" class="btn btn-primary btn-sm">Bezpłatna Konsultacja →</a>
             </nav>
 
@@ -71,16 +33,16 @@
     </header>
 
     <!-- NAGŁÓWEK PODSTRONY: BRANŻA SKLEPY INTERNETOWE -->
-    <section class="page-header section-padding" style="padding-top: 8rem; padding-bottom: 3rem;">
-        <div class="container" style="text-align: center;">
-            <span class="section-tag">Specjalizacja Branżowa #1: E-commerce</span>
-            <h1 style="font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0.8rem 0 1.2rem;">
-                Rozwijamy i budujemy<br><span class="gradient-text">Sklepy Internetowe</span>
-            </h1>
-            <p style="color: var(--text-muted); max-width: 680px; margin: 0 auto 2rem; font-size: 1.08rem;">
-                W e-commerce wygrywa szybkość działania strony, wyrazisty wizerunek produktu i reklama, która trafia w punkt. Tworzymy kompletne systemy sprzedaży dla sklepów internetowych, marek własnych i twórców produktów.
-            </p>
-            <div class="hero-buttons" style="justify-content: center;">
+    <section class="page-top-space center-text">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Specjalizacja Branżowa • E-commerce</span>
+                <h1>Rozwijamy i budujemy<br><span class="gradient-text">Sklepy Internetowe</span></h1>
+                <p>
+                    W e-commerce wygrywa szybkość działania strony, wyrazisty wizerunek produktu i reklama, która trafia w punkt. Tworzymy kompletne systemy sprzedaży dla sklepów internetowych, marek własnych i twórców produktów.
+                </p>
+            </div>
+            <div class="hero-buttons">
                 <a href="kontakt.html" class="btn btn-primary">Skonsultuj swój sklep za darmo →</a>
                 <a href="portfolio.html" class="btn btn-outline">Zobacz nasze realizacje</a>
             </div>
@@ -88,7 +50,7 @@
     </section>
 
     <!-- 3 GŁÓWNE FILARY DLA SKLEPÓW INTERNETOWYCH -->
-    <section class="section-padding" style="padding-top: 2rem;">
+    <section class="section-padding">
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">Strategia E-commerce 360°</span>
@@ -98,70 +60,76 @@
 
             <div class="services-grid">
                 <!-- FILAR 1: SKLEP & UX -->
-                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
-                    <span class="section-tag">Filar 01 • Technologia & UX</span>
-                    <h3 style="margin: 0.6rem 0;">Budowa i Optymalizacja Sklepu Online</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
-                        Tworzymy szybkie sklepy internetowe od zera lub przebudowujemy obecne witryny tak, aby klienci kupowali intuicyjnie na telefonie w mniej niż 60 sekund.
-                    </p>
-                    <ul class="service-list" style="margin-bottom: 1.5rem;">
-                        <li>✓ Przejrzyste karty produktów nastawione na konwersję</li>
-                        <li>✓ Błyskawiczny koszyk, płatności BLIK / szybkie przelewy i paczkomaty</li>
-                        <li>✓ Wyrazisty design budujący zaufanie do marki</li>
-                    </ul>
+                <div class="service-card glass-card">
+                    <div>
+                        <span class="section-tag">Filar 01 • Technologia & UX</span>
+                        <h3>Budowa i Optymalizacja Sklepu Online</h3>
+                        <p>
+                            Tworzymy szybkie sklepy internetowe od zera lub przebudowujemy obecne witryny tak, aby klienci kupowali intuicyjnie na telefonie w mniej niż 60 sekund.
+                        </p>
+                        <ul class="service-list">
+                            <li>✓ Przejrzyste karty produktów nastawione na konwersję</li>
+                            <li>✓ Błyskawiczny koszyk, płatności BLIK / szybkie przelewy i paczkomaty</li>
+                            <li>✓ Wyrazisty design budujący zaufanie do marki</li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-1">
                         Zobacz etapy wdrożenia sklepu →
                     </button>
                 </div>
 
                 <!-- FILAR 2: WIDEO PRODUKTOWE & BRANDING -->
-                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
-                    <span class="section-tag">Filar 02 • Kreacja & Wideo</span>
-                    <h3 style="margin: 0.6rem 0;">Rolki Produktowe (Reels / TikTok) & Wizerunek</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
-                        Ludzie nie kupują już ze statycznych, nudnych zdjęć. Montujemy dynamiczne wideo prezentujące Twój produkt w akcji, unboxingi i kulisy marki.
-                    </p>
-                    <ul class="service-list" style="margin-bottom: 1.5rem;">
-                        <li>✓ Dynamiczny montaż z mocnym otwarciem (Hook w 3 sekundy)</li>
-                        <li>✓ Spójna identyfikacja wizualna, logo i grafiki promocyjne</li>
-                        <li>✓ Kreacje pod premiery nowych produktów i dropy</li>
-                    </ul>
+                <div class="service-card glass-card">
+                    <div>
+                        <span class="section-tag">Filar 02 • Kreacja & Wideo</span>
+                        <h3>Rolki Produktowe (Reels / TikTok) & Wizerunek</h3>
+                        <p>
+                            Ludzie nie kupują już ze statycznych zdjęć. Montujemy dynamiczne wideo prezentujące Twój produkt w akcji, unboxingi i kulisy marki.
+                        </p>
+                        <ul class="service-list">
+                            <li>✓ Dynamiczny montaż z mocnym otwarciem (Hook w 3 sekundy)</li>
+                            <li>✓ Spójna identyfikacja wizualna, logo i grafiki promocyjne</li>
+                            <li>✓ Kreacje pod premiery nowych produktów i dropy</li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-2">
                         Zobacz jak tworzymy kreacje →
                     </button>
                 </div>
 
                 <!-- FILAR 3: KAMPANIE ADS & REMARKETING -->
-                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
-                    <span class="section-tag">Filar 03 • Skalowanie Sprzedaży</span>
-                    <h3 style="margin: 0.6rem 0;">Kampanie Meta & Google Ads dla E-commerce</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
-                        Kierujemy wartościowy ruch prosto na Twoje produkty i automatycznie przypominamy się osobom, które dodały produkt do koszyka, ale nie dokończyły zakupu.
-                    </p>
-                    <ul class="service-list" style="margin-bottom: 1.5rem;">
-                        <li>✓ Pełna analityka koszyka (Meta Pixel & Google Analytics 4)</li>
-                        <li>✓ Reklamy katalogowe i dynamiczny remarketing produktowy</li>
-                        <li>✓ Skalowanie budżetu na najbardziej rentownych produktach</li>
-                    </ul>
+                <div class="service-card glass-card">
+                    <div>
+                        <span class="section-tag">Filar 03 • Skalowanie Sprzedaży</span>
+                        <h3>Kampanie Meta & Google Ads dla E-commerce</h3>
+                        <p>
+                            Kierujemy wartościowy ruch prosto na Twoje produkty i automatycznie przypominamy się osobom, które dodały produkt do koszyka, ale nie dokończyły zakupu.
+                        </p>
+                        <ul class="service-list">
+                            <li>✓ Pełna analityka koszyka (Meta Pixel & Google Analytics 4)</li>
+                            <li>✓ Reklamy katalogowe i dynamiczny remarketing produktowy</li>
+                            <li>✓ Skalowanie budżetu na najbardziej rentownych produktach</li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-3">
                         Zobacz plan kampanii Ads →
                     </button>
                 </div>
             </div>
 
-            <!-- DLACZEGO SKLEPY TRACĄ KLIENTÓW (PORÓWNANIE) -->
+            <!-- KLUCZOWE WSKAŹNIKI E-COMMERCE -->
             <div class="ecom-highlight-grid">
                 <div class="ecom-metric-box">
-                    <strong>< 2 sekundy</strong>
-                    <span style="color: var(--text-muted); font-size: 0.92rem;">Docelowy czas ładowania karty produktu na smartfonie</span>
+                    <strong>Poniżej 2s</strong>
+                    <span>Docelowy czas ładowania karty produktu na smartfonie</span>
                 </div>
                 <div class="ecom-metric-box">
                     <strong>3 sekundy</strong>
-                    <span style="color: var(--text-muted); font-size: 0.92rem;">Czas na zatrzymanie uwagi klienta w rolce produktowej</span>
+                    <span>Czas na zatrzymanie uwagi klienta w rolce produktowej</span>
                 </div>
                 <div class="ecom-metric-box">
                     <strong>100% Zdalnie</strong>
-                    <span style="color: var(--text-muted); font-size: 0.92rem;">Bezpośredni kontakt z założycielami i indywidualna wycena</span>
+                    <span>Bezpośredni kontakt z założycielami i indywidualna wycena</span>
                 </div>
             </div>
         </div>
@@ -170,34 +138,34 @@
     <!-- DLA JAKICH SKLEPÓW PRACUJEMY? -->
     <section class="section-padding">
         <div class="container">
-            <div class="glass-card" style="padding: 3rem 2rem;">
-                <div class="section-header" style="margin-bottom: 2rem;">
+            <div class="glass-card">
+                <div class="section-header">
                     <span class="section-tag">Dla kogo?</span>
                     <h2>Z jakimi sklepami internetowymi współpracujemy?</h2>
                 </div>
 
                 <div class="services-grid">
-                    <div>
-                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">👕 Marki Własne, Moda & Streetwear</h4>
-                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                    <div class="sim-card positive">
+                        <h3>👕 Marki Własne, Moda & Streetwear</h3>
+                        <p>
                             Budowa społeczności wokół unikalnego stylu, komunikacja dropów, lookbooki i dynamiczne rolki z procesów powstawania kolekcji.
                         </p>
                     </div>
-                    <div>
-                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">🎁 Rękodzieło, Design & Produkty Premium</h4>
-                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                    <div class="sim-card positive">
+                        <h3>🎁 Rękodzieło, Design & Produkty Premium</h3>
+                        <p>
                             Przejście ze sprzedaży tylko w wiadomościach prywatnych na profesjonalny, zautomatyzowany sklep internetowy z płatnościami online.
                         </p>
                     </div>
-                    <div>
-                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">📦 Istniejące Sklepy SzukająceWzrostu</h4>
-                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                    <div class="sim-card positive">
+                        <h3>📦 Istniejące Sklepy Szukające Wzrostu</h3>
+                        <p>
                             Odświeżenie przestarzałego wyglądu sklepu, poprawa współczynnika konwersji na urządzeniach mobilnych i wdrożenie kampanii reklamowych.
                         </p>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 2.5rem;">
+                <div class="section-cta-row">
                     <a href="kontakt.html" class="btn btn-primary">Opowiedz nam o swoim sklepie →</a>
                 </div>
             </div>
@@ -209,10 +177,10 @@
         <div class="modal-content glass-card">
             <button class="modal-close" id="closeModal" aria-label="Zamknij">&times;</button>
             <span class="section-tag" id="modalTag">Strategia E-commerce</span>
-            <h2 id="modalTitle" style="margin-bottom: 1.2rem;">Szczegóły wdrożenia</h2>
+            <h2 id="modalTitle">Szczegóły wdrożenia</h2>
             <div id="modalSteps"></div>
-            <div style="margin-top: 1.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                <a href="kontakt.html" class="btn btn-primary" style="flex: 1; text-align: center;">Zapytaj o indywidualną wycenę tego etapu →</a>
+            <div class="section-cta-row">
+                <a href="kontakt.html" class="btn btn-primary btn-full">Zapytaj o indywidualną wycenę tego etapu →</a>
             </div>
         </div>
     </div>
@@ -225,21 +193,20 @@
                 <p>Nowoczesna agencja kreatywna. Sklepy internetowe, strony WWW, wideo i skuteczny marketing.</p>
             </div>
             <div class="footer-links">
-                <h4>Nawigacja</h4>
+                <h4>Podstrony</h4>
                 <a href="index.html">Start</a>
-                <a href="index.html#uslugi">Usługi</a>
                 <a href="koncepty.html">Sklepy Internetowe</a>
                 <a href="portfolio.html">Portfolio</a>
                 <a href="kontakt.html">Kontakt</a>
             </div>
             <div class="footer-links">
-                <h4>Kontakt bezpośredni</h4>
+                <h4>Informacje</h4>
                 <a href="mailto:kontakt@wakethebrand.pl">kontakt@wakethebrand.pl</a>
                 <a href="polityka-prywatnosci.html">Polityka Prywatności & Cookies</a>
                 <button type="button" id="openCookiesBtn" class="footer-cookie-btn">⚙️ Ustawienia Cookies</button>
             </div>
         </div>
-        <div class="container footer-bottom" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div class="container footer-bottom">
             <span>&copy; 2026 Wake The Brand. Wszelkie prawa zastrzeżone.</span>
             <a href="logowanie.html" class="discreet-admin-lock" title="Strefa Założycieli (HQ)">🔒</a>
         </div>
