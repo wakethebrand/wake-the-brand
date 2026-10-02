@@ -3,30 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nasza Wizja i Koncepty | Wake The Brand</title>
+    <title>Sklepy Internetowe & E-commerce | Wake The Brand</title>
+    <meta name="description" content="Kompleksowe wsparcie dla sklepów internetowych. Projektowanie e-commerce, wideo produktowe Reels/TikTok i kampanie skalujące sprzedaż.">
     <!-- Czcionki Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Wspólny arkusz stylów -->
+    <!-- Główny arkusz stylów -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        .discreet-admin-lock {
+            opacity: 0.22;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            margin-left: 0.4rem;
+            display: inline-block;
+        }
+        .discreet-admin-lock:hover {
+            opacity: 0.9;
+            transform: scale(1.15);
+        }
+        .ecom-highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+        .ecom-metric-box {
+            padding: 1.8rem;
+            text-align: center;
+            border: 1px solid rgba(212, 255, 0, 0.25);
+            background: rgba(212, 255, 0, 0.04);
+            border-radius: 18px;
+        }
+        .ecom-metric-box strong {
+            display: block;
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            color: var(--accent-lime);
+            margin-bottom: 0.4rem;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- NAWIGACJA -->
-    <header class="navbar" id="navbar">
-        <div class="container nav-content">
+    <!-- GÓRNY PASEK NAWIGACJI -->
+    <header class="navbar">
+        <div class="container nav-container">
             <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+
             <nav class="nav-links" id="navLinks">
                 <a href="index.html">Start</a>
-                <a href="uslugi.html">Usługi</a>
-                <a href="koncepty.html" class="active">Nasza Wizja</a>
-                <a href="wycena.html">Wycena</a>
-                <a href="kontakt.html">Kontakt</a>
-                <div class="nav-actions">
-                    <a href="logowanie.html" class="btn btn-sm btn-client">🔒 Strefa Klienta</a>
-                </div>
+                <a href="index.html#uslugi">Usługi</a>
+                <a href="koncepty.html" class="active">Sklepy Internetowe</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="index.html#proces">Proces</a>
+                <a href="kontakt.html" class="btn btn-primary btn-sm">Bezpłatna Konsultacja →</a>
             </nav>
+
             <button class="hamburger" id="hamburger" aria-label="Menu">
                 <span></span>
                 <span></span>
@@ -35,224 +70,190 @@
         </div>
     </header>
 
-    <!-- NAGŁÓWEK PODSTRONY -->
-    <section class="page-header">
-        <div class="glow glow-2"></div>
-        <div class="container">
-            <span class="section-tag">Zero lania wody, same konkrety</span>
-            <h1>Zobacz, jak <span class="gradient-text">obudzimy Twoją branżę</span></h1>
-            <p>Nie pokazujemy zmyślonych statystyk. Zamiast tego prezentujemy gotowe scenariusze i strategie, które możemy wdrożyć w Twojej firmie całkowicie zdalnie. Kliknij wybrany koncept, aby zobaczyć plan krok po kroku.</p>
-            
-            <div class="filter-btns">
-                <button type="button" class="filter-btn active" data-filter="all">Wszystkie branże</button>
-                <button type="button" class="filter-btn" data-filter="local">Turystyka & Noclegi</button>
-                <button type="button" class="filter-btn" data-filter="brand">Streetwear & Rękodzieło</button>
-                <button type="button" class="filter-btn" data-filter="services">Usługi & Gastronomia</button>
+    <!-- NAGŁÓWEK PODSTRONY: BRANŻA SKLEPY INTERNETOWE -->
+    <section class="page-header section-padding" style="padding-top: 8rem; padding-bottom: 3rem;">
+        <div class="container" style="text-align: center;">
+            <span class="section-tag">Specjalizacja Branżowa #1: E-commerce</span>
+            <h1 style="font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0.8rem 0 1.2rem;">
+                Rozwijamy i budujemy<br><span class="gradient-text">Sklepy Internetowe</span>
+            </h1>
+            <p style="color: var(--text-muted); max-width: 680px; margin: 0 auto 2rem; font-size: 1.08rem;">
+                W e-commerce wygrywa szybkość działania strony, wyrazisty wizerunek produktu i reklama, która trafia w punkt. Tworzymy kompletne systemy sprzedaży dla sklepów internetowych, marek własnych i twórców produktów.
+            </p>
+            <div class="hero-buttons" style="justify-content: center;">
+                <a href="kontakt.html" class="btn btn-primary">Skonsultuj swój sklep za darmo →</a>
+                <a href="portfolio.html" class="btn btn-outline">Zobacz nasze realizacje</a>
             </div>
         </div>
     </section>
 
-    <!-- KARTY KONCEPTÓW (Z OKNEM MODALNYM PO KLIKNIĘCIU) -->
-    <section class="section" style="padding-top: 2rem;">
+    <!-- 3 GŁÓWNE FILARY DLA SKLEPÓW INTERNETOWYCH -->
+    <section class="section-padding" style="padding-top: 2rem;">
         <div class="container">
-            <div class="portfolio-grid">
-                
-                <!-- Koncept 1 -->
-                <div class="portfolio-card" data-category="local">
-                    <div class="portfolio-img" style="background: linear-gradient(135deg, #0f172a, #0284c7);">
-                        <span class="portfolio-badge">Branża: Turystyka & Pokoje</span>
-                        <div class="portfolio-metric">0% prowizji pośredników</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>System rezerwacji bezpośrednich dla obiektów noclegowych</h3>
-                        <p>Jak uniezależnić pensjonat, apartamenty lub pokoje gościnne od drogich portali rezerwacyjnych i zapełnić kalendarz przed sezonem.</p>
-                        <button type="button" class="btn btn-outline btn-sm open-modal-btn" data-concept="1" style="margin-top: 1.2rem;">Otwórz plan wdrożenia (3 etapy) →</button>
-                    </div>
+            <div class="section-header">
+                <span class="section-tag">Strategia E-commerce 360°</span>
+                <h2>Jak podnosimy sprzedaż w sklepach internetowych?</h2>
+                <p>Kliknij dowolny filar poniżej, aby zobaczyć szczegółowy plan wdrożenia krok po kroku.</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- FILAR 1: SKLEP & UX -->
+                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
+                    <span class="section-tag">Filar 01 • Technologia & UX</span>
+                    <h3 style="margin: 0.6rem 0;">Budowa i Optymalizacja Sklepu Online</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
+                        Tworzymy szybkie sklepy internetowe od zera lub przebudowujemy obecne witryny tak, aby klienci kupowali intuicyjnie na telefonie w mniej niż 60 sekund.
+                    </p>
+                    <ul class="service-list" style="margin-bottom: 1.5rem;">
+                        <li>✓ Przejrzyste karty produktów nastawione na konwersję</li>
+                        <li>✓ Błyskawiczny koszyk, płatności BLIK / szybkie przelewy i paczkomaty</li>
+                        <li>✓ Wyrazisty design budujący zaufanie do marki</li>
+                    </ul>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-1">
+                        Zobacz etapy wdrożenia sklepu →
+                    </button>
                 </div>
 
-                <!-- Koncept 2 -->
-                <div class="portfolio-card" data-category="brand">
-                    <div class="portfolio-img" style="background: linear-gradient(135deg, #2e1065, #db2777);">
-                        <span class="portfolio-badge">Branża: Moda & Handmade</span>
-                        <div class="portfolio-metric">Społeczność & Dropy</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Wyrazista marka własna (Streetwear / Biżuteria / Rękodzieło)</h3>
-                        <p>Budowanie zaangażowanej społeczności wokół unikalnych produktów dzięki estetyce retro/nowoczesnej i rolkom „Behind The Scenes”.</p>
-                        <button type="button" class="btn btn-outline btn-sm open-modal-btn" data-concept="2" style="margin-top: 1.2rem;">Otwórz plan wdrożenia (3 etapy) →</button>
-                    </div>
+                <!-- FILAR 2: WIDEO PRODUKTOWE & BRANDING -->
+                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
+                    <span class="section-tag">Filar 02 • Kreacja & Wideo</span>
+                    <h3 style="margin: 0.6rem 0;">Rolki Produktowe (Reels / TikTok) & Wizerunek</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
+                        Ludzie nie kupują już ze statycznych, nudnych zdjęć. Montujemy dynamiczne wideo prezentujące Twój produkt w akcji, unboxingi i kulisy marki.
+                    </p>
+                    <ul class="service-list" style="margin-bottom: 1.5rem;">
+                        <li>✓ Dynamiczny montaż z mocnym otwarciem (Hook w 3 sekundy)</li>
+                        <li>✓ Spójna identyfikacja wizualna, logo i grafiki promocyjne</li>
+                        <li>✓ Kreacje pod premiery nowych produktów i dropy</li>
+                    </ul>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-2">
+                        Zobacz jak tworzymy kreacje →
+                    </button>
                 </div>
 
-                <!-- Koncept 3 -->
-                <div class="portfolio-card" data-category="services">
-                    <div class="portfolio-img" style="background: linear-gradient(135deg, #064e3b, #10b981);">
-                        <span class="portfolio-badge">Branża: Lokalne Usługi & Gastro</span>
-                        <div class="portfolio-metric">Dominacja w mieście</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Magnes na klientów w promieniu 15 km od Twojej firmy</h3>
-                        <p>Połączenie krótkich form wideo, szybkiej strony WWW z cennikiem oraz precyzyjnych reklam lokalnych Meta i Google.</p>
-                        <button type="button" class="btn btn-outline btn-sm open-modal-btn" data-concept="3" style="margin-top: 1.2rem;">Otwórz plan wdrożenia (3 etapy) →</button>
-                    </div>
+                <!-- FILAR 3: KAMPANIE ADS & REMARKETING -->
+                <div class="service-card glass-card portfolio-card" data-category="ecommerce">
+                    <span class="section-tag">Filar 03 • Skalowanie Sprzedaży</span>
+                    <h3 style="margin: 0.6rem 0;">Kampanie Meta & Google Ads dla E-commerce</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.2rem;">
+                        Kierujemy wartościowy ruch prosto na Twoje produkty i automatycznie przypominamy się osobom, które dodały produkt do koszyka, ale nie dokończyły zakupu.
+                    </p>
+                    <ul class="service-list" style="margin-bottom: 1.5rem;">
+                        <li>✓ Pełna analityka koszyka (Meta Pixel & Google Analytics 4)</li>
+                        <li>✓ Reklamy katalogowe i dynamiczny remarketing produktowy</li>
+                        <li>✓ Skalowanie budżetu na najbardziej rentownych produktach</li>
+                    </ul>
+                    <button type="button" class="btn btn-outline btn-sm btn-full open-modal-btn" data-concept="ecom-3">
+                        Zobacz plan kampanii Ads →
+                    </button>
                 </div>
+            </div>
 
+            <!-- DLACZEGO SKLEPY TRACĄ KLIENTÓW (PORÓWNANIE) -->
+            <div class="ecom-highlight-grid">
+                <div class="ecom-metric-box">
+                    <strong>< 2 sekundy</strong>
+                    <span style="color: var(--text-muted); font-size: 0.92rem;">Docelowy czas ładowania karty produktu na smartfonie</span>
+                </div>
+                <div class="ecom-metric-box">
+                    <strong>3 sekundy</strong>
+                    <span style="color: var(--text-muted); font-size: 0.92rem;">Czas na zatrzymanie uwagi klienta w rolce produktowej</span>
+                </div>
+                <div class="ecom-metric-box">
+                    <strong>100% Zdalnie</strong>
+                    <span style="color: var(--text-muted); font-size: 0.92rem;">Bezpośredni kontakt z założycielami i indywidualna wycena</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- OKNO MODALNE (POPUP Z PEŁNYM PLANEM) -->
+    <!-- DLA JAKICH SKLEPÓW PRACUJEMY? -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="glass-card" style="padding: 3rem 2rem;">
+                <div class="section-header" style="margin-bottom: 2rem;">
+                    <span class="section-tag">Dla kogo?</span>
+                    <h2>Z jakimi sklepami internetowymi współpracujemy?</h2>
+                </div>
+
+                <div class="services-grid">
+                    <div>
+                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">👕 Marki Własne, Moda & Streetwear</h4>
+                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                            Budowa społeczności wokół unikalnego stylu, komunikacja dropów, lookbooki i dynamiczne rolki z procesów powstawania kolekcji.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">🎁 Rękodzieło, Design & Produkty Premium</h4>
+                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                            Przejście ze sprzedaży tylko w wiadomościach prywatnych na profesjonalny, zautomatyzowany sklep internetowy z płatnościami online.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--accent-lime); margin-bottom: 0.5rem;">📦 Istniejące Sklepy SzukająceWzrostu</h4>
+                        <p style="color: var(--text-muted); font-size: 0.93rem;">
+                            Odświeżenie przestarzałego wyglądu sklepu, poprawa współczynnika konwersji na urządzeniach mobilnych i wdrożenie kampanii reklamowych.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2.5rem;">
+                    <a href="kontakt.html" class="btn btn-primary">Opowiedz nam o swoim sklepie →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL SZCZEGÓŁÓW STRATEGII E-COMMERCE -->
     <div class="modal-overlay" id="conceptModal">
         <div class="modal-content glass-card">
-            <button type="button" class="modal-close" id="closeModal" aria-label="Zamknij">&times;</button>
-            <span class="section-tag" id="modalTag">Plan Strategiczny</span>
-            <h2 id="modalTitle">Tytuł Konceptu</h2>
-            <div class="modal-steps" id="modalSteps">
-                <!-- Kroki wstrzykiwane dynamicznie przez script.js -->
-            </div>
-            <div class="modal-footer" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <a href="wycena.html" class="btn btn-primary">Wyceń ten koncept w kalkulatorze ⚡</a>
-                <a href="logowanie.html" class="btn btn-outline">Omówmy to na czacie w Panelu 🔒</a>
+            <button class="modal-close" id="closeModal" aria-label="Zamknij">&times;</button>
+            <span class="section-tag" id="modalTag">Strategia E-commerce</span>
+            <h2 id="modalTitle" style="margin-bottom: 1.2rem;">Szczegóły wdrożenia</h2>
+            <div id="modalSteps"></div>
+            <div style="margin-top: 1.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                <a href="kontakt.html" class="btn btn-primary" style="flex: 1; text-align: center;">Zapytaj o indywidualną wycenę tego etapu →</a>
             </div>
         </div>
     </div>
 
-    <!-- ANATOMIA PRZEBUDZENIA (WIZUALNE PRZED I PO) -->
-    <section class="section bg-darker">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Wizualna Metamorfoza</span>
-                <h2>Anatomia Przebudzenia Marki</h2>
-                <p>Zobacz na konkretnym przykładzie, jak zmieniamy sposób, w jaki klienci postrzegają Twoją stronę i ofertę.</p>
-            </div>
-
-            <div class="makeover-grid">
-                <!-- Karta PRZED -->
-                <div class="makeover-card before-card">
-                    <div class="makeover-header">😴 Przed Wake The Brand</div>
-                    <div class="mockup-box">
-                        <div class="mockup-bar"></div>
-                        <div class="mockup-title">Firma „Usługi-Kompleks”</div>
-                        <div class="mockup-text">Witamy na naszej stronie! Działamy na rynku od wielu lat, zapewniając profesjonalne podejście oraz konkurencyjne ceny. Zapraszamy do kontaktu telefonicznego...</div>
-                        <div class="mockup-btn-old">Więcej o nas</div>
-                    </div>
-                    <ul class="makeover-notes">
-                        <li>❌ Ogólniki, które są na każdej innej stronie</li>
-                        <li>❌ Klient nie wie, ile to kosztuje ani jak zamówić</li>
-                        <li>❌ Brak nowoczesnego designu budzącego zaufanie</li>
-                    </ul>
-                </div>
-
-                <!-- Karta PO -->
-                <div class="makeover-card after-card">
-                    <div class="makeover-header">⚡ Po Wake The Brand</div>
-                    <div class="mockup-box awake-mockup">
-                        <div class="mockup-bar awake-bar"></div>
-                        <div class="mockup-title">Wycena w 60 sekund i pełny podgląd prac online.</div>
-                        <div class="mockup-text">Skonfiguruj pakiet dopasowany do Twoich potrzeb, załóż bezpłatne konto klienta i śledź realizację na żywo.</div>
-                        <div class="mockup-btn-new">Oblicz koszt od ręki ⚡</div>
-                    </div>
-                    <ul class="makeover-notes awake-notes">
-                        <li>✅ Konkretna obietnica i korzyść w pierwszej sekundzie</li>
-                        <li>✅ Wyrazisty kontrast i styl, który zostaje w pamięci</li>
-                        <li>✅ Przycisk, który od razu angażuje odwiedzającego</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROCES 100% ZDALNEJ WSPÓŁPRACY -->
-    <section class="section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Wygoda 100% Online</span>
-                <h2>Jak współpracujemy bez wychodzenia z domu?</h2>
-                <p>Cały proces zaprojektowaliśmy tak, żebyś mógł zarządzać marketingiem swojej firmy z komputera lub telefonu w kilka minut dziennie.</p>
-            </div>
-
-            <div class="process-grid">
-                <div class="process-step">
-                    <div class="step-num">01</div>
-                    <h3>Konto w Strefie Klienta</h3>
-                    <p>Zakładasz darmowe konto na naszej stronie i przesyłasz nam krótką wiadomość na czacie lub swoją wycenę z kalkulatora.</p>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">02</div>
-                    <h3>Koncepcja & Plan Zadań</h3>
-                    <p>W Twoim panelu pojawia się dokładna lista zadań do wykonania, harmonogram oraz przejrzyste podsumowanie kosztów.</p>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">03</div>
-                    <h3>Kreacja i Akceptacja Live</h3>
-                    <p>Projektujemy stronę, grafiki lub rolki. Gotowe materiały podsyłamy Ci w panelu – klikasz akceptację lub piszesz uwagi na czacie.</p>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">04</div>
-                    <h3>Publikacja i Skalowanie</h3>
-                    <p>Wypuszczamy materiały w świat, odpalamy kampanie i na bieżąco aktualizujemy statusy w Twoim Panelu Klienta.</p>
-                </div>
-            </div>
-
-            <div class="cta-banner glass-card">
-                <div>
-                    <h3>Masz własny pomysł na markę lub nietypową branżę?</h3>
-                    <p>Załóż konto w Strefie Klienta i napisz nam na czacie, czym się zajmujesz – przygotujemy dedykowany koncept dla Ciebie.</p>
-                </div>
-                <div class="hero-btns">
-                    <a href="logowanie.html" class="btn btn-primary">Załóż konto i napisz na czacie 🔒</a>
-                    <a href="wycena.html" class="btn btn-outline">Sprawdź kalkulator wyceny →</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- STOPKA -->
+    <!-- STOPKA Z DYSKRETNĄ KŁÓDKĄ DLA WŁAŚCICIELI -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
-                    <p>Zdalne studio kreatywno-marketingowe. Budzimy uśpione marki za pomocą nowoczesnych stron WWW, brandingu i kampanii Social Media.</p>
-                </div>
-                <div class="footer-nav">
-                    <h4>Nawigacja</h4>
-                    <a href="index.html">Start</a>
-                    <a href="uslugi.html">Usługi i Pakiety</a>
-                    <a href="koncepty.html">Nasza Wizja</a>
-                    <a href="wycena.html">Kalkulator Wyceny</a>
-                    <a href="kontakt.html">Kontakt</a>
-                </div>
-                <div class="footer-nav">
-                    <h4>Strefa Klienta & Prawo</h4>
-                    <a href="logowanie.html">🔒 Logowanie / Rejestracja</a>
-                    <a href="polityka.html">Regulamin Serwisu</a>
-                    <a href="polityka.html#prywatnosc">Polityka Prywatności (RODO)</a>
-                    <button type="button" class="footer-link-btn" id="openCookiesBtn">🍪 Ustawienia Cookies</button>
-                </div>
-                <div class="footer-cta">
-                    <h4>Obudź swoją markę</h4>
-                    <p>Skonfiguruj pakiet lub załóż konto w panelu i napisz do nas bezpośrednio na czacie.</p>
-                    <a href="logowanie.html" class="btn btn-primary btn-sm">Załóż konto klienta →</a>
-                </div>
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
+                <p>Nowoczesna agencja kreatywna. Sklepy internetowe, strony WWW, wideo i skuteczny marketing.</p>
             </div>
-            <div class="footer-bottom">
-                <span>&copy; 2026 Wake The Brand. Wszystkie prawa zastrzeżone.</span>
-                <span>100% Remote Studio • Stworzone z pasją i dużą ilością kofeiny ☕</span>
+            <div class="footer-links">
+                <h4>Nawigacja</h4>
+                <a href="index.html">Start</a>
+                <a href="index.html#uslugi">Usługi</a>
+                <a href="koncepty.html">Sklepy Internetowe</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="kontakt.html">Kontakt</a>
             </div>
+            <div class="footer-links">
+                <h4>Kontakt bezpośredni</h4>
+                <a href="mailto:kontakt@wakethebrand.pl">kontakt@wakethebrand.pl</a>
+                <a href="polityka-prywatnosci.html">Polityka Prywatności & Cookies</a>
+                <button type="button" id="openCookiesBtn" class="footer-cookie-btn">⚙️ Ustawienia Cookies</button>
+            </div>
+        </div>
+        <div class="container footer-bottom" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <span>&copy; 2026 Wake The Brand. Wszelkie prawa zastrzeżone.</span>
+            <a href="logowanie.html" class="discreet-admin-lock" title="Strefa Założycieli (HQ)">🔒</a>
         </div>
     </footer>
 
     <!-- BANER COOKIES -->
-    <div class="cookie-banner hidden" id="cookieBanner">
+    <div id="cookieBanner" class="cookie-banner hidden">
         <div class="cookie-content">
-            <div class="cookie-text">
-                <strong>🍪 Szanujemy Twoją prywatność i cenimy konkrety</strong>
-                <p>Używamy plików cookies oraz pamięci przeglądarki (localStorage), aby zapewnić poprawne działanie Strefy Klienta, zapamiętać Twoją wycenę z kalkulatora oraz – za Twoją zgodą – analizować ruch na stronie. Szczegóły znajdziesz w <a href="polityka.html#cookies">Polityce Cookies</a>.</p>
-            </div>
-            <div class="cookie-btns">
-                <button type="button" class="btn btn-outline btn-sm" id="cookieEssentialBtn">Tylko niezbędne</button>
-                <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptAllBtn">Akceptuję wszystkie ⚡</button>
-            </div>
+            <h4>🍪 Dbamy o Twoją prywatność</h4>
+            <p>Używamy plików cookies niezbędnych do prawidłowego działania strony. Szczegóły znajdziesz w <a href="polityka-prywatnosci.html">Polityce Prywatności</a>.</p>
+        </div>
+        <div class="cookie-actions">
+            <button type="button" id="cookieEssentialBtn" class="btn btn-outline btn-sm">Tylko niezbędne</button>
+            <button type="button" id="cookieAcceptAllBtn" class="btn btn-primary btn-sm">Akceptuję wszystkie ⚡</button>
         </div>
     </div>
 
