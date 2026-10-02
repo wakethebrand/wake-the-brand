@@ -5,82 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Autoryzacja HQ | Wake The Brand</title>
-    <!-- Czcionki Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Główny arkusz stylów -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        .hq-login-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem 1.2rem;
-            position: relative;
-        }
-        .hq-login-card {
-            width: 100%;
-            max-width: 440px;
-            padding: 2.6rem 2.2rem;
-            border: 1px solid rgba(212, 255, 0, 0.25);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-        }
-        .hq-top-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding: 0.35rem 0.85rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background: rgba(212, 255, 0, 0.1);
-            color: var(--accent-lime);
-            border: 1px solid rgba(212, 255, 0, 0.3);
-            margin-bottom: 1rem;
-        }
-        .hq-Quick-hint {
-            margin-top: 1.5rem;
-            padding-top: 1.2rem;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.5;
-        }
-        .forgot-pass-link {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.82rem;
-            cursor: pointer;
-            padding: 0;
-            text-decoration: underline;
-            transition: color 0.2s ease;
-        }
-        .forgot-pass-link:hover {
-            color: var(--accent-lime);
-        }
-    </style>
 </head>
 <body class="dashboard-body">
 
     <div class="hq-login-wrapper">
-        <!-- Powrót na stronę główną -->
-        <div style="margin-bottom: 1.8rem; text-align: center;">
-            <a href="index.html" class="logo" style="font-size: 1.6rem;">WAKE THE BRAND<span class="dot">.</span></a>
+        <div class="section-header">
+            <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
         </div>
 
-        <!-- KARTA LOGOWANIA WYŁĄCZNIE DLA ZAŁOŻYCIELI -->
         <div class="glass-card hq-login-card">
-            <div style="text-align: center; margin-bottom: 1.8rem;">
-                <span class="hq-top-badge">🔒 Strefa Założycieli (HQ)</span>
-                <h1 style="font-size: 1.75rem; margin-bottom: 0.4rem;">Panel Administracji</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">
+            <div class="center-text">
+                <span class="section-tag">🔒 Strefa Założycieli (HQ)</span>
+                <h1>Panel Administracji</h1>
+                <p>
                     Wewnętrzny system planowania, plików Google Drive, wycen i zapytań dla właścicieli Wake The Brand.
                 </p>
             </div>
@@ -92,30 +33,28 @@
                 </div>
 
                 <div class="form-group">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                        <label for="loginPassword" style="margin-bottom: 0;">Hasło dostępu</label>
+                    <div class="label-row-between">
+                        <label for="loginPassword">Hasło dostępu</label>
                         <button type="button" id="forgotPassBtn" class="forgot-pass-link">Resetuj hasło</button>
                     </div>
                     <input type="password" id="loginPassword" required placeholder="••••••••••••">
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 0.6rem;">
+                <button type="submit" class="btn btn-primary btn-full">
                     Zaloguj do Centrum HQ ⚡
                 </button>
 
-                <div id="loginFeedback" class="form-feedback" style="text-align: center; margin-top: 1rem;"></div>
+                <div id="loginFeedback" class="form-feedback center-text"></div>
             </form>
 
-            <div class="hq-Quick-hint">
+            <div class="hq-quick-hint">
                 💡 Szybki dostęp z dowolnej podstrony:<br>
                 skrót klawiszowy <strong>Ctrl + Shift + L</strong> lub ikonka <strong>🔒</strong> w stopce.
             </div>
         </div>
 
-        <div style="margin-top: 1.6rem;">
-            <a href="index.html" style="color: var(--text-muted); font-size: 0.88rem; text-decoration: none;">
-                ← Wróć na stronę główną Wake The Brand
-            </a>
+        <div class="section-cta-row">
+            <a href="index.html" class="forgot-pass-link">← Wróć na stronę główną Wake The Brand</a>
         </div>
     </div>
 
