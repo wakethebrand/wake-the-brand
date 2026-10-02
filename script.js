@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+    // =========================================================
+    // 0. KONFIGURACJA FIREBASE & UPRAWNIENIA ZAŁOŻYCIELI (HQ)
+    // =========================================================
     const firebaseConfig = {
         apiKey: "AIzaSyBBPECw6qPYOd7g1NUFzHNQMzljUBOwL9I",
         authDomain: "wake-the-brand.firebaseapp.com",
@@ -10,7 +13,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const CONTACT_RECEIVER_EMAIL = "wakethebrand.kontakt@gmail.com";
-    const LEADS_STORAGE_KEY = 'wtb_leads_local_v1';
+
+    const ADMIN_EMAILS = [
+        'mbugajski@wakethebrand.pl',
+        'bkoczara@wakethebrand.pl',
+        'kontakt@wakethebrand.pl',
+        'contact@wakethebrand.pl',
+        'wakethebrand.kontakt@gmail.com',
+        'mateuszbugecik@gmail.com'
+    ];
+
+    const LEADS_STORAGE_KEY = 'wtb_hq_leads_v1';
+    const WORKSPACE_STORAGE_KEY = 'wtb_hq_workspace_v1';
+
+    const defaultWorkspace = {
+        tasks: [
+            {
+                id: 't_start_1',
+                title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny',
+                project: 'Wake The Brand HQ',
+                owner: 'Wspólnie',
+                status: 'todo',
+                createdAt: 'Start'
+            }
+        ],
+        scratchpad: ' Tutaj możecie zapisywać szybkie ustalenia z briefingu, hasła pomocnicze lub pomysły na rolki...',
+        driveFiles: [
+            {
+                id: 'd_start_1',
+                title: 'Główny Folder Projektowy Wake The Brand',
+                category: '📂 Folder Klienta',
+                url: 'https://drive.google.com/',
+                note: 'Główny dysk współdzielony założycieli',
+                createdAt: 'Start'
+            }
+        ],
+        savedQuotes: [],
+        chatMessages: [
+            {
+                id: 'm_start_1',
+                author: 'System HQ ⚡',
+                senderKey: 'Mateusz',
+                text: 'Wewnętrzny czat założycieli (Mateusz & Bartek) jest gotowy do pracy!',
+                time: 'Start'
+            }
+        ]
+    };
 
     function getCurrentTimeStr() {
         const now = new Date();
@@ -21,7 +69,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `${d}.${m}, ${h}:${min}`;
     }
 
-    // 1. MENU MOBILNE & BANER COOKIES
+    function isOwnerEmail(email) {
+        return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
+    }
+
+    function getLocalWorkspace() {
+        const raw = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(defaultWorkspace));
+        try {
+            return { ...defaultWorkspace, ...JSON.parse(raw) };
+        } catch (e) {
+            return JSON.parse(JSON.stringify(defaultWorkspace));
+        }
+    }
+
+    function saveLocalWorkspace(data) {
+        try { localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    }
+
+    function getLocalLeads() {
+        const raw = localStorage.getItem(LEADS_STORAGE_KEY);
+        if (!raw) return [];
+        try { return JSON.parse(raw); } catch (e) { return []; }
+    }
+
+    function saveLocalLeads(arr) {
+        try { localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+    }
+
+    // =========================================================
+    // 1. UKRYTE WEJŚCIA DO PANELU LOGOWANIA (BOSS KEY + 3x KLIK)
+    // =========================================================
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') || (e.altKey && e.key.toLowerCase() === 'l')) {
+            e.preventDefault();
+            window.location.href = 'logowanie.html';
+        }
+    });
+
+    let secretClickCount = 0;
+    let secretClickTimer = null;
+    document.querySelectorAll('.logo .dot, .footer-bottom span').forEach(el => {
+        el.addEventListener('click', (e) => {
+            secretClickCount++;
+            clearTimeout(secretClickTimer);
+            secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 900);
+            if (secretClickCount >= 3) {
+                e.preventDefault();
+                window.location.href = 'logowanie.html';
+            }
+        });
+    });
+
+    // =========================================================
+    // 2. MENU MOBILNE, BANER COOKIES, SYMULATOR & FAQ
+    // =========================================================
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
     if (hamburger && navLinks) {
@@ -57,7 +159,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 2. SYMULATOR MARKI (index.html), FAQ & KONCEPTY (koncepty.html)
     const btnSleep = document.getElementById('btnSleep');
     const btnAwake = document.getElementById('btnAwake');
     const stateSleep = document.getElementById('stateSleep');
@@ -83,6 +184,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (q) q.addEventListener('click', () => item.classList.toggle('open'));
     });
 
+    // =========================================================
+    // 3. FILTRY PORTFOLIO & MODALE (koncepty.html + portfolio.html)
+    // =========================================================
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioCards = document.querySelectorAll('.portfolio-card');
     if (filterBtns.length > 0 && portfolioCards.length > 0) {
@@ -99,32 +203,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const conceptDetails = {
-        "1": {
-            tag: "Strategia Zdalna #1: Turystyka & Noclegi",
-            title: "System rezerwacji bezpośrednich bez prowizji pośredników",
+    const modalDetailsMap = {
+        "ecom-1": {
+            tag: "Filar 01 • Budowa i Optymalizacja Sklepu Online",
+            title: "Jak wdrażamy szybki sklep internetowy nastawiony na konwersję?",
             steps: [
-                "<strong>Etap 1: Szybka strona WWW z bezpośrednim zapytaniem</strong> – projektujemy nowoczesną witrynę prezentującą pokoje, atuty okolicy i cennik.",
-                "<strong>Etap 2: Krótkie formy wideo (Reels / TikTok)</strong> – z przesłanych nagrań montujemy klimatyczne rolki pokazujące atmosferę wypoczynku.",
-                "<strong>Etap 3: Kampania przed sezonem</strong> – odpalamy celowane reklamy Meta & Google na osoby szukające noclegu."
+                "<strong>Etap 1: Architektura UX/UI Mobile-First</strong> – projektujemy układ kart produktów i koszyka tak, aby zakup na smartfonie zajmował mniej niż 60 sekund.",
+                "<strong>Etap 2: Wdrożenie płatności i logistyki</strong> – integrujemy szybkie płatności (BLIK, Apple Pay, Google Pay, karty) oraz mapy paczkomatów InPost / kurierów.",
+                "<strong>Etap 3: Szybkość i techniczne SEO</strong> – optymalizujemy kod i grafikę, aby sklep ładował się błyskawicznie i wysoko pozycjonował w Google."
             ]
         },
-        "2": {
-            tag: "Strategia Zdalna #2: Moda, Streetwear & Rękodzieło",
-            title: "Budowa zaangażowanej społeczności wokół unikalnego produktu",
+        "ecom-2": {
+            tag: "Filar 02 • Kreacja Wideo & Wizerunek Marki",
+            title: "Rolki produktowe (Reels / TikTok), które sprzedają",
             steps: [
-                "<strong>Etap 1: Wyrazista identyfikacja wizualna</strong> – tworzymy logo, dobieramy czcionki i estetykę wyróżniającą markę.",
-                "<strong>Etap 2: Kulisy powstawania (Behind The Scenes)</strong> – montujemy dynamiczne Rolki z procesu projektowania i tworzenia.",
-                "<strong>Etap 3: Komunikacja dropów i premier</strong> – budujemy napięcie wokół nowych kolekcji i kierujemy ruch na stronę."
+                "<strong>Etap 1: Koncepcja i Haki (Hooks)</strong> – przygotowujemy pomysły na krótkie wideo, które zatrzymują scrollowanie w pierwszych 3 sekundach.",
+                "<strong>Etap 2: Dynamiczny montaż z Twoich nagrań</strong> – przesyłasz nam surowe ujęcia telefonu, a my robimy cięcia, napisy, sound design i korekcję barw.",
+                "<strong>Etap 3: Spójny Branding</strong> – dbamy o to, by sklep, banery i rolki tworzyły jedną, rozpoznawalną markę."
             ]
         },
-        "3": {
-            tag: "Strategia Zdalna #3: Usługi & Gastronomia",
-            title: "Magnes na klientów w promieniu 15 km od Twojej firmy",
+        "ecom-3": {
+            tag: "Filar 03 • Skalowanie Sprzedaży & Ads",
+            title: "System reklamowy dla E-commerce",
             steps: [
-                "<strong>Etap 1: Odświeżenie strony WWW i wizytówki Google</strong> – czytelny cennik, szybki formularz i efekty pracy.",
-                "<strong>Etap 2: Wideo „Przed i Po”</strong> – dynamiczne rolki prezentujące rezultaty usług.",
-                "<strong>Etap 3: Reklama lokalna</strong> – precyzyjna kampania reklamowa wyświetlana mieszkańcom Twojego miasta."
+                "<strong>Etap 1: Analityka sprzedaży</strong> – wdrażamy Meta Pixel oraz Google Analytics 4 ze śledzeniem wartości koszyka i zakupów.",
+                "<strong>Etap 2: Kampanie produktowe i wideo</strong> – docieramy z Twoją ofertą do nowej, precyzyjnie dobranej grupy odbiorców.",
+                "<strong>Etap 3: Ratowanie porzuconych koszyków</strong> – uruchamiamy dynamiczny remarketing przypominający o dokończeniu zamówienia."
+            ]
+        },
+        "port-1": {
+            tag: "Case Study • Sklep Streetwear & Moda",
+            title: "Vintage Drop Store – Sklep pod limitowane kolekcje",
+            steps: [
+                "<strong>Wyzwanie:</strong> Klient sprzedawał wcześniej wyłącznie przez wiadomości prywatne na Instagramie, tracąc klientów przy większych premierach.",
+                "<strong>Rozwiązanie:</strong> Stworzyliśmy mroczny, nowoczesny sklep z licznikiem do dropu, automatycznymi stanami magazynowymi i płatnością BLIK jednym kliknięciem.",
+                "<strong>Rezultat:</strong> Czas ładowania 0.8s na telefonie i pełna automatyzacja wysyłek od pierwszego dnia premiery."
+            ]
+        },
+        "port-2": {
+            tag: "Case Study • Wideo Reels & TikTok",
+            title: "Clay & Craft Studio – Kampania wideo dla rękodzieła",
+            steps: [
+                "<strong>Wyzwanie:</strong> Statyczne zdjęcia produktów nie oddawały detali i nie budowały zasięgów organicznych.",
+                "<strong>Rozwiązanie:</strong> Zmontowaliśmy serię 8 dynamicznych rolek z procesu tworzenia na żywo, pakowania paczek (ASMR) i prezentacji detali.",
+                "<strong>Rezultat:</strong> Wyraźny wzrost zaangażowania na profilu i bezpośrednie przejścia z bio prosto do kart produktów."
+            ]
+        },
+        "port-3": {
+            tag: "Case Study • Redesign E-commerce",
+            title: "Neon Gear E-Shop – Optymalizacja ścieżki zakupowej",
+            steps: [
+                "<strong>Wyzwanie:</strong> Duży odsetek porzuconych koszyków na smartfonach przez skomplikowany, 5-etapowy formularz zamówienia.",
+                "<strong>Rozwiązanie:</strong> Przebudowaliśmy kartę produktu (dodając wideo-prezentację) i skróciliśmy koszyk do jednego przejrzystego ekranu.",
+                "<strong>Rezultat:</strong> Znacznie szybsze finalizowanie zamówień na urządzeniach mobilnych i wyższa średnia wartość koszyka."
+            ]
+        },
+        "port-4": {
+            tag: "Case Study • Branding & Meta Ads",
+            title: "Pulse Coffee Roasters – Rebranding i kampania zestawów",
+            steps: [
+                "<strong>Wyzwanie:</strong> Lokalna palarnia kawy chciała rozpocząć sprzedaż wysyłkową w całej Polsce.",
+                "<strong>Rozwiązanie:</strong> Zaprojektowaliśmy nowe logo, paletę barw, kreacje reklamowe oraz uruchomiliśmy kampanię Meta Ads na zestawy startowe.",
+                "<strong>Rezultat:</strong> Spójny wizerunek marki premium i regularny napływ nowych zamówień ze sklepu online."
             ]
         }
     };
@@ -137,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const data = conceptDetails[btn.getAttribute('data-concept')];
+            const data = modalDetailsMap[btn.getAttribute('data-concept')];
             if (data && modal) {
                 modalTag.innerText = data.tag;
                 modalTitle.innerText = data.title;
@@ -152,91 +292,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
     }
 
-    // 3. KALKULATOR WYCENY (wycena.html)
-    const checkboxes = document.querySelectorAll('.service-checkbox');
-    const budgetSlider = document.getElementById('adBudget');
-    const budgetValue = document.getElementById('budgetValue');
-    const summaryBudget = document.getElementById('summaryBudget');
-    const totalPriceEl = document.getElementById('totalPrice');
-    const receiptList = document.getElementById('receiptList');
-    const billingBtns = document.querySelectorAll('.billing-btn');
-    const transferQuoteBtn = document.getElementById('transferQuoteBtn');
-    const transferToPanelBtn = document.getElementById('transferToPanelBtn');
-    let currentDiscount = 1;
+    // =========================================================
+    // 4. POŁĄCZENIE Z FIREBASE (LOGOWANIE, KONTAKT & PANEL HQ)
+    // =========================================================
+    let auth = null;
+    let db = null;
+    let fbFns = {};
+    let firebaseReady = false;
+    let workspaceCache = getLocalWorkspace();
+    let leadsCache = getLocalLeads();
 
-    if (checkboxes.length > 0 && budgetSlider) {
-        function calculateTotal() {
-            let total = 0;
-            if (receiptList) receiptList.innerHTML = '';
-            checkboxes.forEach(box => {
-                if (box.checked) {
-                    const price = Math.round(parseInt(box.value, 10) * currentDiscount);
-                    total += price;
-                    if (receiptList) {
-                        const li = document.createElement('li');
-                        li.innerHTML = `<span>${box.getAttribute('data-name')}</span><strong>${price} zł</strong>`;
-                        receiptList.appendChild(li);
-                    }
-                }
-            });
-            if (total === 0 && receiptList) {
-                receiptList.innerHTML = '<li><span>Brak wybranych usług</span><strong>0 zł</strong></li>';
+    const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
+    const savedAdminEmail = localStorage.getItem('wtb_admin_email');
+    if (adminEmailLabelEl && savedAdminEmail) {
+        adminEmailLabelEl.innerText = savedAdminEmail;
+    }
+
+    async function syncWorkspaceToCloud(updatedWorkspace) {
+        workspaceCache = updatedWorkspace;
+        saveLocalWorkspace(updatedWorkspace);
+        renderHQWorkspaceUI();
+
+        if (firebaseReady && db) {
+            try {
+                await fbFns.setDoc(fbFns.doc(db, 'settings', 'hq_workspace'), updatedWorkspace, { merge: true });
+            } catch (e) {
+                console.warn('Zapis lokalny HQ:', e);
             }
-            if (totalPriceEl) totalPriceEl.innerText = total;
-            if (budgetValue) budgetValue.innerText = `${budgetSlider.value} zł`;
-            if (summaryBudget) summaryBudget.innerText = budgetSlider.value;
-        }
-
-        billingBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                billingBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentDiscount = parseFloat(btn.getAttribute('data-discount'));
-                calculateTotal();
-            });
-        });
-
-        checkboxes.forEach(box => box.addEventListener('change', calculateTotal));
-        budgetSlider.addEventListener('input', calculateTotal);
-        calculateTotal();
-
-        function buildQuoteObject() {
-            const selected = [];
-            checkboxes.forEach(box => { if (box.checked) selected.push(box.getAttribute('data-name')); });
-            const servicesText = selected.length > 0 ? selected.join(' + ') : 'Pakiet Indywidualny';
-            return {
-                servicesText,
-                totalCost: `${totalPriceEl.innerText} zł`,
-                adBudget: `${budgetSlider.value} zł`,
-                fullText: `Cześć Wake The Brand! Wybieram z kalkulatora: ${servicesText}. Szacowany koszt prac: ${totalPriceEl.innerText} zł + proponowany budżet reklamowy ok. ${budgetSlider.value} zł.`
-            };
-        }
-
-        if (transferQuoteBtn) {
-            transferQuoteBtn.addEventListener('click', () => {
-                localStorage.setItem('wakeTheBrandQuote', buildQuoteObject().fullText);
-                window.location.href = 'kontakt.html';
-            });
-        }
-        if (transferToPanelBtn) {
-            transferToPanelBtn.addEventListener('click', () => {
-                localStorage.setItem('wakeTheBrandQuoteObj', JSON.stringify(buildQuoteObject()));
-                window.location.href = 'logowanie.html#rejestracja';
-            });
         }
     }
 
-    // 4. FORMULARZ KONTAKTOWY (kontakt.html)
+    // =========================================================
+    // 5. FORMULARZ KONTAKTOWY (kontakt.html)
+    // =========================================================
     const topicPills = document.querySelectorAll('.topic-pill');
     const contactForm = document.getElementById('contactForm');
-    const messageInput = document.getElementById('message');
     const formFeedback = document.getElementById('formFeedback');
 
     topicPills.forEach(pill => pill.addEventListener('click', () => pill.classList.toggle('active')));
-    if (messageInput && localStorage.getItem('wakeTheBrandQuote')) {
-        messageInput.value = localStorage.getItem('wakeTheBrandQuote');
-        localStorage.removeItem('wakeTheBrandQuote');
-    }
 
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
@@ -246,7 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const msgVal = document.getElementById('message').value.trim();
             const activeTopics = [];
             topicPills.forEach(p => { if (p.classList.contains('active')) activeTopics.push(p.innerText); });
-            const topicsStr = activeTopics.join(', ') || 'Ogólne';
+            const topicsStr = activeTopics.join(', ') || 'Ogólne zapytanie';
 
             formFeedback.style.color = '#d4ff00';
             formFeedback.innerText = 'Wysyłanie wiadomości... ⏳';
@@ -262,23 +355,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 timestamp: Date.now()
             };
 
-            try {
-                const raw = localStorage.getItem(LEADS_STORAGE_KEY);
-                const arr = raw ? JSON.parse(raw) : [];
-                arr.unshift(leadObj);
-                localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(arr));
-            } catch (err) {}
+            const currentLeads = getLocalLeads();
+            currentLeads.unshift(leadObj);
+            saveLocalLeads(currentLeads);
 
-            try {
-                const [appMod, firestoreMod] = await Promise.all([
-                    import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
-                    import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
-                ]);
-                const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
-                const db = firestoreMod.getFirestore(app);
-                await firestoreMod.addDoc(firestoreMod.collection(db, 'contact_leads'), leadObj);
-            } catch (err) {
-                console.warn('Zapis formularza do Firebase:', err);
+            if (firebaseReady && db) {
+                try {
+                    await fbFns.setDoc(fbFns.doc(db, 'contact_leads', leadObj.id), leadObj);
+                } catch (err) {}
             }
 
             if (window.location.protocol !== 'file:') {
@@ -288,9 +372,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     body: JSON.stringify({
                         _subject: `⚡ Nowe zapytanie Wake The Brand od: ${name}`,
                         _replyto: email,
-                        Imie_lub_Firma: name,
+                        Imie_lub_Marka: name,
                         Kontakt_Klienta: email,
-                        Wybrane_Tematy: topicsStr,
+                        Wybrane_Obszary: topicsStr,
                         Wiadomosc: msgVal,
                         _template: 'table'
                     })
@@ -298,9 +382,594 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             formFeedback.style.color = '#d4ff00';
-            formFeedback.innerText = `Dzięki, ${name}! Zgłoszenie zostało zapisane i wysłane do Wake The Brand ⚡`;
+            formFeedback.innerText = `Dzięki, ${name}! Wiadomość została wysłana. Odezwiemy się maksymalnie w 24h ⚡`;
             contactForm.reset();
         });
+    }
+
+    // =========================================================
+    // 6. LOGOWANIE ZAŁOŻYCIELI (logowanie.html)
+    // =========================================================
+    const loginForm = document.getElementById('loginForm');
+    const forgotPassBtn = document.getElementById('forgotPassBtn');
+
+    if (forgotPassBtn) {
+        forgotPassBtn.addEventListener('click', async () => {
+            const emailVal = document.getElementById('loginEmail').value.trim();
+            const loginFeedback = document.getElementById('loginFeedback');
+            if (!emailVal) {
+                loginFeedback.style.color = '#ffb074';
+                loginFeedback.innerText = 'Wpisz najpierw swój służbowy e-mail powyżej.';
+                return;
+            }
+            if (firebaseReady && auth) {
+                try {
+                    await fbFns.sendPasswordResetEmail(auth, emailVal);
+                    loginFeedback.style.color = '#d4ff00';
+                    loginFeedback.innerText = `Link do resetu hasła wysłano na: ${emailVal} ⚡`;
+                } catch (err) {
+                    loginFeedback.style.color = '#fca5a5';
+                    loginFeedback.innerText = 'Nie znaleziono konta o tym adresie w Firebase Auth.';
+                }
+            }
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const loginFeedback = document.getElementById('loginFeedback');
+
+            if (!isOwnerEmail(email)) {
+                loginFeedback.style.color = '#fca5a5';
+                loginFeedback.innerText = '⛔ Dostęp wyłącznie dla autoryzowanych adresów Założycieli Wake The Brand.';
+                return;
+            }
+
+            loginFeedback.style.color = '#d4ff00';
+            loginFeedback.innerText = 'Weryfikacja dostępu HQ... ⚡';
+
+            if (firebaseReady && auth) {
+                try {
+                    await fbFns.signInWithEmailAndPassword(auth, email, password);
+                    localStorage.setItem('wtb_admin_email', email);
+                    window.location.href = 'admin.html';
+                } catch (err) {
+                    // Jeśli właściciel loguje się pierwszy raz na nowy adres z białej listy, utwórz konto w Auth
+                    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                        try {
+                            await fbFns.createUserWithEmailAndPassword(auth, email, password);
+                            localStorage.setItem('wtb_admin_email', email);
+                            window.location.href = 'admin.html';
+                            return;
+                        } catch (createErr) {}
+                    }
+                    loginFeedback.style.color = '#fca5a5';
+                    loginFeedback.innerText = 'Błędne hasło lub dane autoryzacji.';
+                }
+            } else {
+                localStorage.setItem('wtb_admin_email', email);
+                window.location.href = 'admin.html';
+            }
+        });
+    }
+
+    const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+    if (adminLogoutBtn) {
+        adminLogoutBtn.addEventListener('click', async () => {
+            if (firebaseReady && auth) {
+                try { await fbFns.signOut(auth); } catch (e) {}
+            }
+            window.location.href = 'logowanie.html';
+        });
+    }
+
+    // =========================================================
+    // 7. WEWNĘTRZNY PANEL ADMINISTRACJI HQ (admin.html)
+    // =========================================================
+    const dashNavBtns = document.querySelectorAll('.dash-nav-btn');
+    const dashTabContents = document.querySelectorAll('.dash-tab-content');
+
+    function activateHQTab(targetId) {
+        dashNavBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === targetId));
+        dashTabContents.forEach(sec => {
+            const isMatch = sec.id === targetId;
+            sec.classList.toggle('hidden', !isMatch);
+            sec.classList.toggle('active', isMatch);
+        });
+    }
+
+    dashNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => activateHQTab(btn.getAttribute('data-tab')));
+    });
+
+    // Elementy DOM w admin.html
+    const statTotalLeads = document.getElementById('statTotalLeads');
+    const sidebarLeadsCount = document.getElementById('sidebarLeadsCount');
+    const statActiveTasks = document.getElementById('statActiveTasks');
+    const statDriveFiles = document.getElementById('statDriveFiles');
+    const statSavedQuotes = document.getElementById('statSavedQuotes');
+
+    const adminLeadsList = document.getElementById('adminLeadsList');
+    const hqPlannerForm = document.getElementById('hqPlannerForm');
+    const hqPlannerList = document.getElementById('hqPlannerList');
+    const planFilterOwner = document.getElementById('planFilterOwner');
+    const hqScratchpadForm = document.getElementById('hqScratchpadForm');
+    const hqScratchpadInput = document.getElementById('hqScratchpadInput');
+    const scratchpadSavedInfo = document.getElementById('scratchpadSavedInfo');
+
+    const hqDriveForm = document.getElementById('hqDriveForm');
+    const hqDriveList = document.getElementById('hqDriveList');
+    const driveSearchInput = document.getElementById('driveSearchInput');
+
+    const calcClientName = document.getElementById('calcClientName');
+    const hqCalcChecks = document.querySelectorAll('.hq-calc-check');
+    const calcCustomAdd = document.getElementById('calcCustomAdd');
+    const calcDiscountPercent = document.getElementById('calcDiscountPercent');
+    const calcSuggestedAds = document.getElementById('calcSuggestedAds');
+    const hqCalcTotal = document.getElementById('hqCalcTotal');
+    const hqCalcSplit = document.getElementById('hqCalcSplit');
+    const hqQuoteReadyText = document.getElementById('hqQuoteReadyText');
+    const copyQuoteTextBtn = document.getElementById('copyQuoteTextBtn');
+    const saveQuoteHistoryBtn = document.getElementById('saveQuoteHistoryBtn');
+    const hqQuoteFeedback = document.getElementById('hqQuoteFeedback');
+    const hqSavedQuotesList = document.getElementById('hqSavedQuotesList');
+
+    const hqInternalChatBox = document.getElementById('hqInternalChatBox');
+    const hqInternalChatForm = document.getElementById('hqInternalChatForm');
+    const hqChatSenderSelect = document.getElementById('hqChatSenderSelect');
+    const hqInternalChatInput = document.getElementById('hqInternalChatInput');
+
+    function ownerPillHTML(owner) {
+        if (owner === 'Mateusz') return '<span class="hq-pill mateusz">🟢 Mateusz</span>';
+        if (owner === 'Bartek') return '<span class="hq-pill bartek">🔵 Bartek</span>';
+        return '<span class="hq-pill wspolnie">⚡ Wspólnie</span>';
+    }
+
+    function taskStatusBadgeHTML(status) {
+        if (status === 'done') return '<span class="badge-status done">✓ Gotowe</span>';
+        if (status === 'progress') return '<span class="badge-status progress">⏳ W trakcie</span>';
+        return '<span class="badge-status todo">📋 Do zrobienia</span>';
+    }
+
+    function leadStatusBadgeHTML(crmStatus) {
+        if (crmStatus === 'client') return '<span class="badge-status done">✅ Dogadane</span>';
+        if (crmStatus === 'contacted') return '<span class="badge-status progress">📞 W kontakcie</span>';
+        return '<span class="hq-pill wspolnie">🔥 Nowe zapytanie</span>';
+    }
+
+    // 7A. Renderowanie wiadomości z formularza (Leady)
+    function renderLeadsUI() {
+        const count = leadsCache ? leadsCache.length : 0;
+        if (statTotalLeads) statTotalLeads.innerText = count;
+        if (sidebarLeadsCount) sidebarLeadsCount.innerText = count;
+        if (!adminLeadsList) return;
+
+        if (count === 0) {
+            adminLeadsList.innerHTML = `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zapytań z formularza kontaktowego. Gdy klient wyśle formularz na stronie Kontakt, wiadomość pojawi się tutaj automatycznie.</span></li>`;
+            return;
+        }
+
+        adminLeadsList.innerHTML = leadsCache.map(lead => `
+            <li class="dash-task-item" style="align-items:flex-start;">
+                <div class="task-meta">
+                    <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                        <strong style="font-size:1rem;">${lead.name}</strong>
+                        <span style="color:var(--accent-lime);font-size:0.85rem;">(${lead.email})</span>
+                        ${leadStatusBadgeHTML(lead.crmStatus)}
+                    </div>
+                    <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.35rem;">
+                        Wybrane obszary: <strong style="color:#fff;">${lead.topics || 'Ogólne'}</strong> • Wysłano: ${lead.createdAt || ''}
+                    </div>
+                    <p style="margin:0.4rem 0;color:#e5e7eb;line-height:1.55;">„${lead.message}”</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;">
+                    <button type="button" class="btn-mini btn-accent" data-quote-lead="${lead.name}">🧮 Zrób wycenę →</button>
+                    <button type="button" class="btn-mini" data-cycle-lead="${lead.id}">🔄 Status</button>
+                    <a href="mailto:${lead.email}?subject=Oferta współpracy Wake The Brand" class="btn-mini">✉️ Odpisz</a>
+                    <button type="button" class="btn-mini btn-danger" data-del-lead="${lead.id}">🗑️</button>
+                </div>
+            </li>
+        `).join('');
+
+        adminLeadsList.querySelectorAll('[data-quote-lead]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const clientName = btn.getAttribute('data-quote-lead');
+                if (calcClientName) {
+                    calcClientName.value = clientName;
+                    recalculateInternalQuote();
+                }
+                activateHQTab('hq-tab-pricing');
+            });
+        });
+
+        adminLeadsList.querySelectorAll('[data-cycle-lead]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-cycle-lead');
+                const target = leadsCache.find(l => l.id === id);
+                if (!target) return;
+                const cur = target.crmStatus || 'new';
+                target.crmStatus = cur === 'new' ? 'contacted' : (cur === 'contacted' ? 'client' : 'new');
+                saveLocalLeads(leadsCache);
+                renderLeadsUI();
+                if (firebaseReady && db) {
+                    try { await fbFns.setDoc(fbFns.doc(db, 'contact_leads', id), { crmStatus: target.crmStatus }, { merge: true }); } catch (e) {}
+                }
+            });
+        });
+
+        adminLeadsList.querySelectorAll('[data-del-lead]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-del-lead');
+                leadsCache = leadsCache.filter(l => l.id !== id);
+                saveLocalLeads(leadsCache);
+                renderLeadsUI();
+                if (firebaseReady && db) {
+                    try { await fbFns.deleteDoc(fbFns.doc(db, 'contact_leads', id)); } catch (e) {}
+                }
+            });
+        });
+    }
+
+    // 7B. Renderowanie Planera, Dysku Google, Historii Wycen i Czatu
+    function renderHQWorkspaceUI() {
+        const tasks = workspaceCache.tasks || [];
+        const driveFiles = workspaceCache.driveFiles || [];
+        const savedQuotes = workspaceCache.savedQuotes || [];
+        const chatMessages = workspaceCache.chatMessages || [];
+
+        const activeTasksCount = tasks.filter(t => t.status !== 'done').length;
+        if (statActiveTasks) statActiveTasks.innerText = activeTasksCount;
+        if (statDriveFiles) statDriveFiles.innerText = driveFiles.length;
+        if (statSavedQuotes) statSavedQuotes.innerText = savedQuotes.length;
+
+        // Scratchpad
+        if (hqScratchpadInput && !hqScratchpadInput.dataset.editing) {
+            hqScratchpadInput.value = workspaceCache.scratchpad || '';
+        }
+
+        // Planer zadań
+        if (hqPlannerList) {
+            const ownerFilter = planFilterOwner ? planFilterOwner.value : 'all';
+            const filteredTasks = tasks.filter(t => ownerFilter === 'all' || t.owner === ownerFilter);
+
+            hqPlannerList.innerHTML = filteredTasks.length === 0
+                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zadań dla wybranego filtra.</span></li>`
+                : filteredTasks.map(t => `
+                    <li class="dash-task-item">
+                        <div class="task-meta">
+                            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                                <strong>${t.title}</strong>
+                                ${ownerPillHTML(t.owner)}
+                            </div>
+                            <small>${t.project || 'Ogólne'} • Dodano: ${t.createdAt || 'Teraz'}</small>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.45rem;">
+                            <button type="button" class="btn-mini" data-cycle-hq-task="${t.id}">${taskStatusBadgeHTML(t.status)}</button>
+                            <button type="button" class="btn-mini btn-danger" data-del-hq-task="${t.id}">🗑️</button>
+                        </div>
+                    </li>
+                `).join('');
+
+            hqPlannerList.querySelectorAll('[data-cycle-hq-task]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-cycle-hq-task');
+                    const task = workspaceCache.tasks.find(x => x.id === id);
+                    if (!task) return;
+                    task.status = task.status === 'todo' ? 'progress' : (task.status === 'progress' ? 'done' : 'todo');
+                    syncWorkspaceToCloud(workspaceCache);
+                });
+            });
+
+            hqPlannerList.querySelectorAll('[data-del-hq-task]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-del-hq-task');
+                    workspaceCache.tasks = workspaceCache.tasks.filter(x => x.id !== id);
+                    syncWorkspaceToCloud(workspaceCache);
+                });
+            });
+        }
+
+        // Katalog Google Drive
+        if (hqDriveList) {
+            const q = (driveSearchInput ? driveSearchInput.value : '').trim().toLowerCase();
+            const filteredDrive = driveFiles.filter(d => {
+                if (!q) return true;
+                return `${d.title} ${d.category} ${d.note}`.toLowerCase().includes(q);
+            });
+
+            hqDriveList.innerHTML = filteredDrive.length === 0
+                ? `<div class="drive-card-row"><span style="color:var(--text-muted);">Brak podpiętych plików pasujących do wyszukiwania.</span></div>`
+                : filteredDrive.map(d => `
+                    <div class="drive-card-row">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.25rem;">
+                                <span class="hq-pill mateusz">${d.category}</span>
+                                <strong style="font-size:1rem;">${d.title}</strong>
+                            </div>
+                            <small style="color:var(--text-muted);">${d.note || 'Brak opisu'} • Dodano: ${d.createdAt}</small>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️ Otwórz w Drive →</a>
+                            <button type="button" class="btn-mini btn-danger" data-del-drive="${d.id}">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            hqDriveList.querySelectorAll('[data-del-drive]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-del-drive');
+                    workspaceCache.driveFiles = workspaceCache.driveFiles.filter(x => x.id !== id);
+                    syncWorkspaceToCloud(workspaceCache);
+                });
+            });
+        }
+
+        // Zapisane wyceny
+        if (hqSavedQuotesList) {
+            hqSavedQuotesList.innerHTML = savedQuotes.length === 0
+                ? `<li class="dash-task-item"><span style="color:var(--text-muted);">Brak zapisanych wycen. Użyj kalkulatora obok i kliknij „Zapisz wycenę na liście”.</span></li>`
+                : savedQuotes.map(qItem => `
+                    <li class="dash-task-item">
+                        <div class="task-meta">
+                            <strong>${qItem.client} – <span style="color:var(--accent-lime);">${qItem.total}</span></strong>
+                            <small>${qItem.services} • Podział 50/50: ${qItem.split} • ${qItem.date}</small>
+                        </div>
+                        <button type="button" class="btn-mini btn-danger" data-del-quote="${qItem.id}">🗑️</button>
+                    </li>
+                `).join('');
+
+            hqSavedQuotesList.querySelectorAll('[data-del-quote]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-del-quote');
+                    workspaceCache.savedQuotes = workspaceCache.savedQuotes.filter(x => x.id !== id);
+                    syncWorkspaceToCloud(workspaceCache);
+                });
+            });
+        }
+
+        // Wewnętrzny czat założycieli
+        if (hqInternalChatBox) {
+            hqInternalChatBox.innerHTML = chatMessages.map(m => `
+                <div class="chat-bubble ${m.senderKey === 'Bartek' ? 'from-agency' : 'from-client'}">
+                    <span class="chat-sender">${m.author} • ${m.time}</span>
+                    <div>${m.text}</div>
+                </div>
+            `).join('');
+            hqInternalChatBox.scrollTop = hqInternalChatBox.scrollHeight;
+        }
+    }
+
+    // 7C. Wewnętrzny Kalkulator Wyceny – obliczenia na żywo
+    function recalculateInternalQuote() {
+        if (!hqCalcTotal) return;
+        let baseSum = 0;
+        const selectedNames = [];
+
+        hqCalcChecks.forEach(ch => {
+            if (ch.checked) {
+                baseSum += parseInt(ch.value, 10) || 0;
+                selectedNames.push(ch.getAttribute('data-name'));
+            }
+        });
+
+        const customAdd = parseInt(calcCustomAdd?.value, 10) || 0;
+        const discountPct = Math.min(80, Math.max(0, parseInt(calcDiscountPercent?.value, 10) || 0));
+        const suggestedAds = parseInt(calcSuggestedAds?.value, 10) || 0;
+
+        const subtotal = Math.max(0, baseSum + customAdd);
+        const finalTotal = Math.round(subtotal * (1 - discountPct / 100));
+        const perOwner = Math.round(finalTotal / 2);
+
+        hqCalcTotal.innerText = `${finalTotal.toLocaleString('pl-PL')} zł`;
+        if (hqCalcSplit) hqCalcSplit.innerText = `po ${perOwner.toLocaleString('pl-PL')} zł (Mateusz / Bartek)`;
+
+        const clientLabel = (calcClientName?.value || '').trim() || 'Twojej Marki';
+        const servicesLines = selectedNames.length > 0
+            ? selectedNames.map(s => `• ${s}`).join('\n')
+            : '• Indywidualny zakres prac dopasowany do projektu';
+
+        if (hqQuoteReadyText) {
+            hqQuoteReadyText.value =
+`Cześć! Przygotowaliśmy indywidualną propozycję współpracy dla ${clientLabel} w Wake The Brand ⚡
+
+Zakres prac:
+${servicesLines}
+
+💰 Całkowity koszt realizacji: ${finalTotal.toLocaleString('pl-PL')} zł${discountPct > 0 ? ` (po uwzględnieniu ${discountPct}% rabatu)` : ''}
+📈 Rekomendowany budżet reklamowy Ads: ok. ${suggestedAds.toLocaleString('pl-PL')} zł / mies.
+
+Daj znać, czy taki zakres jest dla Ciebie odpowiedni – możemy startować od razu!
+Zespół Wake The Brand`;
+        }
+
+        return {
+            client: clientLabel,
+            services: selectedNames.join(' + ') || 'Wycena indywidualna',
+            total: `${finalTotal.toLocaleString('pl-PL')} zł`,
+            split: `po ${perOwner.toLocaleString('pl-PL')} zł`
+        };
+    }
+
+    if (hqCalcTotal) {
+        hqCalcChecks.forEach(ch => ch.addEventListener('change', recalculateInternalQuote));
+        [calcClientName, calcCustomAdd, calcDiscountPercent, calcSuggestedAds].forEach(inp => {
+            if (inp) inp.addEventListener('input', recalculateInternalQuote);
+        });
+        recalculateInternalQuote();
+    }
+
+    if (copyQuoteTextBtn && hqQuoteReadyText) {
+        copyQuoteTextBtn.addEventListener('click', () => {
+            navigator.clipboard?.writeText(hqQuoteReadyText.value);
+            if (hqQuoteFeedback) {
+                hqQuoteFeedback.style.color = '#d4ff00';
+                hqQuoteFeedback.innerText = '📋 Skopiowano gotową treść oferty do schowka!';
+                setTimeout(() => { hqQuoteFeedback.innerText = ''; }, 2500);
+            }
+        });
+    }
+
+    if (saveQuoteHistoryBtn) {
+        saveQuoteHistoryBtn.addEventListener('click', () => {
+            const summary = recalculateInternalQuote();
+            workspaceCache.savedQuotes = workspaceCache.savedQuotes || [];
+            workspaceCache.savedQuotes.unshift({
+                id: 'q_' + Date.now(),
+                ...summary,
+                date: getCurrentTimeStr()
+            });
+            syncWorkspaceToCloud(workspaceCache);
+            if (hqQuoteFeedback) {
+                hqQuoteFeedback.style.color = '#d4ff00';
+                hqQuoteFeedback.innerText = '💾 Zapisano wycenę na liście poniżej!';
+                setTimeout(() => { hqQuoteFeedback.innerText = ''; }, 2500);
+            }
+        });
+    }
+
+    // 7D. Obsługa formularzy w admin.html (Planer, Notatnik, Drive, Czat)
+    if (hqPlannerForm) {
+        hqPlannerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            workspaceCache.tasks = workspaceCache.tasks || [];
+            workspaceCache.tasks.unshift({
+                id: 'task_' + Date.now(),
+                title: document.getElementById('planTaskTitle').value.trim(),
+                project: document.getElementById('planTaskProject').value.trim() || 'Wake The Brand',
+                owner: document.getElementById('planTaskOwner').value,
+                status: document.getElementById('planTaskPriority').value,
+                createdAt: getCurrentTimeStr()
+            });
+            hqPlannerForm.reset();
+            syncWorkspaceToCloud(workspaceCache);
+        });
+    }
+
+    if (planFilterOwner) {
+        planFilterOwner.addEventListener('change', renderHQWorkspaceUI);
+    }
+
+    if (hqScratchpadForm && hqScratchpadInput) {
+        hqScratchpadInput.addEventListener('focus', () => { hqScratchpadInput.dataset.editing = '1'; });
+        hqScratchpadInput.addEventListener('blur', () => { delete hqScratchpadInput.dataset.editing; });
+        hqScratchpadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            workspaceCache.scratchpad = hqScratchpadInput.value;
+            syncWorkspaceToCloud(workspaceCache);
+            if (scratchpadSavedInfo) {
+                scratchpadSavedInfo.innerText = '✓ Zapisano!';
+                setTimeout(() => { scratchpadSavedInfo.innerText = ''; }, 2000);
+            }
+        });
+    }
+
+    if (hqDriveForm) {
+        hqDriveForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            workspaceCache.driveFiles = workspaceCache.driveFiles || [];
+            workspaceCache.driveFiles.unshift({
+                id: 'drive_' + Date.now(),
+                title: document.getElementById('driveItemTitle').value.trim(),
+                category: document.getElementById('driveItemCategory').value,
+                url: document.getElementById('driveItemUrl').value.trim(),
+                note: document.getElementById('driveItemNote').value.trim(),
+                createdAt: getCurrentTimeStr()
+            });
+            hqDriveForm.reset();
+            syncWorkspaceToCloud(workspaceCache);
+        });
+    }
+
+    if (driveSearchInput) {
+        driveSearchInput.addEventListener('input', renderHQWorkspaceUI);
+    }
+
+    if (hqInternalChatForm && hqInternalChatInput) {
+        hqInternalChatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = hqInternalChatInput.value.trim();
+            if (!text) return;
+            const senderKey = hqChatSenderSelect ? hqChatSenderSelect.value : 'Mateusz';
+            workspaceCache.chatMessages = workspaceCache.chatMessages || [];
+            workspaceCache.chatMessages.push({
+                id: 'msg_' + Date.now(),
+                senderKey,
+                author: senderKey === 'Bartek' ? '🔵 Bartek Koczara' : '🟢 Mateusz Bugajski',
+                text,
+                time: getCurrentTimeStr()
+            });
+            hqInternalChatInput.value = '';
+            syncWorkspaceToCloud(workspaceCache);
+        });
+    }
+
+    if (adminLeadsList || hqPlannerList) {
+        renderLeadsUI();
+        renderHQWorkspaceUI();
+    }
+
+    // =========================================================
+    // 8. INICJALIZACJA FIREBASE W TLE (REALTIME SYNC)
+    // =========================================================
+    try {
+        const [appMod, authMod, firestoreMod] = await Promise.all([
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js'),
+            import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
+        ]);
+
+        const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
+        auth = authMod.getAuth(app);
+        db = firestoreMod.initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
+        fbFns = { ...authMod, ...firestoreMod };
+        firebaseReady = true;
+
+        const statusEl = document.getElementById('firebaseStatusText');
+        if (statusEl) {
+            statusEl.style.color = '#d4ff00';
+            statusEl.innerText = '● Połączono z chmurą Firebase HQ';
+        }
+
+        if (typeof auth.authStateReady === 'function') await auth.authStateReady();
+
+        if (auth.currentUser && auth.currentUser.email) {
+            const email = auth.currentUser.email.toLowerCase();
+            localStorage.setItem('wtb_admin_email', email);
+            if (adminEmailLabelEl) adminEmailLabelEl.innerText = email;
+            if (hqChatSenderSelect && email.includes('bkoczara')) {
+                hqChatSenderSelect.value = 'Bartek';
+            }
+        }
+
+        if (adminLeadsList || hqPlannerList) {
+            // Synchronizacja wewnętrznego obszaru roboczego HQ (Planer, Drive, Wyceny, Czat)
+            fbFns.onSnapshot(fbFns.doc(db, 'settings', 'hq_workspace'), (docSnap) => {
+                if (docSnap.exists()) {
+                    workspaceCache = { ...defaultWorkspace, ...docSnap.data() };
+                    saveLocalWorkspace(workspaceCache);
+                    renderHQWorkspaceUI();
+                } else {
+                    syncWorkspaceToCloud(workspaceCache);
+                }
+            });
+
+            // Synchronizacja wiadomości z formularza kontaktowego
+            fbFns.onSnapshot(fbFns.collection(db, 'contact_leads'), (colSnap) => {
+                if (!colSnap.empty) {
+                    const arr = [];
+                    colSnap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+                    arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    leadsCache = arr;
+                    saveLocalLeads(arr);
+                    renderLeadsUI();
+                }
+            });
+        }
+    } catch (err) {
+        console.warn('Praca w trybie pamięci lokalnej:', err);
     }
 
 });
