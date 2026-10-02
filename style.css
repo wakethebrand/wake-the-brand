@@ -88,28 +88,25 @@ ul {
 }
 
 /* =========================================================
-   2. NOWY, CZYSTY NAVBAR (BEZ NAKŁADANIA STYLÓW)
+   2. PIERWOTNY, MINIMALISTYCZNY NAVBAR
    ========================================================= */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px;
     z-index: 1000;
-    background: rgba(7, 8, 12, 0.88);
+    background: rgba(7, 8, 12, 0.82);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    height: 78px;
 }
 
 .logo {
@@ -118,8 +115,6 @@ ul {
     font-weight: 700;
     letter-spacing: -0.5px;
     color: #ffffff;
-    display: inline-flex;
-    align-items: center;
 }
 
 .logo .dot {
@@ -129,34 +124,31 @@ ul {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
-    padding: 0.35rem;
-    border-radius: 16px;
+    gap: 2rem;
 }
 
 .nav-links a:not(.btn) {
-    padding: 0.55rem 1.15rem;
-    border-radius: 12px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 500;
     color: var(--text-muted);
+    position: relative;
+    padding: 0.25rem 0;
 }
 
-.nav-links a:not(.btn):hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.04);
-}
-
+.nav-links a:not(.btn):hover,
 .nav-links a:not(.btn).active {
-    color: #07080c;
-    background: var(--accent-lime);
-    font-weight: 700;
+    color: var(--accent-lime);
 }
 
-.nav-links .btn-sm {
-    margin-left: 0.4rem;
+.nav-links a:not(.btn).active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-lime);
+    border-radius: 2px;
 }
 
 .hamburger {
@@ -166,7 +158,7 @@ ul {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.4rem;
 }
 
 .hamburger span {
@@ -252,6 +244,7 @@ ul {
 .btn-primary:hover {
     background: #e1ff3d;
     transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(212, 255, 0, 0.32);
 }
 
 .btn-outline {
@@ -277,9 +270,9 @@ ul {
 }
 
 .btn-sm {
-    padding: 0.55rem 1.15rem;
+    padding: 0.58rem 1.2rem;
     font-size: 0.85rem;
-    border-radius: 12px;
+    border-radius: 11px;
 }
 
 .btn-full {
@@ -1419,28 +1412,19 @@ ul {
 
     .nav-links {
         position: absolute;
-        top: 80px;
+        top: 78px;
         left: 0;
         width: 100%;
         background: rgba(7, 8, 12, 0.98);
-        border: none;
         border-bottom: 1px solid var(--border-color);
-        border-radius: 0;
         flex-direction: column;
         padding: 1.5rem;
-        gap: 0.8rem;
+        gap: 1.2rem;
         display: none;
     }
 
     .nav-links.open {
         display: flex;
-    }
-
-    .nav-links a:not(.btn),
-    .nav-links .btn-sm {
-        width: 100%;
-        text-align: center;
-        margin-left: 0;
     }
 
     .stat-divider {
