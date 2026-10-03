@@ -9,18 +9,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
 
-    <!-- WBUDOWANE STYLE SLIDERA I KONTENERÓW (GWARANCJA DZIAŁANIA OD RĘKI) -->
     <style>
+        /* GWARANCJA BLURA NA NAVBARZE STRONY GŁÓWNEJ */
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(7, 8, 12, 0.78) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* KONTENER ATUTÓW POD HERO – BEZ WYCHODZENIA POZA KAFELKI */
         .hero-stats {
             display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            align-items: center !important;
-            gap: 1.5rem !important;
-            max-width: 900px !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            align-items: stretch !important;
+            gap: 1.25rem !important;
+            max-width: 920px !important;
             margin: 0 auto !important;
-            padding: 1.6rem 2rem !important;
+            padding: 1.5rem 1.75rem !important;
         }
         .stat-item {
             display: flex !important;
@@ -28,21 +41,53 @@
             align-items: center !important;
             justify-content: center !important;
             text-align: center !important;
-            padding: 0 1rem !important;
+            padding: 0.25rem 0.85rem !important;
             border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+            min-width: 0 !important;
+            overflow-wrap: break-word !important;
         }
         .stat-item:last-child {
             border-right: none !important;
         }
 
-        /* CAŁY ŻÓŁTY/LIMONKOWY SLIDER Z WYCIĘTYMI (PRZEZROCZYSTYMI) NAPISAMI */
+        /* KAFELKI SYMULATORA I USŁUG – IDEALNE DOPASOWANIE TEKSTU W ŚRODKU */
+        .sim-grid,
+        .services-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 1.5rem !important;
+            align-items: stretch !important;
+        }
+        .sim-card,
+        .service-card {
+            min-width: 0 !important;
+            height: 100% !important;
+            padding: 1.65rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+        .sim-card h3,
+        .service-card h3 {
+            font-size: clamp(1.08rem, 1.5vw, 1.24rem) !important;
+            line-height: 1.3 !important;
+            margin-bottom: 0.6rem !important;
+        }
+        .sim-card p,
+        .service-card p,
+        .service-list li {
+            font-size: 0.9rem !important;
+            line-height: 1.55 !important;
+        }
+
+        /* ŻÓŁTY SLIDER BEZ MIX-BLEND-MODE (NIE PSUJE BLURA NA NAVBARZE!) */
         .strengths-marquee {
             width: 100%;
             overflow: hidden;
             background-color: #d4ff00 !important;
-            color: #000000 !important;
-            mix-blend-mode: multiply; /* Czarny tekst wycina dziurę na wylot, odsłaniając tło strony pod spodem */
-            box-shadow: 0 0 35px rgba(212, 255, 0, 0.35);
+            box-shadow: 0 0 35px rgba(212, 255, 0, 0.28);
             padding: 1.05rem 0;
             margin: 1.5rem 0 2.5rem;
             position: relative;
@@ -60,9 +105,6 @@
             animation: wtbCutoutScroll 26s linear infinite !important;
             animation-play-state: running !important;
         }
-        .strengths-marquee:hover .marquee-track {
-            animation-play-state: running !important;
-        }
         .marquee-group {
             display: flex;
             align-items: center;
@@ -71,31 +113,36 @@
         }
         .marquee-item {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.15rem;
+            font-size: 1.12rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.4px;
             text-transform: uppercase;
-            color: #000000 !important;
+            color: #07080c !important;
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
             text-shadow: none !important;
             padding: 0 !important;
-            border-radius: 0 !important;
             white-space: nowrap;
             display: inline-block;
         }
         .marquee-sep {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.22rem;
             font-weight: 700;
-            color: #000000 !important;
-            filter: none !important;
+            color: #07080c !important;
             display: inline-block;
         }
         @keyframes wtbCutoutScroll {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        @media (max-width: 992px) {
+            .sim-grid,
+            .services-grid {
+                grid-template-columns: 1fr !important;
+            }
         }
         @media (max-width: 768px) {
             .hero-stats {
@@ -111,7 +158,7 @@
                 padding-bottom: 0 !important;
             }
             .marquee-item {
-                font-size: 0.98rem;
+                font-size: 0.96rem;
             }
         }
     </style>
@@ -171,7 +218,7 @@
         </div>
     </section>
 
-    <!-- CAŁY ŻÓŁTY SLIDER Z PRZEZROCZYSTYMI NAPISAMI I SEPARATOREM | -->
+    <!-- CAŁY ŻÓŁTY SLIDER Z WIELKIMI LITERAMI I SEPARATOREM | -->
     <div class="strengths-marquee" aria-label="Nasze mocne strony">
         <div class="marquee-track">
             <div class="marquee-group">
@@ -227,19 +274,25 @@
             <div class="sim-box glass-card" id="stateSleep">
                 <div class="sim-grid">
                     <div class="sim-card negative">
-                        <span class="sim-icon">💸</span>
-                        <h3>Przepalany budżet w Google, Meta i Allegro Ads</h3>
-                        <p>Kampanie ustawione bez segmentacji, wykluczeń i kontroli stawek – generują wysoki koszt kliknięcia zamiast realnych zamówień.</p>
+                        <div>
+                            <span class="sim-icon">💸</span>
+                            <h3>Przepalany budżet w Google, Meta i Allegro Ads</h3>
+                            <p>Kampanie ustawione bez segmentacji, wykluczeń i kontroli stawek – generują wysoki koszt kliknięcia zamiast realnych zamówień.</p>
+                        </div>
                     </div>
                     <div class="sim-card negative">
-                        <span class="sim-icon">📉</span>
-                        <h3>Brak analityki i ślepe decyzje</h3>
-                        <p>Błędnie skonfigurowane GA4, GTM i Pixel. Nie wiadomo, które źródło ruchu faktycznie zarabia, a które generuje straty.</p>
+                        <div>
+                            <span class="sim-icon">📉</span>
+                            <h3>Brak analityki i ślepe decyzje</h3>
+                            <p>Błędnie skonfigurowane GA4, GTM i Pixel. Nie wiadomo, które źródło ruchu faktycznie zarabia, a które generuje straty.</p>
+                        </div>
                     </div>
                     <div class="sim-card negative">
-                        <span class="sim-icon">🕸️</span>
-                        <h3>Niewidoczne oferty na Allegro i w Google (SEO)</h3>
-                        <p>Nieoptymalne tytuły aukcji, błędy techniczne w sklepie i brak dedykowanych stron docelowych (Landing Page) pod kampanie.</p>
+                        <div>
+                            <span class="sim-icon">🕸️</span>
+                            <h3>Niewidoczne oferty na Allegro i w Google (SEO)</h3>
+                            <p>Nieoptymalne tytuły aukcji, błędy techniczne w sklepie i brak dedykowanych stron docelowych (Landing Page) pod kampanie.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -248,19 +301,25 @@
             <div class="sim-box glass-card hidden" id="stateAwake">
                 <div class="sim-grid">
                     <div class="sim-card positive">
-                        <span class="sim-icon">🎯</span>
-                        <h3>Rentowne kampanie Google, Meta i Allegro Ads</h3>
-                        <p>Precyzyjnie zoptymalizowane kampanie produktowe i remarketingowe nastawione na niski koszt pozyskania klienta i wysoki ROAS.</p>
+                        <div>
+                            <span class="sim-icon">🎯</span>
+                            <h3>Rentowne kampanie Google, Meta i Allegro Ads</h3>
+                            <p>Precyzyjnie zoptymalizowane kampanie produktowe i remarketingowe nastawione na niski koszt pozyskania klienta i wysoki ROAS.</p>
+                        </div>
                     </div>
                     <div class="sim-card positive">
-                        <span class="sim-icon">📊</span>
-                        <h3>Pełna analityka i przejrzysta strategia</h3>
-                        <p>Bezawaryjne śledzenie każdej złotówki w koszyku, dokładne audyty kont reklamowych i jasny plan skalowania sprzedaży.</p>
+                        <div>
+                            <span class="sim-icon">📊</span>
+                            <h3>Pełna analityka i przejrzysta strategia</h3>
+                            <p>Bezawaryjne śledzenie każdej złotówki w koszyku, dokładne audyty kont reklamowych i jasny plan skalowania sprzedaży.</p>
+                        </div>
                     </div>
                     <div class="sim-card positive">
-                        <span class="sim-icon">🚀</span>
-                        <h3>Dominacja w wynikach SEO i na Allegro</h3>
-                        <p>Dopracowane oferty Allegro, skuteczne pozycjonowanie organiczne oraz szybkie Landing Page'e, które zamieniają ruch w klientów.</p>
+                        <div>
+                            <span class="sim-icon">🚀</span>
+                            <h3>Dominacja w wynikach SEO i na Allegro</h3>
+                            <p>Dopracowane oferty Allegro, skuteczne pozycjonowanie organiczne oraz szybkie Landing Page'e, które zamieniają ruch w klientów.</p>
+                        </div>
                     </div>
                 </div>
             </div>
