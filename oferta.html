@@ -9,14 +9,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=12">
 
-    <!-- WBUDOWANE STYLE PODSTRON OFERTY (GWARANCJA DZIAŁANIA BEZ WZGLĘDU NA CACHE) -->
     <style>
+        /* GWARANCJA BLURA NA NAVBARZE */
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(7, 8, 12, 0.78) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* SIATKA 10 KAFELKÓW OFERTY – ELASTYCZNA, NIC NIE WYCHODZI POZA OBRYS */
         .wtb-offer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.6rem;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1.5rem;
             align-items: stretch;
         }
         .wtb-offer-tile {
@@ -24,10 +37,32 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
+            min-width: 0;
+            padding: 1.75rem;
             cursor: pointer;
             transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            overflow: hidden;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .wtb-offer-tile h3 {
+            font-size: clamp(1.15rem, 1.6vw, 1.32rem);
+            line-height: 1.3;
+            margin: 0.35rem 0 0.65rem;
+        }
+        .wtb-offer-tile p {
+            font-size: 0.91rem;
+            line-height: 1.58;
+            color: #9ca3af;
+            margin-bottom: 1.15rem;
+        }
+        .wtb-offer-tile .service-list {
+            margin-bottom: 1.2rem;
+        }
+        .wtb-offer-tile .service-list li {
+            font-size: 0.87rem;
+            line-height: 1.48;
+            margin-bottom: 0.45rem;
         }
         .wtb-offer-tile:hover {
             border-color: rgba(212, 255, 0, 0.65);
@@ -35,16 +70,16 @@
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 25px rgba(212, 255, 0, 0.12);
         }
         .wtb-tile-cta {
-            margin-top: 1.4rem;
+            margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.78rem 1.2rem;
+            padding: 0.72rem 1.1rem;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
             font-weight: 700;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: #ffffff;
             transition: all 0.25s ease;
         }
@@ -55,7 +90,7 @@
             box-shadow: 0 0 20px rgba(212, 255, 0, 0.35);
         }
 
-        /* DEDYKOWANA PODSTRONA USŁUGI - UKŁAD PREMIUM */
+        /* DEDYKOWANA PODSTRONA USŁUGI - WSZYSTKO MIEŚCI SIĘ W KAFELKACH */
         .wtb-subpage-topbar {
             display: flex;
             justify-content: space-between;
@@ -66,159 +101,173 @@
         }
         .wtb-hero-banner {
             display: grid;
-            grid-template-columns: 1.35fr 1fr;
-            gap: 2.5rem;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+            gap: 2rem;
             align-items: center;
-            padding: 2.8rem;
+            padding: 2.3rem;
             border-radius: 24px;
             background: radial-gradient(circle at top right, rgba(212, 255, 0, 0.14), rgba(14, 17, 26, 0.92) 65%);
             border: 1px solid rgba(212, 255, 0, 0.32);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            margin-bottom: 2.2rem;
+            margin-bottom: 2rem;
         }
         .wtb-hero-banner h1 {
-            font-size: clamp(2.1rem, 4vw, 3.1rem);
-            margin: 0.6rem 0 1.1rem;
-            line-height: 1.15;
+            font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+            margin: 0.4rem 0 1rem;
+            line-height: 1.18;
+            overflow-wrap: break-word;
         }
         .wtb-hero-lead {
             color: #d1d5db;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            margin-bottom: 1.8rem;
+            font-size: 0.98rem;
+            line-height: 1.68;
+            margin-bottom: 1.6rem;
         }
         .wtb-hero-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.85rem;
             flex-wrap: wrap;
         }
         .wtb-kpi-stack {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.85rem;
+            min-width: 0;
         }
         .wtb-kpi-box {
             display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            padding: 1.25rem 1.5rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+            padding: 1.1rem 1.35rem;
             border-radius: 16px;
-            background: rgba(7, 8, 12, 0.78);
+            background: rgba(7, 8, 12, 0.82);
             border: 1px solid rgba(212, 255, 0, 0.28);
+            min-width: 0;
+            overflow-wrap: break-word;
         }
         .wtb-kpi-box strong {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.75rem;
+            font-size: 1.45rem;
             color: #d4ff00;
-            min-width: 95px;
             text-shadow: 0 0 14px rgba(212, 255, 0, 0.35);
+            line-height: 1.2;
         }
         .wtb-kpi-box span {
             color: #e5e7eb;
-            font-size: 0.9rem;
+            font-size: 0.86rem;
             line-height: 1.45;
         }
 
         /* 3 KARTY FILARÓW USŁUGI */
         .wtb-pillars-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2.2rem;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2rem;
+            align-items: stretch;
         }
         .wtb-pillar-card {
-            padding: 1.8rem;
+            padding: 1.6rem;
             border-radius: 20px;
-            background: rgba(17, 20, 30, 0.8);
+            background: rgba(17, 20, 30, 0.82);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-top: 3px solid #d4ff00;
             display: flex;
             flex-direction: column;
-            gap: 0.65rem;
+            gap: 0.55rem;
+            min-width: 0;
+            overflow-wrap: break-word;
         }
         .wtb-pillar-card h3 {
-            font-size: 1.2rem;
+            font-size: 1.12rem;
+            line-height: 1.32;
             color: #ffffff;
         }
         .wtb-pillar-card p {
             color: #9ca3af;
-            font-size: 0.92rem;
-            line-height: 1.65;
+            font-size: 0.89rem;
+            line-height: 1.6;
         }
 
         /* 2 KOLUMNY DOLNE: PROCES + ZAKRES PRAC */
         .wtb-detail-split {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 2rem;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+            gap: 1.8rem;
             align-items: stretch;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2.2rem;
         }
         .wtb-detail-panel {
-            padding: 2.2rem;
+            padding: 1.9rem;
             border-radius: 22px;
             background: rgba(17, 20, 30, 0.78);
             border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            min-width: 0;
+            overflow-wrap: break-word;
         }
         .wtb-detail-panel h2 {
-            font-size: 1.55rem;
-            margin: 0.4rem 0 1rem;
+            font-size: clamp(1.3rem, 2.2vw, 1.55rem);
+            margin: 0.4rem 0 0.9rem;
         }
         .wtb-desc-paragraphs p {
             color: #9ca3af;
-            font-size: 0.95rem;
-            line-height: 1.75;
-            margin-bottom: 1.1rem;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
         }
         .wtb-step-list {
             display: flex;
             flex-direction: column;
-            gap: 0.9rem;
-            margin-top: 1.2rem;
+            gap: 0.8rem;
+            margin-top: 1rem;
         }
         .wtb-step-item {
             display: flex;
-            gap: 1rem;
+            gap: 0.9rem;
             align-items: flex-start;
-            padding: 1.15rem 1.3rem;
+            padding: 1rem 1.15rem;
             border-radius: 14px;
             background: rgba(0, 0, 0, 0.45);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            min-width: 0;
         }
         .wtb-step-num {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             background: #d4ff00;
             color: #07080c;
-            padding: 0.3rem 0.6rem;
+            padding: 0.28rem 0.55rem;
             border-radius: 8px;
             flex-shrink: 0;
             margin-top: 0.1rem;
         }
         .wtb-step-text {
-            font-size: 0.92rem;
+            font-size: 0.89rem;
             color: #e5e7eb;
             line-height: 1.55;
+            min-width: 0;
         }
         .wtb-deliverables-list {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            margin: 1.2rem 0 1.8rem;
+            gap: 0.65rem;
+            margin: 1rem 0 1.5rem;
         }
         .wtb-deliverables-list li {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.85rem 1.1rem;
+            gap: 0.65rem;
+            padding: 0.78rem 1rem;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 0.92rem;
+            font-size: 0.89rem;
+            line-height: 1.5;
             color: #f3f4f6;
         }
         .wtb-deliverables-list li span.check-neon {
@@ -227,15 +276,15 @@
             flex-shrink: 0;
         }
         .wtb-outcome-banner {
-            padding: 1.25rem 1.4rem;
+            padding: 1.15rem 1.3rem;
             border-radius: 16px;
             background: linear-gradient(90deg, rgba(212, 255, 0, 0.12), rgba(255, 107, 0, 0.08));
             border: 1px solid rgba(212, 255, 0, 0.38);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.3rem;
         }
         .wtb-outcome-banner small {
             display: block;
-            font-size: 0.74rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 0.8px;
             color: #d4ff00;
@@ -244,10 +293,12 @@
         }
         .wtb-outcome-banner strong {
             color: #ffffff;
-            font-size: 0.98rem;
+            font-size: 0.93rem;
+            line-height: 1.45;
+            display: block;
         }
         .wtb-switch-bar {
-            padding: 2rem;
+            padding: 1.8rem;
             border-radius: 20px;
             background: rgba(17, 20, 30, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -257,8 +308,8 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 0.6rem;
-            margin-top: 1.2rem;
+            gap: 0.55rem;
+            margin-top: 1.1rem;
         }
 
         @media (max-width: 992px) {
@@ -267,8 +318,9 @@
             .wtb-detail-split {
                 grid-template-columns: 1fr;
             }
-            .wtb-hero-banner {
-                padding: 1.8rem;
+            .wtb-hero-banner,
+            .wtb-detail-panel {
+                padding: 1.5rem;
             }
         }
     </style>
@@ -551,7 +603,7 @@
                         <div>
                             <span class="section-tag">Zakres Prac</span>
                             <h2>Co dokładnie otrzymujesz?</h2>
-                            <p style="color:#9ca3af; font-size:0.92rem;">Każdy element wdrażamy kompleksowo z pełnym raportowaniem wyników:</p>
+                            <p style="color:#9ca3af; font-size:0.9rem;">Każdy element wdrażamy kompleksowo z pełnym raportowaniem wyników:</p>
                             <ul class="wtb-deliverables-list" id="subpageDeliverables"></ul>
                         </div>
 
@@ -643,7 +695,7 @@
                 metrics: [
                     { val: "-35%", label: "Średnia redukcja marnowanego budżetu po wdrożeniu zaleceń" },
                     { val: "100%", label: "Weryfikacji ustawień konwersji, stawek i struktury kampanii" },
-                    { val: "PDF", label: "Gotowy raport naprawczy z listą zmian krok po kroku" }
+                    { val: "Raport PDF", label: "Gotowy dokument naprawczy z listą zmian krok po kroku" }
                 ],
                 pillars: [
                     { title: "🔍 Weryfikacja Pomiaru i Danych", desc: "Sprawdzamy, czy algorytmy reklamowe optymalizują kampanie pod realne zakupy i przychód, czy pod puste kliknięcia i zdublowane zdarzenia." },
@@ -673,9 +725,9 @@
                 title: "Optymalizacja ofert Allegro",
                 lead: "Kompleksowa przebudowa Twoich aukcji na Allegro pod kątem algorytmu trafności oraz psychologii zakupowej klientów. Sprawiamy, że Twoje oferty wyświetlają się wyżej i znacznie częściej kończą się zakupem.",
                 metrics: [
-                    { val: "TOP", label: "Wyższe pozycje ofert po sortowaniu według Trafności" },
-                    { val: "+Konwersja", label: "Czytelne, sekcyjne opisy zbijające obiekcje kupujących" },
-                    { val: "100%", label: "Uzupełnionych parametrów i fraz kluczowych w tytułach" }
+                    { val: "TOP Trafność", label: "Wyższe pozycje ofert na liście wyników wyszukiwania Allegro" },
+                    { val: "Wyższa Konwersja", label: "Czytelne, sekcyjne opisy zbijające obiekcje kupujących" },
+                    { val: "100% Parametrów", label: "Kompletne atrybuty i frazy kluczowe w tytułach" }
                 ],
                 pillars: [
                     { title: "🏷️ Tytuły i Parametry pod Algorytm", desc: "Wykorzystujemy limit znaków w tytule o najbardziej konwertujące frazy i uzupełniamy 100% parametrów kategorii." },
@@ -706,8 +758,8 @@
                 lead: "Wdrożenie i naprawa kompletnego ekosystemu pomiarowego (Google Analytics 4, Google Tag Manager, Meta Pixel, API Konwersji). Zyskujesz 100% pewności, skąd przychodzą Twoi klienci i która reklama realnie zarabia.",
                 metrics: [
                     { val: "GA4 + GTM", label: "Pełne śledzenie każdego kroku w lejku zakupowym" },
-                    { val: "CAPI", label: "Wdrożenie API Konwersji odpornego na blokady przeglądarek" },
-                    { val: "100%", label: "Czystej atrybucji z wykluczeniem bramek płatniczych" }
+                    { val: "Meta CAPI", label: "Wdrożenie API Konwersji odpornego na blokady przeglądarek" },
+                    { val: "100% Danych", label: "Czysta atrybucja z wykluczeniem bramek płatniczych" }
                 ],
                 pillars: [
                     { title: "🛒 Enhanced E-commerce w GA4", desc: "Mierzymy wyświetlenia produktów, dodania do koszyka, przejścia do kasy oraz dokładną wartość i ID każdego zamówienia." },
@@ -737,9 +789,9 @@
                 title: "Audyt SEO",
                 lead: "Kompleksowe badanie techniczne, strukturalne i treściowe Twojego sklepu internetowego lub strony WWW. Odkrywamy wszystkie bariery, które blokują Twoją witrynę przed zdobyciem wysokich pozycji w Google.",
                 metrics: [
-                    { val: "On-Site", label: "Pełne prześwietlenie kodu, nagłówków i architektury URL" },
-                    { val: "CWV", label: "Analiza szybkości ładowania i Core Web Vitals na telefonach" },
-                    { val: "Plan", label: "Konkretna lista wytycznych dla programisty i copywritera" }
+                    { val: "Audyt On-Site", label: "Pełne prześwietlenie kodu, nagłówków i architektury URL" },
+                    { val: "Core Web Vitals", label: "Analiza szybkości ładowania i wydajności na telefonach" },
+                    { val: "Plan Wdrożeń", label: "Konkretna lista wytycznych dla programisty i copywritera" }
                 ],
                 pillars: [
                     { title: "⚙️ Audyt Techniczny i Indeksacja", desc: "Sprawdzamy pliki Sitemap.xml, robots.txt, przekierowania, błędy 404/500, tagi canonical oraz dane z Google Search Console." },
@@ -769,9 +821,9 @@
                 title: "Kampanie Allegro Ads",
                 lead: "Aktywne zarządzanie i optymalizacja kampanii reklamowych w ekosystemie Allegro. Skupiamy się na obniżaniu udziału kosztu reklamy w sprzedaży (ACOS) i agresywnym skalowaniu najbardziej zyskownych produktów.",
                 metrics: [
-                    { val: "ACOS", label: "Ścisła kontrola udziału kosztu reklamy w przychodzie" },
-                    { val: "ROAS", label: "Podział kampanii według marżowości i rotacji towaru" },
-                    { val: "CPC", label: "Bieżąca optymalizacja stawek za kliknięcie i wykluczeń" }
+                    { val: "Niski ACOS", label: "Ścisła kontrola udziału kosztu reklamy w przychodzie" },
+                    { val: "Wysoki ROAS", label: "Podział kampanii według marżowości i rotacji towaru" },
+                    { val: "Kontrola CPC", label: "Bieżąca optymalizacja stawek za kliknięcie i wykluczeń" }
                 ],
                 pillars: [
                     { title: "📦 Segmentacja Marżowa Oferty", desc: "Dzielimy asortyment na osobne kampanie dla bestsellerów, produktów wysokomarżowych, nowości i towarów sezonowych." },
@@ -801,9 +853,9 @@
                 title: "Kampanie Google Ads",
                 lead: "Pozyskujemy klientów dokładnie w tym ułamku sekundy, w którym wpisują w wyszukiwarkę Google nazwę Twojego produktu lub usługi. Budujemy i optymalizujemy kampanie nastawione na maksymalny zwrot z inwestycji (ROAS).",
                 metrics: [
-                    { val: "Shopping", label: "Dopracowane kampanie produktowe i Google Merchant Center" },
-                    { val: "Search", label: "Precyzyjne kampanie na frazy o najwyższej intencji zakupu" },
-                    { val: "ROAS", label: "Optymalizacja budżetu pod realną wartość koszyka" }
+                    { val: "Shopping & PMax", label: "Dopracowane kampanie produktowe i Google Merchant Center" },
+                    { val: "Google Search", label: "Precyzyjne kampanie na frazy o najwyższej intencji zakupu" },
+                    { val: "Maksymalny ROAS", label: "Optymalizacja budżetu pod realną wartość koszyka" }
                 ],
                 pillars: [
                     { title: "🛍️ Google Shopping & Performance Max", desc: "Optymalizujemy plik produktowy (Feed) i dzielimy kampanie PMax/Shopping tak, aby budżet trafiał na produkty, na których zarabiasz najwięcej." },
@@ -833,8 +885,8 @@
                 title: "Kampanie Facebook i Instagram Ads",
                 lead: "Tworzymy skuteczne lejki reklamowe w ekosystemie Meta. Generujemy popyt na Twoje produkty wśród nowych odbiorców i automatycznie odzyskujemy porzucone koszyki w Twoim sklepie.",
                 metrics: [
-                    { val: "DPA", label: "Dynamiczny remarketing katalogowy ratujący koszyki" },
-                    { val: "Lejek", label: "Podział na pozyskiwanie nowego ruchu i domykanie sprzedaży" },
+                    { val: "Katalogi DPA", label: "Dynamiczny remarketing produktowy ratujący koszyki" },
+                    { val: "Pełny Lejek", label: "Podział na pozyskiwanie nowego ruchu i domykanie sprzedaży" },
                     { val: "Testy A/B", label: "Systematyczne testowanie kreacji, nagłówków i grup" }
                 ],
                 pillars: [
@@ -847,7 +899,7 @@
                     "Projektujemy wieloetapowe kampanie w Menedżerze Reklam Meta. Spinamy katalog produktów Twojego sklepu z Pixelem i API Konwersji, dzielimy budżet na poszczególne piętra lejka sprzedażowego i optymalizujemy kampanie pod kątem ROAS oraz kosztu pozyskania zamówienia (CPA)."
                 ],
                 process: [
-                    "<strong>Konfiguracja katalogu produktów i zdarzeń Pixel / CAPI</strong> – sprawdzamy poprawność przesyłania stanów magazynowe, cen i zdarzeń koszykowych.",
+                    "<strong>Konfiguracja katalogu produktów i zdarzeń Pixel / CAPI</strong> – sprawdzamy poprawność przesyłania stanów magazynowych, cen i zdarzeń koszykowych.",
                     "<strong>Uruchomienie lejka Prospecting + Remarketing</strong> – wdrażamy kampanie na zimny ruch oraz dynamiczny remarketing produktowy.",
                     "<strong>Testy A/B i skalowanie budżetu</strong> – wyłączamy drogie zestawy reklam i skalujemy te, które generują najwyższy zwrot."
                 ],
@@ -865,9 +917,9 @@
                 title: "Landing page pod kampanię",
                 lead: "Projektujemy i kodujemy ultraszybkie, dedykowane strony docelowe stworzone w jednym celu: zamienić jak największy procent kliknięć z płatnych reklam w realny zakup lub zapytanie ofertowe.",
                 metrics: [
-                    { val: "< 1s", label: "Błyskawiczny czas ładowania na smartfonach" },
+                    { val: "< 1 sekunda", label: "Błyskawiczny czas ładowania na smartfonach" },
                     { val: "UX / CRO", label: "Układ sekcji zaprojektowany pod maksymalną konwersję" },
-                    { val: "100%", label: "Gotowego opomiarowania pod Google Ads i Meta Pixel" }
+                    { val: "100% Analityki", label: "Gotowe opomiarowanie pod Google Ads i Meta Pixel" }
                 ],
                 pillars: [
                     { title: "🧭 Perswazyjna Architektura Sekcji", desc: "Układamy nagłówki, argumenty sprzedażowe, korzyści, opinie i wezwania do działania (CTA) tak, aby prowadziły klienta prosto do celu." },
@@ -897,9 +949,9 @@
                 title: "Strategia marketingowa",
                 lead: "Kompleksowa mapa drogowa skalowania sprzedaży dla Twojego sklepu lub marki. Definiujemy grupy docelowe, przewagi konkurencyjne, dobór kanałów reklamowych oraz optymalny podział budżetu.",
                 metrics: [
-                    { val: "360°", label: "Analiza rynku, marżowości oferty i działań konkurencji" },
-                    { val: "Lejek", label: "Spójny plan łączący Google, Meta, Allegro i SEO" },
-                    { val: "KPI", label: "Precyzyjny podział budżetu i harmonogram wdrożenia" }
+                    { val: "Analiza 360°", label: "Badanie rynku, marżowości oferty i działań konkurencji" },
+                    { val: "Spójny Lejek", label: "Plan łączący Google Ads, Meta Ads, Allegro i SEO" },
+                    { val: "Jasne KPI", label: "Precyzyjny podział budżetu i harmonogram wdrożenia" }
                 ],
                 pillars: [
                     { title: "🔬 Analiza Konkurencji i USP", desc: "Prześwietlamy, jak komunikują się i sprzedają Twoi konkurenci, oraz wyciągamy najmocniejsze wyróżniki Twojej oferty." },
@@ -929,13 +981,13 @@
                 title: "Pozycjonowanie (SEO)",
                 lead: "Systematyczne budowanie wysokiej widoczności Twojego sklepu internetowego lub strony w bezpłatnych wynikach wyszukiwania Google. Pozyskuj klientów każdego dnia bez opłat za pojedyncze kliknięcie.",
                 metrics: [
-                    { val: "TOP 10", label: "Budowa pozycji na frazy zakupowe i kategorie produktowe" },
-                    { val: "0 zł", label: "Kosztu za pojedyncze kliknięcie w wynikach organicznych" },
-                    { val: "Wzrost", label: "Długofalowa wartość domeny i niezależność od płatnych reklam" }
+                    { val: "TOP 10 Google", label: "Budowa pozycji na frazy zakupowe i kategorie produktowe" },
+                    { val: "0 zł za klik", label: "Brak opłat za pojedyncze przejście z wyników organicznych" },
+                    { val: "Stały Wzrost", label: "Długofalowa wartość domeny i niezależność od płatnych reklam" }
                 ],
                 pillars: [
                     { title: "🛠️ Stała Optymalizacja Techniczna", desc: "Dbamy o bezbłędną indeksację, strukturę nagłówków H1–H3, meta dane, dane strukturalne Schema oraz szybkie działanie sklepu." },
-                    { title: "✍️️ Content Marketing & Kategorie", desc: "Tworzymy i optymalizujemy opisy kategorii, kart produktów oraz artykuły eksperckie odpowiadające na pytania kupujących." },
+                    { title: "✍️ Content Marketing & Kategorie", desc: "Tworzymy i optymalizujemy opisy kategorii, kart produktów oraz artykuły eksperckie odpowiadające na pytania kupujących." },
                     { title: "🔗 Bezpieczny Link Building", desc: "Wzmacniamy autorytet Twojej domeny w oczach Google poprzez pozyskiwanie wartościowych, tematycznych odnośników zewnętrznych." }
                 ],
                 description: [
