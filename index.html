@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=11">
 
-    <!-- WBUDOWANE STYLE NEONOWEGO SLIDERA I KONTENERÓW (GWARANCJA DZIAŁANIA OD RĘKI) -->
+    <!-- WBUDOWANE STYLE SLIDERA I KONTENERÓW (GWARANCJA DZIAŁANIA OD RĘKI) -->
     <style>
         .hero-stats {
             display: grid !important;
@@ -34,23 +34,30 @@
         .stat-item:last-child {
             border-right: none !important;
         }
+
+        /* CAŁY ŻÓŁTY/LIMONKOWY SLIDER Z WYCIĘTYMI (PRZEZROCZYSTYMI) NAPISAMI */
         .strengths-marquee {
             width: 100%;
             overflow: hidden;
-            background: linear-gradient(90deg, rgba(7, 8, 12, 0.96) 0%, rgba(212, 255, 0, 0.1) 50%, rgba(7, 8, 12, 0.96) 100%);
-            border-top: 1px solid rgba(212, 255, 0, 0.6);
-            border-bottom: 1px solid rgba(212, 255, 0, 0.6);
-            box-shadow: 0 0 38px rgba(212, 255, 0, 0.18), inset 0 0 24px rgba(212, 255, 0, 0.09);
-            padding: 1.15rem 0;
+            background-color: #d4ff00 !important;
+            color: #000000 !important;
+            mix-blend-mode: multiply; /* Czarny tekst wycina dziurę na wylot, odsłaniając tło strony pod spodem */
+            box-shadow: 0 0 35px rgba(212, 255, 0, 0.35);
+            padding: 1.05rem 0;
             margin: 1.5rem 0 2.5rem;
             position: relative;
             z-index: 2;
             pointer-events: none !important;
+            user-select: none;
+        }
+        .strengths-marquee::before,
+        .strengths-marquee::after {
+            display: none !important;
         }
         .marquee-track {
             display: flex;
             width: max-content;
-            animation: wtbNeonScroll 26s linear infinite !important;
+            animation: wtbCutoutScroll 26s linear infinite !important;
             animation-play-state: running !important;
         }
         .strengths-marquee:hover .marquee-track {
@@ -59,41 +66,34 @@
         .marquee-group {
             display: flex;
             align-items: center;
-            gap: 1.6rem;
-            padding-right: 1.6rem;
+            gap: 2.2rem;
+            padding-right: 2.2rem;
         }
         .marquee-item {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: #d4ff00;
-            text-shadow: 0 0 12px rgba(212, 255, 0, 0.6);
-            background: rgba(212, 255, 0, 0.1);
-            border: 1px solid rgba(212, 255, 0, 0.55);
-            box-shadow: 0 0 18px rgba(212, 255, 0, 0.2), inset 0 0 10px rgba(212, 255, 0, 0.1);
-            padding: 0.5rem 1.2rem;
-            border-radius: 999px;
+            color: #000000 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
             white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-        }
-        .neon-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #d4ff00;
-            box-shadow: 0 0 10px #d4ff00, 0 0 18px #d4ff00;
             display: inline-block;
         }
         .marquee-sep {
-            color: #ff6b00;
-            font-size: 1.15rem;
-            filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.85));
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #000000 !important;
+            filter: none !important;
+            display: inline-block;
         }
-        @keyframes wtbNeonScroll {
+        @keyframes wtbCutoutScroll {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-50%, 0, 0); }
         }
@@ -109,6 +109,9 @@
             .stat-item:last-child {
                 border-bottom: none !important;
                 padding-bottom: 0 !important;
+            }
+            .marquee-item {
+                font-size: 0.98rem;
             }
         }
     </style>
@@ -168,40 +171,40 @@
         </div>
     </section>
 
-    <!-- NEONOWY SLIDER (MARQUEE) Z NASZYMI MOCNYMI STRONAMI (PŁYNIE CAŁY CZAS) -->
+    <!-- CAŁY ŻÓŁTY SLIDER Z PRZEZROCZYSTYMI NAPISAMI I SEPARATOREM | -->
     <div class="strengths-marquee" aria-label="Nasze mocne strony">
         <div class="marquee-track">
             <div class="marquee-group">
-                <span class="marquee-item"><span class="neon-dot"></span> NASTAWIENIE NA ROAS & REALNY ZYSK</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> 100% TRANSPARENTNOŚCI DANYCH W GA4 & GTM</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> BEZPOŚREDNI KONTAKT Z ZAŁOŻYCIELAMI</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> ZERO PRZEPALANIA BUDŻETU REKLAMOWEGO</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> SPECJALIZACJA E-COMMERCE & ALGORYTM ALLEGRO</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> WŁASNE ZAPLECZE TECHNICZNE, SEO & WEB DEV</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> SZYBKA REAKCJA I WDROŻENIA W 24H</span>
-                <span class="marquee-sep">⚡</span>
+                <span class="marquee-item">NASTAWIENIE NA ROAS I REALNY ZYSK</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">100% TRANSPARENTNOŚCI DANYCH W GA4 I GTM</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">BEZPOŚREDNI KONTAKT Z ZAŁOŻYCIELAMI</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">ZERO PRZEPALANIA BUDŻETU REKLAMOWEGO</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">SPECJALIZACJA E-COMMERCE I ALGORYTM ALLEGRO</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">WŁASNE ZAPLECZE TECHNICZNE, SEO I WEB DEV</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">SZYBKA REAKCJA I WDROŻENIA W 24H</span>
+                <span class="marquee-sep">|</span>
             </div>
             <div class="marquee-group" aria-hidden="true">
-                <span class="marquee-item"><span class="neon-dot"></span> NASTAWIENIE NA ROAS & REALNY ZYSK</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> 100% TRANSPARENTNOŚCI DANYCH W GA4 & GTM</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> BEZPOŚREDNI KONTAKT Z ZAŁOŻYCIELAMI</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> ZERO PRZEPALANIA BUDŻETU REKLAMOWEGO</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> SPECJALIZACJA E-COMMERCE & ALGORYTM ALLEGRO</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> WŁASNE ZAPLECZE TECHNICZNE, SEO & WEB DEV</span>
-                <span class="marquee-sep">⚡</span>
-                <span class="marquee-item"><span class="neon-dot"></span> SZYBKA REAKCJA I WDROŻENIA W 24H</span>
-                <span class="marquee-sep">⚡</span>
+                <span class="marquee-item">NASTAWIENIE NA ROAS I REALNY ZYSK</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">100% TRANSPARENTNOŚCI DANYCH W GA4 I GTM</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">BEZPOŚREDNI KONTAKT Z ZAŁOŻYCIELAMI</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">ZERO PRZEPALANIA BUDŻETU REKLAMOWEGO</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">SPECJALIZACJA E-COMMERCE I ALGORYTM ALLEGRO</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">WŁASNE ZAPLECZE TECHNICZNE, SEO I WEB DEV</span>
+                <span class="marquee-sep">|</span>
+                <span class="marquee-item">SZYBKA REAKCJA I WDROŻENIA W 24H</span>
+                <span class="marquee-sep">|</span>
             </div>
         </div>
     </div>
