@@ -9,7 +9,269 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=10">
+
+    <!-- WBUDOWANE STYLE PODSTRON OFERTY (GWARANCJA DZIAŁANIA BEZ WZGLĘDU NA CACHE) -->
+    <style>
+        .wtb-offer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.6rem;
+            align-items: stretch;
+        }
+        .wtb-offer-tile {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .wtb-offer-tile:hover {
+            border-color: rgba(212, 255, 0, 0.65);
+            transform: translateY(-5px);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 25px rgba(212, 255, 0, 0.12);
+        }
+        .wtb-tile-cta {
+            margin-top: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.78rem 1.2rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #ffffff;
+            transition: all 0.25s ease;
+        }
+        .wtb-offer-tile:hover .wtb-tile-cta {
+            background: #d4ff00;
+            color: #07080c;
+            border-color: #d4ff00;
+            box-shadow: 0 0 20px rgba(212, 255, 0, 0.35);
+        }
+
+        /* DEDYKOWANA PODSTRONA USŁUGI - UKŁAD PREMIUM */
+        .wtb-subpage-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+        .wtb-hero-banner {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+            padding: 2.8rem;
+            border-radius: 24px;
+            background: radial-gradient(circle at top right, rgba(212, 255, 0, 0.14), rgba(14, 17, 26, 0.92) 65%);
+            border: 1px solid rgba(212, 255, 0, 0.32);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            margin-bottom: 2.2rem;
+        }
+        .wtb-hero-banner h1 {
+            font-size: clamp(2.1rem, 4vw, 3.1rem);
+            margin: 0.6rem 0 1.1rem;
+            line-height: 1.15;
+        }
+        .wtb-hero-lead {
+            color: #d1d5db;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+        }
+        .wtb-hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .wtb-kpi-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .wtb-kpi-box {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            background: rgba(7, 8, 12, 0.78);
+            border: 1px solid rgba(212, 255, 0, 0.28);
+        }
+        .wtb-kpi-box strong {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            color: #d4ff00;
+            min-width: 95px;
+            text-shadow: 0 0 14px rgba(212, 255, 0, 0.35);
+        }
+        .wtb-kpi-box span {
+            color: #e5e7eb;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+
+        /* 3 KARTY FILARÓW USŁUGI */
+        .wtb-pillars-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.2rem;
+        }
+        .wtb-pillar-card {
+            padding: 1.8rem;
+            border-radius: 20px;
+            background: rgba(17, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 3px solid #d4ff00;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+        .wtb-pillar-card h3 {
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+        .wtb-pillar-card p {
+            color: #9ca3af;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        /* 2 KOLUMNY DOLNE: PROCES + ZAKRES PRAC */
+        .wtb-detail-split {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            align-items: stretch;
+            margin-bottom: 2.5rem;
+        }
+        .wtb-detail-panel {
+            padding: 2.2rem;
+            border-radius: 22px;
+            background: rgba(17, 20, 30, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .wtb-detail-panel h2 {
+            font-size: 1.55rem;
+            margin: 0.4rem 0 1rem;
+        }
+        .wtb-desc-paragraphs p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            line-height: 1.75;
+            margin-bottom: 1.1rem;
+        }
+        .wtb-step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-top: 1.2rem;
+        }
+        .wtb-step-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1.15rem 1.3rem;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .wtb-step-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #d4ff00;
+            color: #07080c;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+        .wtb-step-text {
+            font-size: 0.92rem;
+            color: #e5e7eb;
+            line-height: 1.55;
+        }
+        .wtb-deliverables-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.2rem 0 1.8rem;
+        }
+        .wtb-deliverables-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.85rem 1.1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.92rem;
+            color: #f3f4f6;
+        }
+        .wtb-deliverables-list li span.check-neon {
+            color: #d4ff00;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .wtb-outcome-banner {
+            padding: 1.25rem 1.4rem;
+            border-radius: 16px;
+            background: linear-gradient(90deg, rgba(212, 255, 0, 0.12), rgba(255, 107, 0, 0.08));
+            border: 1px solid rgba(212, 255, 0, 0.38);
+            margin-bottom: 1.5rem;
+        }
+        .wtb-outcome-banner small {
+            display: block;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #d4ff00;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .wtb-outcome-banner strong {
+            color: #ffffff;
+            font-size: 0.98rem;
+        }
+        .wtb-switch-bar {
+            padding: 2rem;
+            border-radius: 20px;
+            background: rgba(17, 20, 30, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+        .wtb-switch-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+        }
+
+        @media (max-width: 992px) {
+            .wtb-hero-banner,
+            .wtb-pillars-row,
+            .wtb-detail-split {
+                grid-template-columns: 1fr;
+            }
+            .wtb-hero-banner {
+                padding: 1.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -35,7 +297,7 @@
     </header>
 
     <!-- =========================================================
-         WIDOK 1: GŁÓWNA SIATKA INTERAKTYWNYCH KAFELKÓW OFERTY
+         WIDOK 1: GŁÓWNY KATALOG USŁUG (KLIKALNE KAFELKI)
          ========================================================= -->
     <div id="offerMainCatalogView">
         <section class="page-top-space center-text">
@@ -44,7 +306,7 @@
                     <span class="section-tag">Katalog Usług • Wake The Brand</span>
                     <h1>Rozwiązania nastawione na<br><span class="gradient-text">mierzalny wzrost sprzedaży</span></h1>
                     <p>
-                        Kliknij w wybrany kafelek poniżej, aby przejść do dedykowanej karty usługi, poznać dokładny proces wdrożenia oraz sprawdzić, co zyska Twój biznes.
+                        Wybierz interesujący Cię obszar poniżej. Kliknięcie w kafelek otworzy dedykowaną podstronę usługi z dokładnym zakresem prac, procesem wdrożenia i korzyściami dla Twojej firmy.
                     </p>
                 </div>
             </div>
@@ -52,10 +314,10 @@
 
         <section class="section-padding">
             <div class="container">
-                <div class="services-grid">
+                <div class="wtb-offer-grid">
 
-                    <!-- KAFELEK: AUDYT KONTA REKLAMOWEGO -->
-                    <a href="#audyt-konta" class="service-card glass-card offer-tile-link">
+                    <!-- AUDYT KONTA REKLAMOWEGO -->
+                    <a href="#audyt-konta" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Weryfikacja Budżetu & ROAS</span>
                             <h3>Audyt konta reklamowego</h3>
@@ -66,11 +328,14 @@
                                 <li>✓ Gotowy plan naprawczy podnoszący ROAS</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: OPTYMALIZACJA OFERT ALLEGRO -->
-                    <a href="#optymalizacja-allegro" class="service-card glass-card offer-tile-link">
+                    <!-- OPTYMALIZACJA OFERT ALLEGRO -->
+                    <a href="#optymalizacja-allegro" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Marketplace & Trafność</span>
                             <h3>Optymalizacja ofert Allegro</h3>
@@ -81,11 +346,14 @@
                                 <li>✓ Kompletna parametryzacja i wielowariantowość</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: KONFIGURACJA ANALITYKI -->
-                    <a href="#konfiguracja-analityki" class="service-card glass-card offer-tile-link">
+                    <!-- KONFIGURACJA ANALITYKI -->
+                    <a href="#konfiguracja-analityki" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Dane & Pomiar Konwersji</span>
                             <h3>Konfiguracja analityki</h3>
@@ -96,11 +364,14 @@
                                 <li>✓ Pełne śledzenie wartości koszyka i zakupów</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: AUDYT SEO -->
-                    <a href="#audyt-seo" class="service-card glass-card offer-tile-link">
+                    <!-- AUDYT SEO -->
+                    <a href="#audyt-seo" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Technologia & Wyszukiwarka</span>
                             <h3>Audyt SEO</h3>
@@ -111,11 +382,14 @@
                                 <li>✓ Konkretny plan wdrożeniowy dla programisty</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: KAMPANIE ALLEGRO ADS -->
-                    <a href="#kampanie-allegro-ads" class="service-card glass-card offer-tile-link">
+                    <!-- KAMPANIE ALLEGRO ADS -->
+                    <a href="#kampanie-allegro-ads" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Skalowanie Marketplace</span>
                             <h3>Kampanie Allegro Ads</h3>
@@ -126,11 +400,14 @@
                                 <li>✓ Kontrola stawek CPC i segmentacja marżowa</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: KAMPANIE GOOGLE ADS -->
-                    <a href="#kampanie-google-ads" class="service-card glass-card offer-tile-link">
+                    <!-- KAMPANIE GOOGLE ADS -->
+                    <a href="#kampanie-google-ads" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Google Ecosystem</span>
                             <h3>Kampanie Google Ads</h3>
@@ -141,11 +418,14 @@
                                 <li>✓ Remarketing dynamiczny i ochrona budżetu</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: KAMPANIE FACEBOOK I INSTAGRAM ADS -->
-                    <a href="#kampanie-meta-ads" class="service-card glass-card offer-tile-link">
+                    <!-- KAMPANIE FACEBOOK I INSTAGRAM ADS -->
+                    <a href="#kampanie-meta-ads" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Paid Social & Remarketing</span>
                             <h3>Kampanie Facebook i Instagram Ads</h3>
@@ -156,11 +436,14 @@
                                 <li>✓ Testy A/B kreacji i optymalizacja kosztu zakupu</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: LANDING PAGE POD KAMPANIĘ -->
-                    <a href="#landing-page" class="service-card glass-card offer-tile-link">
+                    <!-- LANDING PAGE POD KAMPANIĘ -->
+                    <a href="#landing-page" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Web Design & Konwersja</span>
                             <h3>Landing page pod kampanię</h3>
@@ -171,11 +454,14 @@
                                 <li>✓ Pełne spięcie z analityką i formularzami</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: STRATEGIA MARKETINGOWA -->
-                    <a href="#strategia-marketingowa" class="service-card glass-card offer-tile-link">
+                    <!-- STRATEGIA MARKETINGOWA -->
+                    <a href="#strategia-marketingowa" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Planowanie & Lejek Sprzedażowy</span>
                             <h3>Strategia marketingowa</h3>
@@ -186,11 +472,14 @@
                                 <li>✓ Plan podziału budżetu i harmonogram działań</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
-                    <!-- KAFELEK: POZYCJONOWANIE (SEO) -->
-                    <a href="#pozycjonowanie-seo" class="service-card glass-card offer-tile-link">
+                    <!-- POZYCJONOWANIE (SEO) -->
+                    <a href="#pozycjonowanie-seo" class="glass-card wtb-offer-tile">
                         <div>
                             <span class="section-tag">Długofalowy Ruch Organiczny</span>
                             <h3>Pozycjonowanie (SEO)</h3>
@@ -201,7 +490,10 @@
                                 <li>✓ Bezpieczny Link Building i raportowanie efektów</li>
                             </ul>
                         </div>
-                        <span class="offer-tile-cta">Przejdź do opisu usługi →</span>
+                        <div class="wtb-tile-cta">
+                            <span>Poznaj szczegóły usługi</span>
+                            <span>→</span>
+                        </div>
                     </a>
 
                 </div>
@@ -210,53 +502,79 @@
     </div>
 
     <!-- =========================================================
-         WIDOK 2: DEDYKOWANA PODSTRONA WYBRANEJ USŁUGI (DYNAMICZNA)
+         WIDOK 2: DEDYKOWANA PODSTRONA USŁUGI (NOWY DESIGN PREMIUM)
          ========================================================= -->
-    <section id="offerSingleDetailView" class="page-top-space section-padding hidden">
-        <div class="container">
-            <div class="offer-back-row">
-                <a href="#wszystkie" id="backToCatalogBtn" class="btn btn-outline btn-sm">
-                    ← Wróć do wszystkich usług w Ofercie
-                </a>
-            </div>
+    <div id="offerSingleDetailView" class="hidden">
+        <section class="page-top-space">
+            <div class="container">
 
-            <div class="glass-card offer-subpage-hero">
-                <span class="section-tag" id="subpageTag">Specyfikacja Usługi</span>
-                <h1 id="subpageTitle">Nazwa Usługi</h1>
-                <p id="subpageLead" class="offer-subpage-lead"></p>
+                <!-- Pasek powrotu do katalogu -->
+                <div class="wtb-subpage-topbar">
+                    <a href="#wszystkie" class="btn btn-outline btn-sm">← Wróć do wszystkich usług w Ofercie</a>
+                    <span class="section-tag" id="subpageTag">Specyfikacja Usługi</span>
+                </div>
 
-                <div class="offer-subpage-columns">
-                    <div class="offer-subpage-main">
-                        <h3>Na czym polega ta usługa i dlaczego jest kluczowa?</h3>
-                        <div id="subpageDescription"></div>
-
-                        <h3>Jak wygląda proces realizacji krok po kroku?</h3>
-                        <div id="subpageProcess" class="offer-process-steps"></div>
+                <!-- 1. GŁÓWNY BANER HERO USŁUGI + 3 BOKSY KPI -->
+                <div class="wtb-hero-banner">
+                    <div>
+                        <h1 id="subpageTitle" class="gradient-text">Nazwa Usługi</h1>
+                        <p id="subpageLead" class="wtb-hero-lead"></p>
+                        <div class="wtb-hero-actions">
+                            <a href="kontakt.html" class="btn btn-primary">Zamów wycenę tej usługi →</a>
+                            <a href="portfolio.html" class="btn btn-outline">Zobacz nasze Case Studies</a>
+                        </div>
                     </div>
+                    <div class="wtb-kpi-stack" id="subpageMetricsGrid"></div>
+                </div>
 
-                    <div class="offer-card-side">
-                        <h4>Co dokładnie wchodzi w zakres prac?</h4>
-                        <ul class="service-list" id="subpageDeliverables"></ul>
+                <!-- 2. TRZY FILARY WDROŻENIA W RÓWNYM RZĘDZIE -->
+                <div class="wtb-pillars-row" id="subpagePillarsGrid"></div>
 
-                        <div class="offer-benefit-highlight">
-                            <small>Główny rezultat biznesowy:</small>
-                            <strong id="subpageOutcome"></strong>
+                <!-- 3. DWIE KOLUMNY: OPIS I PROCES (LEWA) + ZAKRES PRAC I WYNIK (PRAWA) -->
+                <div class="wtb-detail-split">
+                    <!-- Lewy panel: Dlaczego to działa + Etapy 01, 02, 03 -->
+                    <div class="wtb-detail-panel">
+                        <div>
+                            <span class="section-tag">Strategia & Realizacja</span>
+                            <h2>Jak realizujemy tę usługę w praktyce?</h2>
+                            <div id="subpageDescription" class="wtb-desc-paragraphs"></div>
                         </div>
 
-                        <a href="kontakt.html" class="btn btn-primary btn-full">
-                            Zapytaj o wycenę tej usługi →
-                        </a>
+                        <div>
+                            <h3>Proces wdrożenia krok po kroku:</h3>
+                            <div class="wtb-step-list" id="subpageProcess"></div>
+                        </div>
+                    </div>
+
+                    <!-- Prawy panel: Co dokładnie zawiera usługa + Rezultat + CTA -->
+                    <div class="wtb-detail-panel">
+                        <div>
+                            <span class="section-tag">Zakres Prac</span>
+                            <h2>Co dokładnie otrzymujesz?</h2>
+                            <p style="color:#9ca3af; font-size:0.92rem;">Każdy element wdrażamy kompleksowo z pełnym raportowaniem wyników:</p>
+                            <ul class="wtb-deliverables-list" id="subpageDeliverables"></ul>
+                        </div>
+
+                        <div>
+                            <div class="wtb-outcome-banner">
+                                <small>⚡ Główny rezultat biznesowy dla Twojej firmy</small>
+                                <strong id="subpageOutcome"></strong>
+                            </div>
+                            <a href="kontakt.html" class="btn btn-primary btn-full">Skonsultuj wdrożenie i odbierz wycenę →</a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Nawigacja do pozostałych usług na dole podstrony -->
-            <div class="offer-other-services-box">
-                <h3>Sprawdź pozostałe usługi Wake The Brand</h3>
-                <div class="topic-pills" id="subpageQuickSwitch"></div>
+                <!-- 4. SZYBKIE PRZEŁĄCZANIE MIĘDZY POZOSTAŁYMI USŁUGAMI -->
+                <div class="wtb-switch-bar">
+                    <span class="section-tag">Pozostałe Usługi Wake The Brand</span>
+                    <h3>Sprawdź inne obszary z naszej oferty</h3>
+                    <div class="wtb-switch-pills" id="subpageQuickSwitch"></div>
+                </div>
+
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <!-- DOLNE WEZWANIE DO DZIAŁANIA (CTA) -->
     <section class="cta-section section-padding">
@@ -314,29 +632,39 @@
 
     <script src="script.js"></script>
 
-    <!-- WBUDOWANY SILNIK PODSTRON OFERTY (WSZYSTKIE 10 USŁUG W JEDNYM PLIKU) -->
+    <!-- SILNIK PODSTRON OFERTY -->
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const OFFER_SUBPAGES_DATA = {
             "audyt-konta": {
                 tag: "Weryfikacja Budżetu & Optymalizacja ROAS",
                 title: "Audyt konta reklamowego",
-                lead: "Szczegółowe prześwietlenie Twoich dotychczasowych kampanii w Google Ads, Meta Ads (Facebook & Instagram) lub Allegro Ads. Wskazujemy dokładnie, gdzie przepalany jest budżet i jak wycisnąć więcej sprzedaży z każdej wydanej złotówki.",
+                lead: "Szczegółowe prześwietlenie Twoich dotychczasowych kampanii w Google Ads, Meta Ads (Facebook & Instagram) lub Allegro Ads. Wskazujemy czarno na białym, gdzie przepalany jest budżet i jak wycisnąć więcej sprzedaży z każdej wydanej złotówki.",
+                metrics: [
+                    { val: "-35%", label: "Średnia redukcja marnowanego budżetu po wdrożeniu zaleceń" },
+                    { val: "100%", label: "Weryfikacji ustawień konwersji, stawek i struktury kampanii" },
+                    { val: "PDF", label: "Gotowy raport naprawczy z listą zmian krok po kroku" }
+                ],
+                pillars: [
+                    { title: "🔍 Weryfikacja Pomiaru i Danych", desc: "Sprawdzamy, czy algorytmy reklamowe optymalizują kampanie pod realne zakupy i przychód, czy pod puste kliknięcia i zdublowane zdarzenia." },
+                    { title: "💸 Wykrycie Przepalanego Budżetu", desc: "Analizujemy wyszukiwane hasła, wykluczenia, nakładające się grupy odbiorców oraz nierentowne produkty w katalogu." },
+                    { title: "📈 Plan Podniesienia ROAS", desc: "Otrzymujesz konkretną listę zmian w strukturze kampanii, stawkach CPC i kreacjach, które natychmiast poprawią wynik." }
+                ],
                 description: [
-                    "Większość kont reklamowych traci od 20% do nawet 50% budżetu mediowego przez błędną strukturę kampanii, brak wykluczających słów kluczowych, kanibalizację grup odbiorców lub nieprawidłowe przekazywanie wartości konwersji do algorytmów.",
-                    "Podczas audytu sprawdzamy Twoje konto od fundamentów technicznych po same kreacje i stawki. Nie otrzymujesz od nas ogólnikowych wykresów – dostarczamy konkretny raport wdrożeniowy z listą błędów krytycznych oraz instrukcją zmian, które obniżą koszt pozyskania klienta (CPA) i podniosą zwrot z inwestycji (ROAS)."
+                    "Większość kont reklamowych traci od 20% do nawet 50% budżetu mediowego przez błędną architekturę kampanii, brak wykluczających słów kluczowych, kanibalizację grup odbiorców lub nieprawidłowe przekazywanie wartości koszyka do systemu reklamowego.",
+                    "Podczas audytu sprawdzamy Twoje konto od fundamentów technicznych po same kreacje i stawki. Nie dostarczamy ogólnikowych wykresów – przygotowujemy konkretny dokument wdrożeniowy z listą błędów krytycznych oraz instrukcją zmian, które obniżą koszt pozyskania klienta (CPA)."
                 ],
                 process: [
-                    "<strong>Etap 1: Weryfikacja analityki i celów konwersji</strong> – sprawdzamy, czy system reklamowy opiera się na prawdziwych danych sprzedażowych, czy na zdublowanych lub błędnych zdarzeniach.",
-                    "<strong>Etap 2: Analiza struktury kampanii, fraz i kierowania</strong> – prześwietlamy podział budżetów, wyszukiwane hasła, plik produktowy (Feed) oraz grupy odbiorców.",
-                    "<strong>Etap 3: Raport naprawczy i rekomendacje skalowania</strong> – przygotowujemy dokument PDF z priorytetyzacją zmian gotowych do wdrożenia od zaraz."
+                    "<strong>Analiza techniczna i weryfikacja konwersji</strong> – sprawdzamy spięcie konta z Google Analytics 4, GTM, Meta Pixel oraz poprawność pliku produktowego.",
+                    "<strong>Prześwietlenie struktury kampanii i stawek</strong> – badamy podział budżetów, strategie ustalania stawek, frazy kluczowe i segmentację produktów.",
+                    "<strong>Przekazanie raportu i planu naprawczego</strong> – otrzymujesz przejrzysty dokument PDF z priorytetyzacją wdrożeń od najważniejszych."
                 ],
                 deliverables: [
-                    "✓ Pełna weryfikacja ustawień technicznych konta i śledzenia konwersji",
-                    "✓ Analiza struktury kampanii, grup reklam oraz strategii ustalania stawek",
-                    "✓ Wykrycie przepalających budżet fraz kluczowych, miejsc docelowych i produktów",
-                    "✓ Ocena jakości kreacji reklamowych, nagłówków oraz dopasowania stron docelowych",
-                    "✓ Kompletny raport PDF z listą kroków naprawczych i planem poprawy ROAS"
+                    "Pełna weryfikacja ustawień technicznych konta i śledzenia konwersji",
+                    "Analiza struktury kampanii, grup reklam oraz strategii ustalania stawek",
+                    "Wykrycie przepalających budżet fraz kluczowych, miejsc docelowych i produktów",
+                    "Ocena jakości kreacji reklamowych, nagłówków oraz dopasowania stron docelowych",
+                    "Kompletny raport PDF z listą kroków naprawczych i planem poprawy ROAS"
                 ],
                 outcome: "Wyeliminowanie marnowanego budżetu reklamowego i jasny plan zwiększenia rentowności kampanii."
             },
@@ -344,21 +672,31 @@
                 tag: "Marketplace & Algorytm Trafności",
                 title: "Optymalizacja ofert Allegro",
                 lead: "Kompleksowa przebudowa Twoich aukcji na Allegro pod kątem algorytmu trafności oraz psychologii zakupowej klientów. Sprawiamy, że Twoje oferty wyświetlają się wyżej i znacznie częściej kończą się zakupem.",
+                metrics: [
+                    { val: "TOP", label: "Wyższe pozycje ofert po sortowaniu według Trafności" },
+                    { val: "+Konwersja", label: "Czytelne, sekcyjne opisy zbijające obiekcje kupujących" },
+                    { val: "100%", label: "Uzupełnionych parametrów i fraz kluczowych w tytułach" }
+                ],
+                pillars: [
+                    { title: "🏷️ Tytuły i Parametry pod Algorytm", desc: "Wykorzystujemy limit znaków w tytule o najbardziej konwertujące frazy i uzupełniamy 100% parametrów kategorii." },
+                    { title: "📝 Sprzedażowe Opisy Sekcyjne", desc: "Projektujemy nowoczesne, czytelne opisy podzielone na sekcje wizualne i tekstowe, które prowadzą klienta prosto do zakupu." },
+                    { title: "🔗 Wielowariantowość i Zestawy", desc: "Spinamy powiązane produkty w warianty (rozmiary, kolory, pojemności) i tworzymy opłacalne zestawy podnoszące wartość koszyka." }
+                ],
                 description: [
-                    "Na Allegro o sukcesie decydują dwa czynniki: pozycja aukcji po sortowaniu według „Trafności” oraz to, czy karta produktu potrafi przekonać kupującego w ciągu kilku sekund. Nawet największy budżet w Allegro Ads nie przyniesie zysku, jeśli kieruje ruch na ofertę z niepełnymi parametrami, słabym tytułem i chaotycznym opisem.",
-                    "Przeprowadzamy pełną optymalizację Twoich kluczowych aukcji. Dobieramy precyzyjne słowa kluczowe wpisywane przez klientów w wyszukiwarkę Allegro, uzupełniamy parametry rzutujące na widoczność oraz projektujemy czytelne, wielosekcyjne opisy, które zbijają obiekcje zakupowe i podnoszą wartość koszyka."
+                    "Na Allegro o sukcesie decydują dwa czynniki: pozycja aukcji po sortowaniu według „Trafności” oraz to, czy karta produktu potrafi przekonać kupującego w ciągu kilku sekund. Nawet największy budżet w Allegro Ads nie przyniesie zysku, jeśli kieruje ruch na ofertę ze słabym tytułem i chaotycznym opisem.",
+                    "Przeprowadzamy pełną optymalizację Twoich kluczowych aukcji. Dobieramy precyzyjne słowa kluczowe wpisywane przez klientów w wyszukiwarkę Allegro, porządkujemy parametry oraz tworzymy przejrzyste opisy, które wyróżniają Twoją ofertę na tle konkurencji."
                 ],
                 process: [
-                    "<strong>Etap 1: Analiza fraz kluczowych i konkurencji w kategorii</strong> – badamy, jakich dokładnie określeń szukają kupujący w Twojej branży na Allegro.",
-                    "<strong>Etap 2: Przebudowa tytułów, parametrów i wielowariantowości</strong> – wykorzystujemy potencjał znaków w tytule do maksimum i spinamy produkty w logiczne warianty oraz zestawy.",
-                    "<strong>Etap 3: Stworzenie nowoczesnych opisów sekcyjnych</strong> – przygotowujemy przejrzyste opisy i strukturę zdjęć produktowych pod wymogi Allegro."
+                    "<strong>Badanie słów kluczowych i konkurencji w kategorii</strong> – sprawdzamy, jakich dokładnie fraz szukają kupujący w Twojej niszy na Allegro.",
+                    "<strong>Optymalizacja tytułów, parametrów i wariantów</strong> – przebudowujemy nagłówki aukcji, uzupełniamy brakujące atrybuty i łączymy oferty w wielowariantowość.",
+                    "<strong>Wdrożenie nowych opisów i przygotowanie pod Ads</strong> – publikujemy przejrzyste opisy sekcyjne gotowe do skalowania w Allegro Ads."
                 ],
                 deliverables: [
-                    "✓ Dobór słów kluczowych i stworzenie maksymalnie skutecznych tytułów ofert",
-                    "✓ Kompletne uzupełnienie parametrów obowiązkowych i dodatkowych pod trafność",
-                    "✓ Projektowanie czytelnych, sprzedażowych opisów w układzie sekcyjnym Allegro",
-                    "✓ Konfiguracja wielowariantowości, zestawów produktowych oraz rabatów ilościowych",
-                    "✓ Przygotowanie kart produktów pod wysoką konwersję z kampanii Allegro Ads"
+                    "Dobór słów kluczowych i stworzenie maksymalnie skutecznych tytułów ofert",
+                    "Kompletne uzupełnienie parametrów obowiązkowych i dodatkowych pod trafność",
+                    "Projektowanie czytelnych, sprzedażowych opisów w układzie sekcyjnym Allegro",
+                    "Konfiguracja wielowariantowości, zestawów produktowych oraz rabatów ilościowych",
+                    "Przygotowanie kart produktów pod wysoką konwersję z kampanii Allegro Ads"
                 ],
                 outcome: "Wyższa pozycja w wynikach trafności Allegro i wyraźny wzrost współczynnika konwersji na aukcjach."
             },
@@ -366,21 +704,31 @@
                 tag: "Pomiar Danych & Śledzenie E-commerce",
                 title: "Konfiguracja analityki",
                 lead: "Wdrożenie i naprawa kompletnego ekosystemu pomiarowego (Google Analytics 4, Google Tag Manager, Meta Pixel, API Konwersji). Zyskujesz 100% pewności, skąd przychodzą Twoi klienci i która reklama realnie zarabia.",
+                metrics: [
+                    { val: "GA4 + GTM", label: "Pełne śledzenie każdego kroku w lejku zakupowym" },
+                    { val: "CAPI", label: "Wdrożenie API Konwersji odpornego na blokady przeglądarek" },
+                    { val: "100%", label: "Czystej atrybucji z wykluczeniem bramek płatniczych" }
+                ],
+                pillars: [
+                    { title: "🛒 Enhanced E-commerce w GA4", desc: "Mierzymy wyświetlenia produktów, dodania do koszyka, przejścia do kasy oraz dokładną wartość i ID każdego zamówienia." },
+                    { title: "🎯 Tagi Reklamowe i API Konwersji", desc: "Konfigurujemy Google Ads Conversion Tracking, Meta Pixel oraz Conversion API, karmiąc algorytmy bezbłędnymi danymi." },
+                    { title: "🛡️ Naprawa Źródeł Ruchu (Atrybucji)", desc: "Wykluczamy domeny bramek płatniczych (PayU, Przelewy24, TPay, BLIK), aby nie kradły przypisania sprzedaży z reklam." }
+                ],
                 description: [
-                    "Prowadzenie kampanii reklamowych bez poprawnej analityki to przepalanie budżetu po omacku. Jeśli GA4 nie rejestruje dokładnej wartości koszyka, bramki płatności (BLIK, Przelewy24, PayU) nadpisują źródło pochodzenia klienta jako „referral”, a Meta Pixel gubi połowę konwersji przez blokady przeglądarkowe – algorytmy reklamowe uczą się na błędnych danych.",
-                    "Wdrażamy od podstaw lub naprawiamy całą architekturę analityczną Twojego sklepu internetowego lub strony usługowej. Konfigurujemy warstwę danych (DataLayer), wykluczamy domeny bramek płatniczych i spinamy systemy reklamowe tak, aby widziały każdą złotówkę wygenerowaną w koszyku."
+                    "Prowadzenie kampanii reklamowych bez poprawnej analityki to przepalanie budżetu po omacku. Jeśli GA4 nie rejestruje dokładnej wartości koszyka, bramki płatności nadpisują źródło pochodzenia klienta, a Meta Pixel gubi połowę konwersji – algorytmy reklamowe optymalizują kampanie pod przypadkowych ludzi.",
+                    "Wdrażamy od podstaw lub naprawiamy całą architekturę analityczną Twojego sklepu internetowego lub strony usługowej. Konfigurujemy warstwę danych (DataLayer) i dbamy o pełną zgodność ze standardem Consent Mode v2."
                 ],
                 process: [
-                    "<strong>Etap 1: Audyt obecnych tagów i warstwy danych (DataLayer)</strong> – sprawdzamy, jakie zdarzenia są obecnie wysyłane ze strony i eliminujemy duplikacje.",
-                    "<strong>Etap 2: Konfiguracja GTM, GA4, Meta Pixel i tagów Google Ads</strong> – ustawiamy precyzyjne reguły dla kluczowych kroków lejka (widok produktu, dodanie do koszyka, rozpoczęcie zamówienia, zakup).",
-                    "<strong>Etap 3: Testy diagnostyczne i oczyszczenie atrybucji</strong> – weryfikujemy poprawność zliczania transakcji w trybie rzeczywistym oraz wykluczamy bramki płatnicze."
+                    "<strong>Audyt obecnych tagów i warstwy danych (DataLayer)</strong> – weryfikujemy obecne skrypty na stronie i usuwamy zduplikowane lub błędne kody.",
+                    "<strong>Konfiguracja kontenera GTM, GA4 i pikseli reklamowych</strong> – wdrażamy reguły pomiarowe dla wszystkich zdarzeń koszykowych i formularzy.",
+                    "<strong>Testy diagnostyczne i weryfikacja transakcji</strong> – testujemy pełną ścieżkę zakupową w trybie podglądu na żywo (DebugView)."
                 ],
                 deliverables: [
-                    "✓ Profesjonalna konfiguracja kontenera Google Tag Manager (GTM) oraz usługi GA4",
-                    "✓ Wdrożenie pełnego śledzenia e-commerce (view_item, add_to_cart, begin_checkout, purchase)",
-                    "✓ Instalacja i powiązanie Meta Pixel, API Konwersji (CAPI) oraz konwersji Google Ads",
-                    "✓ Wykluczenie bramek płatności z listy stron odsyłających (naprawa źródeł ruchu)",
-                    "✓ Konfiguracja pomiaru formularzy, kliknięć w telefon/e-mail oraz standardu Consent Mode v2"
+                    "Profesjonalna konfiguracja kontenera Google Tag Manager (GTM) oraz usługi GA4",
+                    "Wdrożenie pełnego śledzenia e-commerce (view_item, add_to_cart, begin_checkout, purchase)",
+                    "Instalacja i powiązanie Meta Pixel, API Konwersji (CAPI) oraz konwersji Google Ads",
+                    "Wykluczenie bramek płatności z listy stron odsyłających (naprawa źródeł ruchu)",
+                    "Konfiguracja pomiaru formularzy, kliknięć w telefon/e-mail oraz standardu Consent Mode v2"
                 ],
                 outcome: "Bezawaryjny pomiar każdej transakcji i dostarczanie czystych danych do algorytmów Google oraz Meta Ads."
             },
@@ -388,21 +736,31 @@
                 tag: "Technologia & Wyszukiwarka Google",
                 title: "Audyt SEO",
                 lead: "Kompleksowe badanie techniczne, strukturalne i treściowe Twojego sklepu internetowego lub strony WWW. Odkrywamy wszystkie bariery, które blokują Twoją witrynę przed zdobyciem wysokich pozycji w Google.",
+                metrics: [
+                    { val: "On-Site", label: "Pełne prześwietlenie kodu, nagłówków i architektury URL" },
+                    { val: "CWV", label: "Analiza szybkości ładowania i Core Web Vitals na telefonach" },
+                    { val: "Plan", label: "Konkretna lista wytycznych dla programisty i copywritera" }
+                ],
+                pillars: [
+                    { title: "⚙️ Audyt Techniczny i Indeksacja", desc: "Sprawdzamy pliki Sitemap.xml, robots.txt, przekierowania, błędy 404/500, tagi canonical oraz dane z Google Search Console." },
+                    { title: "🗂️ Architektura Kategorii i Fraz", desc: "Analizujemy drzewo kategorii sklepu, wykrywamy kanibalizację słów kluczowych i wskazujemy brakujące podstrony." },
+                    { title: "⚡ Wydajność Mobile & Content", desc: "Oceniamy szybkość działania strony na smartfonach oraz jakość i unikalność opisów kategorii i produktów." }
+                ],
                 description: [
-                    "Nawet najlepszy asortyment nie będzie generował ruchu organicznego, jeśli roboty Google napotykają na błędy indeksacji, zduplikowane strony filtrów, kanibalizację słów kluczowych, brak odpowiedniej hierarchii nagłówków lub zbyt wolne ładowanie na urządzeniach mobilnych.",
-                    "Przeprowadzamy wielopłaszczyznowy Audyt SEO. Prześwietlamy kod witryny, dane z Google Search Console, architekturę drzewa kategorii, linkowanie wewnętrzne oraz profil linków przychodzących. Efektem jest przejrzysty dokument wdrożeniowy dla programisty i copywritera."
+                    "Nawet najlepszy asortyment nie będzie generował bezpłatnego ruchu z Google, jeśli roboty wyszukiwarki napotykają na błędy indeksacji, zduplikowane strony filtrów, kanibalizację słów kluczowych lub nieprawidłową hierarchię nagłówków H1–H3.",
+                    "Przeprowadzamy wielopłaszczyznowy Audyt SEO. Prześwietlamy kod witryny, logi w Google Search Console, linkowanie wewnętrzne oraz profil linków przychodzących. Efektem jest przejrzysty dokument wdrożeniowy z podziałem na priorytety."
                 ],
                 process: [
-                    "<strong>Etap 1: Pełny skan techniczny i analiza indeksacji</strong> – badamy witrynę pod kątem błędów 404/500, przekierowań, mapy Sitemap.xml, pliku robots.txt oraz tagów kanonicznych.",
-                    "<strong>Etap 2: Analiza słów kluczowych, architektury i treści</strong> – sprawdzamy, czy struktura kategorii i kart produktów odpowiada temu, jak klienci szukają Twojego asortymentu w Google.",
-                    "<strong>Etap 3: Opracowanie planu naprawczego z priorytetami</strong> – dzielimy wykryte problemy na krytyczne, ważne i dodatkowe, podając gotowe rozwiązania techniczne."
+                    "<strong>Pełny skan techniczny i analiza Search Console</strong> – badamy wszystkie podstrony sklepu pod kątem błędów indeksacji i blokad technicznych.",
+                    "<strong>Analiza słów kluczowych, struktury i konkurencji</strong> – sprawdzamy, dlaczego konkurenci wyświetlają się wyżej i jakich fraz brakuje w Twojej witrynie.",
+                    "<strong>Raport PDF z gotowymi rozwiązaniami</strong> – dostarczamy precyzyjne wytyczne techniczne i treściowe gotowe do wdrożenia."
                 ],
                 deliverables: [
-                    "✓ Dogłębna analiza indeksacji, budżetu crawlowania i błędów w Google Search Console",
-                    "✓ Badanie szybkości ładowania oraz wskaźników Core Web Vitals (Mobile & Desktop)",
-                    "✓ Weryfikacja struktury adresów URL, meta tagów (Title, Description) i nagłówków H1–H6",
-                    "✓ Wykrycie duplikacji treści oraz wewnętrznej kanibalizacji słów kluczowych",
-                    "✓ Szczegółowy raport PDF z wytycznymi wdrożeniowymi krok po kroku"
+                    "Dogłębna analiza indeksacji, budżetu crawlowania i błędów w Google Search Console",
+                    "Badanie szybkości ładowania oraz wskaźników Core Web Vitals (Mobile & Desktop)",
+                    "Weryfikacja struktury adresów URL, meta tagów (Title, Description) i nagłówków H1–H6",
+                    "Wykrycie duplikacji treści oraz wewnętrznej kanibalizacji słów kluczowych",
+                    "Szczegółowy raport PDF z wytycznymi wdrożeniowymi krok po kroku"
                 ],
                 outcome: "Pełna lista technicznych i treściowych zmian, które odblokują potencjał organiczny Twojej domeny w Google."
             },
@@ -410,21 +768,31 @@
                 tag: "Skalowanie Sprzedaży Marketplace",
                 title: "Kampanie Allegro Ads",
                 lead: "Aktywne zarządzanie i optymalizacja kampanii reklamowych w ekosystemie Allegro. Skupiamy się na obniżaniu udziału kosztu reklamy w sprzedaży (ACOS) i agresywnym skalowaniu najbardziej zyskownych produktów.",
+                metrics: [
+                    { val: "ACOS", label: "Ścisła kontrola udziału kosztu reklamy w przychodzie" },
+                    { val: "ROAS", label: "Podział kampanii według marżowości i rotacji towaru" },
+                    { val: "CPC", label: "Bieżąca optymalizacja stawek za kliknięcie i wykluczeń" }
+                ],
+                pillars: [
+                    { title: "📦 Segmentacja Marżowa Oferty", desc: "Dzielimy asortyment na osobne kampanie dla bestsellerów, produktów wysokomarżowych, nowości i towarów sezonowych." },
+                    { title: "🎯 Oferty Sponsorowane & Grafika", desc: "Precyzyjnie dobieramy miejsca emisji (wyszukiwarka, strona oferty) oraz wspieramy sprzedaż reklamą banerową." },
+                    { title: "🛡️ Eliminacja Przepalaczy Budżetu", desc: "Regularnie wykluczamy z kampanii aukcje, które generują kliknięcia i koszty, ale nie przynoszą transakcji." }
+                ],
                 description: [
-                    "Włączenie jednej automatycznej kampanii „Wszystkie oferty” w panelu Allegro Ads to najkrótsza droga do przepalenia marży na produktach, które klikają się bez intencji zakupu. Skuteczne prowadzenie Allegro Ads wymaga podziału asortymentu według marżowości, rotacji oraz sezonowości.",
-                    "Przejmujemy pełną opiekę nad Twoim kontem Allegro Ads. Tworzymy odseparowane kampanie dla bestsellerów, produktów wysokomarżowych oraz nowości. Codziennie kontrolujemy stawki za kliknięcie (CPC), oddzielamy ruch z wyszukiwarki Allegro od sieci zewnętrznej i wykluczamy nierentowne aukcje."
+                    "Włączenie jednej automatycznej kampanii „Wszystkie oferty” w panelu Allegro Ads to najkrótsza droga do przepalenia marży na produktach, które klikają się bez intencji zakupu. Skuteczne prowadzenie Allegro Ads wymaga dokładnej segmentacji i ciągłej pracy na stawkach CPC.",
+                    "Przejmujemy pełną opiekę nad Twoim kontem Allegro Ads. Oddzielamy ruch z wyszukiwarki Allegro od sieci zewnętrznej, kontrolujemy rentowność każdej grupy produktowej i skalujemy oferty o najwyższym zwrocie z inwestycji."
                 ],
                 process: [
-                    "<strong>Etap 1: Segmentacja asortymentu i przebudowa struktury konta</strong> – dzielimy produkty na precyzyjne grupy reklamowe w oparciu o marżę i historyczną konwersję.",
-                    "<strong>Etap 2: Uruchomienie Ofert Sponsorowanych i Reklamy Graficznej</strong> – dobieramy miejsca emisji (wyszukiwarka, strona oferty, lewa kolumna) oraz optymalne stawki wejściowe CPC.",
-                    "<strong>Etap 3: Ciągła optymalizacja stawek pod docelowy ACOS / ROAS</strong> – wyłączamy oferty przepalające budżet i przenosimy środki na aukcje generujące najwyższy zysk."
+                    "<strong>Analiza asortymentu i przebudowa struktury konta</strong> – porządkujemy dotychczasowe kampanie i dzielimy produkty według marży.",
+                    "<strong>Uruchomienie segmentowanych kampanii Ads</strong> – konfigurujemy Oferty Sponsorowane oraz Reklamę Graficzną z optymalnymi stawkami CPC.",
+                    "<strong>Bieżąca optymalizacja i skalowanie wyników</strong> – co tydzień korygujemy stawki, wykluczamy nierentowne aukcje i raportujemy ROAS."
                 ],
                 deliverables: [
-                    "✓ Projekt i wdrożenie wielopoziomowej struktury kampanii Allegro Ads",
-                    "✓ Zarządzanie Ofertami Sponsorowanymi oraz kampaniami banerowymi (Reklama Graficzna)",
-                    "✓ Bieżąca optymalizacja stawek CPC pod maksymalny zwrot z inwestycji (ROAS)",
-                    "✓ Systematyczne wykluczanie produktów generujących kliknięcia bez sprzedaży",
-                    "✓ Przejrzyste raportowanie wygenerowanego obrotu, kosztu oraz wskaźnika ACOS"
+                    "Projekt i wdrożenie wielopoziomowej struktury kampanii Allegro Ads",
+                    "Zarządzanie Ofertami Sponsorowanymi oraz kampaniami banerowymi (Reklama Graficzna)",
+                    "Bieżąca optymalizacja stawek CPC pod maksymalny zwrot z inwestycji (ROAS)",
+                    "Systematyczne wykluczanie produktów generujących kliknięcia bez sprzedaży",
+                    "Przejrzyste raportowanie wygenerowanego obrotu, kosztu oraz wskaźnika ACOS"
                 ],
                 outcome: "Skalowanie obrotów na Allegro przy zachowaniu bezpiecznego, niskiego udziału kosztu reklamy w przychodzie."
             },
@@ -432,21 +800,31 @@
                 tag: "Intencja Zakupowa & Google Ecosystem",
                 title: "Kampanie Google Ads",
                 lead: "Pozyskujemy klientów dokładnie w tym ułamku sekundy, w którym wpisują w wyszukiwarkę Google nazwę Twojego produktu lub usługi. Budujemy i optymalizujemy kampanie nastawione na maksymalny zwrot z inwestycji (ROAS).",
+                metrics: [
+                    { val: "Shopping", label: "Dopracowane kampanie produktowe i Google Merchant Center" },
+                    { val: "Search", label: "Precyzyjne kampanie na frazy o najwyższej intencji zakupu" },
+                    { val: "ROAS", label: "Optymalizacja budżetu pod realną wartość koszyka" }
+                ],
+                pillars: [
+                    { title: "🛍️ Google Shopping & Performance Max", desc: "Optymalizujemy plik produktowy (Feed) i dzielimy kampanie PMax/Shopping tak, aby budżet trafiał na produkty, na których zarabiasz najwięcej." },
+                    { title: "🔍 Sieć Wyszukiwania (Search)", desc: "Tworzymy dopasowane reklamy tekstowe na konkretne zapytania zakupowe i usługowe wraz z rozbudową list słów wykluczających." },
+                    { title: "🔄 Remarketing & Ochrona Budżetu", desc: "Przypominamy o Twojej ofercie osobom, które odwiedziły sklep, i blokujemy wyświetlanie reklam na przypadkowe zapytania." }
+                ],
                 description: [
-                    "Ruch z wyszukiwarki Google oraz sekcji Zakupy Google (Google Shopping) charakteryzuje się najwyższą intencją zakupową w całym internecie. Klient nie przegląda tu tablicy dla rozrywki – on aktywnie szuka konkretnego rozwiązania i chce dokonać zakupu.",
-                    "Aby jednak wygrywać aukcje reklamowe przy niskim koszcie kliknięcia, potrzebna jest dopracowana struktura konta oraz bezbłędnie zoptymalizowany plik produktowy (Feed) w Google Merchant Center. Budujemy segmentowane kampanie Performance Max, Google Shopping oraz Search, chroniąc Twój budżet rozbudowanymi listami słów wykluczających."
+                    "Ruch z wyszukiwarki Google oraz sekcji Zakupy Google (Google Shopping) charakteryzuje się najwyższą intencją zakupową w internecie. Użytkownik aktywnie szuka konkretnego produktu i jest gotowy do sfinalizowania transakcji.",
+                    "Aby jednak wygrywać aukcje reklamowe przy niskim koszcie kliknięcia, potrzebna jest dopracowana struktura konta oraz bezbłędnie zoptymalizowany plik produktowy w Google Merchant Center. Budujemy i prowadzimy kampanie Google Ads nastawione wyłącznie na mierzalny zysk."
                 ],
                 process: [
-                    "<strong>Etap 1: Optymalizacja Google Merchant Center i plików produktowych</strong> – dbamy o to, aby tytuły, kategorie i atrybuty produktów w feedzie idealnie pasowały do zapytań klientów.",
-                    "<strong>Etap 2: Wdrożenie segmentowanych kampanii Shopping, PMax i Search</strong> – oddzielamy produkty wysokomarżowe i bestsellery od reszty asortymentu, kontrolując alokację budżetu.",
-                    "<strong>Etap 3: Optymalizacja stawek, słów wykluczających i remarketingu</strong> – regularnie odcinamy nieefektywne zapytania i domykamy niezdecydowanych użytkowników."
+                    "<strong>Konfiguracja Google Merchant Center i analityki</strong> – weryfikujemy feed produktowy, tytuły produktów i poprawne przekazywanie wartości transakcji.",
+                    "<strong>Budowa i uruchomienie struktury kampanii</strong> – wdrażamy segmentowane kampanie produktowe, Search oraz remarketingowe.",
+                    "<strong>Stała optymalizacja stawek, fraz i ROAS</strong> – regularnie dodajemy wykluczenia, testujemy nagłówki i skalujemy najefektywniejsze grupy."
                 ],
                 deliverables: [
-                    "✓ Konfiguracja i optymalizacja konta Google Merchant Center oraz pliku produktowego",
-                    "✓ Prowadzenie kampanii produktowych Google Shopping oraz Performance Max",
-                    "✓ Prowadzenie kampanii tekstowych w sieci wyszukiwania (Search) na frazy zakupowe",
-                    "✓ Stała rozbudowa list wykluczających słów kluczowych (ochrona budżetu przed przepaleniem)",
-                    "✓ Remarketing dynamiczny oraz comiesięczne raportowanie przychodów i ROAS"
+                    "Konfiguracja i optymalizacja konta Google Merchant Center oraz pliku produktowego",
+                    "Prowadzenie kampanii produktowych Google Shopping oraz Performance Max",
+                    "Prowadzenie kampanii tekstowych w sieci wyszukiwania (Search) na frazy zakupowe",
+                    "Stała rozbudowa list wykluczających słów kluczowych (ochrona budżetu przed przepaleniem)",
+                    "Remarketing dynamiczny oraz comiesięczne raportowanie przychodów i ROAS"
                 ],
                 outcome: "Stały dopływ klientów o najwyższej intencji zakupowej i przewidywalny zwrot z każdej złotówki wydanej w Google."
             },
@@ -454,21 +832,31 @@
                 tag: "Paid Social & Remarketing Dynamiczny",
                 title: "Kampanie Facebook i Instagram Ads",
                 lead: "Tworzymy skuteczne lejki reklamowe w ekosystemie Meta. Generujemy popyt na Twoje produkty wśród nowych odbiorców i automatycznie odzyskujemy porzucone koszyki w Twoim sklepie.",
+                metrics: [
+                    { val: "DPA", label: "Dynamiczny remarketing katalogowy ratujący koszyki" },
+                    { val: "Lejek", label: "Podział na pozyskiwanie nowego ruchu i domykanie sprzedaży" },
+                    { val: "Testy A/B", label: "Systematyczne testowanie kreacji, nagłówków i grup" }
+                ],
+                pillars: [
+                    { title: "🚀 Pozyskiwanie Nowych Klientów", desc: "Docieramy do precyzyjnie dobranych grup odbiorców (Broad, Zainteresowania, Lookalike), budując skalę i świeży ruch w sklepie." },
+                    { title: "🛒 Ratowanie Porzuconych Koszyków (DPA)", desc: "Automatycznie wyświetlamy klientowi na Facebooku i Instagramie dokładnie te produkty, które oglądał lub dodał do koszyka." },
+                    { title: "🎨 Optymalizacja Kreacji i Komunikatów", desc: "Testujemy różne formaty reklam (wideo/Reels, karuzele, kolekcje), przesuwając budżet na kreacje o najniższym koszcie zakupu." }
+                ],
                 description: [
-                    "Ekosystem Meta (Facebook i Instagram) pozwala dotrzeć z Twoim produktem do precyzyjnie określonej grupy docelowej, zanim jeszcze zacznie ona szukać konkurencyjnych rozwiązań. Co równie ważne – to najskuteczniejsze narzędzie do domykania sprzedaży wśród osób, które odwiedziły już Twój sklep, ale nie dokończyły zamówienia.",
-                    "Projektujemy wieloetapowe kampanie Meta Ads. Łączymy działania pozyskujące nowy, jakościowy ruch (Prospecting) z zaawansowanym remarketingiem dynamicznym z katalogu produktów (DPA), który pokazuje użytkownikowi dokładnie ten produkt, który przed chwilą oglądał w Twoim sklepie."
+                    "System reklamowy Meta (Facebook i Instagram) pozwala wygenerować popyt na Twój produkt, zanim jeszcze klient wpisze go w wyszukiwarkę, a jednocześnie jest najskuteczniejszym narzędziem do domykania sprzedaży wśród osób niezdecydowanych.",
+                    "Projektujemy wieloetapowe kampanie w Menedżerze Reklam Meta. Spinamy katalog produktów Twojego sklepu z Pixelem i API Konwersji, dzielimy budżet na poszczególne piętra lejka sprzedażowego i optymalizujemy kampanie pod kątem ROAS oraz kosztu pozyskania zamówienia (CPA)."
                 ],
                 process: [
-                    "<strong>Etap 1: Spięcie katalogu produktów i weryfikacja Pixela / CAPI</strong> – upewniamy się, że Menedżer Reklam bezbłędnie pobiera stany magazynowe, ceny i zdarzenia z koszyka.",
-                    "<strong>Etap 2: Budowa lejka Prospecting + Remarketing (DPA)</strong> – oddzielamy budżet na pozyskiwanie nowych klientów od budżetu na ratowanie porzuconych koszyków.",
-                    "<strong>Etap 3: Testy A/B kreacji, formatów i komunikatów</strong> – testujemy różne warianty wizualne i tekstowe, skalując wyłącznie zestawy reklam o najniższym koszcie zakupu (CPA)."
+                    "<strong>Konfiguracja katalogu produktów i zdarzeń Pixel / CAPI</strong> – sprawdzamy poprawność przesyłania stanów magazynowe, cen i zdarzeń koszykowych.",
+                    "<strong>Uruchomienie lejka Prospecting + Remarketing</strong> – wdrażamy kampanie na zimny ruch oraz dynamiczny remarketing produktowy.",
+                    "<strong>Testy A/B i skalowanie budżetu</strong> – wyłączamy drogie zestawy reklam i skalujemy te, które generują najwyższy zwrot."
                 ],
                 deliverables: [
-                    "✓ Konfiguracja Menedżera Firmy, Katalogu Produktów oraz zdarzeń konwersji",
-                    "✓ Kampanie pozyskujące nowych klientów (Broad, Zainteresowania, grupy Lookalike)",
-                    "✓ Dynamiczne reklamy produktowe (DPA) odzyskujące porzucone koszyki i przeglądających",
-                    "✓ Kampanie Lead Ads i konwersyjne pozyskujące zapytania dla firm usługowych",
-                    "✓ Bieżąca optymalizacja budżetów, testy kreacji i raportowanie wskaźnika ROAS / CPA"
+                    "Konfiguracja Menedżera Firmy, Katalogu Produktów oraz zdarzeń konwersji",
+                    "Kampanie pozyskujące nowych klientów (Broad, Zainteresowania, grupy Lookalike)",
+                    "Dynamiczne reklamy produktowe (DPA) odzyskujące porzucone koszyki i przeglądających",
+                    "Kampanie Lead Ads i konwersyjne pozyskujące zapytania dla firm usługowych",
+                    "Bieżąca optymalizacja budżetów, testy kreacji i raportowanie wskaźnika ROAS / CPA"
                 ],
                 outcome: "Skuteczne budowanie skali sprzedaży, wyższy odsetek domkniętych koszyków i stały napływ nowych klientów."
             },
@@ -476,21 +864,31 @@
                 tag: "Web Design, UX/UI & Maksymalizacja Konwersji",
                 title: "Landing page pod kampanię",
                 lead: "Projektujemy i kodujemy ultraszybkie, dedykowane strony docelowe stworzone w jednym celu: zamienić jak największy procent kliknięć z płatnych reklam w realny zakup lub zapytanie ofertowe.",
+                metrics: [
+                    { val: "< 1s", label: "Błyskawiczny czas ładowania na smartfonach" },
+                    { val: "UX / CRO", label: "Układ sekcji zaprojektowany pod maksymalną konwersję" },
+                    { val: "100%", label: "Gotowego opomiarowania pod Google Ads i Meta Pixel" }
+                ],
+                pillars: [
+                    { title: "🧭 Perswazyjna Architektura Sekcji", desc: "Układamy nagłówki, argumenty sprzedażowe, korzyści, opinie i wezwania do działania (CTA) tak, aby prowadziły klienta prosto do celu." },
+                    { title: "📱 Projektowanie Mobile-First", desc: "Ponad 75% ruchu z kampanii pochodzi ze smartfonów – tworzymy strony, które na telefonie obsługuje się wygodnie jednym kciukiem." },
+                    { title: "⚡ Czysty Kod i Integracja Analityki", desc: "Kodujemy bez ciężkich, spowalniających wtyczek i od razu podpinamy formularze oraz zdarzenia konwersji pod kampanie." }
+                ],
                 description: [
-                    "Kierowanie płatnego ruchu z Google Ads czy Facebook Ads na ogólną, przeładowaną linkami stronę główną bardzo często kończy się wysokim współczynnikiem odrzuceń. Użytkownik, który kliknął w konkretną reklamę, oczekuje natychmiastowego rozwinięcia obietnicy z kreacji i prostej ścieżki do działania.",
-                    "Tworzymy dedykowane Landing Page'e zoptymalizowane pod kątem konwersji (CRO) oraz urządzeń mobilnych (Mobile-First). Dbamy o logiczny układ argumentów sprzedażowych, dowody społeczne (Social Proof), czas ładowania poniżej sekundy oraz pełne opomiarowanie analityczne od pierwszego dnia."
+                    "Kierowanie płatnego ruchu z Google Ads czy Facebook Ads na ogólną, przeładowaną informacjami stronę główną bardzo często kończy się wysokim współczynnikiem odrzuceń. Klient po kliknięciu w reklamę oczekuje natychmiastowego rozwinięcia obietnicy z kreacji.",
+                    "Tworzymy dedykowane strony docelowe (Landing Page) zoptymalizowane pod kątem konwersji. Łączymy nowoczesny design dopasowany do Twojej marki z psychologicznym ułożeniem treści, dzięki czemu z tego samego budżetu reklamowego pozyskujesz znacznie więcej klientów."
                 ],
                 process: [
-                    "<strong>Etap 1: Architektura informacji i copywriting sprzedażowy</strong> – układamy kolejność sekcji, nagłówki, korzyści oraz wezwania do działania (CTA) tak, aby prowadziły klienta za rękę.",
-                    "<strong>Etap 2: Projekt UX/UI i szybkie kodowanie Mobile-First</strong> – tworzymy nowoczesny, przejrzysty design dopasowany do Twojej marki i wdrażamy go w czystym, błyskawicznym kodzie.",
-                    "<strong>Etap 3: Integracja formularzy i spięcie z analityką kampanii</strong> – podłączamy powiadomienia o leadach oraz tagi konwersji Google Ads i Meta Pixel."
+                    "<strong>Makieta UX i copywriting sprzedażowy</strong> – opracowujemy strukturę strony, nagłówki i argumentację dopasowaną do grupy docelowej kampanii.",
+                    "<strong>Projekt graficzny UI i kodowanie</strong> – tworzymy nowoczesny wygląd i wdrażamy stronę z naciskiem na szybkość działania.",
+                    "<strong>Podpięcie formularzy, domeny i tagów konwersji</strong> – testujemy działanie na wszystkich urządzeniach i spinamy stronę z Google/Meta Ads."
                 ],
                 deliverables: [
-                    "✓ Dedykowany projekt UX/UI dopasowany do psychologii zakupowej grupy docelowej",
-                    "✓ Perswazyjna struktura sekcji (Hero, Korzyści, Proces, Case Studies, FAQ, CTA)",
-                    "✓ Responsywne i ultraszybkie wdrożenie techniczne zoptymalizowane pod smartfony",
-                    "✓ Konfiguracja formularza kontaktowego / zakupowego z natychmiastowym powiadomieniem",
-                    "✓ Pełne opomiarowanie zdarzeń konwersji pod kampanie Google Ads i Meta Ads"
+                    "Dedykowany projekt UX/UI dopasowany do psychologii zakupowej grupy docelowej",
+                    "Perswazyjna struktura sekcji (Hero, Korzyści, Proces, Case Studies, FAQ, CTA)",
+                    "Responsywne i ultraszybkie wdrożenie techniczne zoptymalizowane pod smartfony",
+                    "Konfiguracja formularza kontaktowego / zakupowego z natychmiastowym powiadomieniem",
+                    "Pełne opomiarowanie zdarzeń konwersji pod kampanie Google Ads i Meta Ads"
                 ],
                 outcome: "Znacznie wyższy współczynnik konwersji z płatnych kampanii i niższy koszt pozyskania pojedynczego klienta."
             },
@@ -498,21 +896,31 @@
                 tag: "Planowanie, USP & Architektura Lejka",
                 title: "Strategia marketingowa",
                 lead: "Kompleksowa mapa drogowa skalowania sprzedaży dla Twojego sklepu lub marki. Definiujemy grupy docelowe, przewagi konkurencyjne, dobór kanałów reklamowych oraz optymalny podział budżetu.",
+                metrics: [
+                    { val: "360°", label: "Analiza rynku, marżowości oferty i działań konkurencji" },
+                    { val: "Lejek", label: "Spójny plan łączący Google, Meta, Allegro i SEO" },
+                    { val: "KPI", label: "Precyzyjny podział budżetu i harmonogram wdrożenia" }
+                ],
+                pillars: [
+                    { title: "🔬 Analiza Konkurencji i USP", desc: "Prześwietlamy, jak komunikują się i sprzedają Twoi konkurenci, oraz wyciągamy najmocniejsze wyróżniki Twojej oferty." },
+                    { title: "🗺️ Projekt Lejka Sprzedażowego", desc: "Rozpisujemy ścieżkę klienta od pierwszego kontaktu z marką, przez budowanie zaufania, aż po domknięcie koszyka i powrót." },
+                    { title: "💰 Alokacja Budżetu i Harmonogram", desc: "Wskazujemy dokładnie, ile środków przeznaczyć na Google Ads, Meta Ads, Allegro czy SEO, aby zmaksymalizować zwrot." }
+                ],
                 description: [
-                    "Chaotyczne testowanie pojedynczych reklam bez spójnego planu prowadzi do przepalania budżetu i braku przewidywalności przychodów. Zanim zaczniesz agresywne skalowanie, potrzebujesz jasnej odpowiedzi na pytanie: komu, w jakim kanale, jakim komunikatem i przy jakiej marży sprzedajemy.",
-                    "Opracowujemy praktyczną strategię marketingową opartą na twardych danych rynkowych. Analizujemy działania i cenniki Twojej konkurencji, wyciągamy najmocniejsze wyróżniki Twojej oferty (USP) i projektujemy kompletny lejek sprzedażowy spinający Google Ads, Meta Ads, Allegro oraz SEO."
+                    "Chaotyczne testowanie pojedynczych reklam bez spójnego planu prowadzi do rozproszenia budżetu i braku przewidywalności przychodów. Zanim zaczniesz agresywne skalowanie, potrzebujesz jasnego planu: komu, w jakim kanale, jakim komunikatem i przy jakiej marży sprzedajemy.",
+                    "Opracowujemy praktyczną strategię marketingową opartą na twardych danych rynkowych. Otrzymujesz gotowy do wdrożenia dokument strategiczny, który porządkuje wszystkie działania marketingowe Twojej firmy."
                 ],
                 process: [
-                    "<strong>Etap 1: Analiza biznesu, marżowości i konkurencji</strong> – prześwietlamy Twój asortyment, koszty pozyskania klienta oraz strategie stosowane przez liderów w Twojej branży.",
-                    "<strong>Etap 2: Segmentacja grup docelowych i komunikacji (USP)</strong> – określamy persony zakupowe i argumenty, które decydują o wyborze Twojej oferty.",
-                    "<strong>Etap 3: Dobór kanałów, budżetów i harmonogramu wdrożenia</strong> – rozpisujemy plan działań krok po kroku wraz z docelowymi wskaźnikami rentowności (KPI / ROAS)."
+                    "<strong>Audyt modelu biznesowego, marż i otoczenia rynkowego</strong> – badamy potencjał produktów, dotychczasowe wyniki oraz ruch konkurencji.",
+                    "<strong>Opracowanie grup docelowych, komunikacji i lejka</strong> – dobieramy kanały dotarcia i argumenty sprzedażowe na każdy etap decyzyjny.",
+                    "<strong>Stworzenie harmonogramu i budżetu mediowego</strong> – przekazujemy kompletną strategię wraz z planem wdrożenia krok po kroku."
                 ],
                 deliverables: [
-                    "✓ Szczegółowa analiza konkurencji, otoczenia rynkowego i pozycjonowania oferty",
-                    "✓ Opracowanie wyróżników marki (USP) oraz komunikatów dla poszczególnych segmentów klientów",
-                    "✓ Architektura pełnego lejka sprzedażowego (pozyskanie ruchu, domknięcie, retencja)",
-                    "✓ Rekomendowany podział budżetu mediowego pomiędzy Google, Meta, Allegro i SEO",
-                    "✓ Gotowy harmonogram wdrożeniowy na najbliższe miesiące z określonymi celami KPI"
+                    "Szczegółowa analiza konkurencji, otoczenia rynkowego i pozycjonowania oferty",
+                    "Opracowanie wyróżników marki (USP) oraz komunikatów dla poszczególnych segmentów klientów",
+                    "Architektura pełnego lejka sprzedażowego (pozyskanie ruchu, domknięcie, retencja)",
+                    "Rekomendowany podział budżetu mediowego pomiędzy Google, Meta, Allegro i SEO",
+                    "Gotowy harmonogram wdrożeniowy na najbliższe miesiące z określonymi celami KPI"
                 ],
                 outcome: "Przejrzysty, policzony plan rozwoju sprzedaży, który eliminuje kosztowne błędy i przypadkowe decyzje."
             },
@@ -520,21 +928,31 @@
                 tag: "Długofalowy Ruch Organiczny z Google",
                 title: "Pozycjonowanie (SEO)",
                 lead: "Systematyczne budowanie wysokiej widoczności Twojego sklepu internetowego lub strony w bezpłatnych wynikach wyszukiwania Google. Pozyskuj klientów każdego dnia bez opłat za pojedyncze kliknięcie.",
+                metrics: [
+                    { val: "TOP 10", label: "Budowa pozycji na frazy zakupowe i kategorie produktowe" },
+                    { val: "0 zł", label: "Kosztu za pojedyncze kliknięcie w wynikach organicznych" },
+                    { val: "Wzrost", label: "Długofalowa wartość domeny i niezależność od płatnych reklam" }
+                ],
+                pillars: [
+                    { title: "🛠️ Stała Optymalizacja Techniczna", desc: "Dbamy o bezbłędną indeksację, strukturę nagłówków H1–H3, meta dane, dane strukturalne Schema oraz szybkie działanie sklepu." },
+                    { title: "✍️️ Content Marketing & Kategorie", desc: "Tworzymy i optymalizujemy opisy kategorii, kart produktów oraz artykuły eksperckie odpowiadające na pytania kupujących." },
+                    { title: "🔗 Bezpieczny Link Building", desc: "Wzmacniamy autorytet Twojej domeny w oczach Google poprzez pozyskiwanie wartościowych, tematycznych odnośników zewnętrznych." }
+                ],
                 description: [
-                    "Płatne kampanie reklamowe dostarczają sprzedaż od ręki, jednak to pozycjonowanie organiczne (SEO) buduje trwałą wartość Twojej domeny i systematycznie obniża średni koszt pozyskania klienta w czasie. Wysokie pozycje na frazy kategorii i nazwy produktów sprawiają, że klienci trafiają do Ciebie naturalnie przez 24 godziny na dobę.",
-                    "Prowadzimy kompleksowe, bezpieczne działania SEO nastawione na ruch, który kupuje – a nie tylko nabija puste wyświetlenia. Łączymy stałą optymalizację techniczną witryny z rozbudową drzewa kategorii, tworzeniem opisów i treści eksperckich oraz pozyskiwaniem jakościowych linków przychodzących (Link Building)."
+                    "Płatne kampanie reklamowe dostarczają sprzedaż od ręki, jednak to pozycjonowanie organiczne (SEO) buduje trwałą wartość Twojej domeny i systematycznie obniża średni koszt pozyskania klienta w czasie. Wysokie pozycje w Google sprawiają, że klienci trafiają do Ciebie naturalnie przez całą dobę.",
+                    "Prowadzimy kompleksowe działania SEO nastawione na ruch, który konwertuje – skupiamy się na frazach produktowych, kategoriach oraz precyzyjnych zapytaniach z tzw. długiego ogona (Long-Tail)."
                 ],
                 process: [
-                    "<strong>Etap 1: Strategia słów kluczowych i optymalizacja techniczna (On-Site)</strong> – dobieramy frazy o wysokiej intencji zakupowej (w tym Long-Tail) i wdrażamy poprawki w kodzie oraz strukturze sklepu.",
-                    "<strong>Etap 2: Rozbudowa kategorii i content marketing</strong> – optymalizujemy nagłówki, meta tagi, linkowanie wewnętrzne oraz tworzymy nasycone frazami opisy kategorii i artykuły.",
-                    "<strong>Etap 3: Budowanie autorytetu domeny (Link Building) i monitoring</strong> – pozyskujemy wartościowe odnośniki zewnętrzne i co miesiąc raportujemy wzrost pozycji oraz ruchu organicznego."
+                    "<strong>Dobór słów kluczowych i wdrożenie zmian technicznych</strong> – przygotowujemy mapę fraz dla całej witryny i optymalizujemy kod oraz strukturę sklepu.",
+                    "<strong>Rozbudowa treści kategorii i linkowania wewnętrznego</strong> – nasycamy kluczowe podstrony wartościową treścią i wzmacniamy przepływ mocy SEO.",
+                    "<strong>Link Building i comiesięczne raportowanie wzrostów</strong> – budujemy profil linkowy i raportujemy pozycje, ruch organiczny oraz konwersje."
                 ],
                 deliverables: [
-                    "✓ Stała opieka techniczna SEO nad sklepem lub stroną usługową",
-                    "✓ Dobór i monitoring słów kluczowych generujących sprzedaż (kategorie, produkty, Long-Tail)",
-                    "✓ Optymalizacja meta danych, nagłówków H1–H3, danych strukturalnych Schema oraz linkowania wewnętrznego",
-                    "✓ Tworzenie i optymalizacja treści sprzedażowych na kategorie, karty produktów i bloga",
-                    "✓ Bezpieczny Link Building oraz przejrzyste raporty z Google Search Console i GA4"
+                    "Stała opieka techniczna SEO nad sklepem lub stroną usługową",
+                    "Dobór i monitoring słów kluczowych generujących sprzedaż (kategorie, produkty, Long-Tail)",
+                    "Optymalizacja meta danych, nagłówków H1–H3, danych strukturalnych Schema oraz linkowania wewnętrznego",
+                    "Tworzenie i optymalizacja treści sprzedażowych na kategorie, karty produktów i bloga",
+                    "Bezpieczny Link Building oraz przejrzyste raporty z Google Search Console i GA4"
                 ],
                 outcome: "Rosnący z miesiąca na miesiąc bezpłatny ruch z wyszukiwarki Google i uniezależnienie biznesu od samych płatnych reklam."
             }
@@ -546,6 +964,8 @@
         const subpageTag = document.getElementById('subpageTag');
         const subpageTitle = document.getElementById('subpageTitle');
         const subpageLead = document.getElementById('subpageLead');
+        const subpageMetricsGrid = document.getElementById('subpageMetricsGrid');
+        const subpagePillarsGrid = document.getElementById('subpagePillarsGrid');
         const subpageDescription = document.getElementById('subpageDescription');
         const subpageProcess = document.getElementById('subpageProcess');
         const subpageDeliverables = document.getElementById('subpageDeliverables');
@@ -570,16 +990,35 @@
             subpageTitle.textContent = serviceData.title;
             subpageLead.textContent = serviceData.lead;
 
+            subpageMetricsGrid.innerHTML = serviceData.metrics.map(m => `
+                <div class="wtb-kpi-box">
+                    <strong>${m.val}</strong>
+                    <span>${m.label}</span>
+                </div>
+            `).join('');
+
+            subpagePillarsGrid.innerHTML = serviceData.pillars.map(p => `
+                <div class="wtb-pillar-card">
+                    <h3>${p.title}</h3>
+                    <p>${p.desc}</p>
+                </div>
+            `).join('');
+
             subpageDescription.innerHTML = serviceData.description
                 .map(p => `<p>${p}</p>`)
                 .join('');
 
             subpageProcess.innerHTML = serviceData.process
-                .map(step => `<div class="modal-step-box">${step}</div>`)
+                .map((step, idx) => `
+                    <div class="wtb-step-item">
+                        <span class="wtb-step-num">0${idx + 1}</span>
+                        <div class="wtb-step-text">${step}</div>
+                    </div>
+                `)
                 .join('');
 
             subpageDeliverables.innerHTML = serviceData.deliverables
-                .map(item => `<li>${item}</li>`)
+                .map(item => `<li><span class="check-neon">✓</span> <span>${item}</span></li>`)
                 .join('');
 
             subpageOutcome.textContent = serviceData.outcome;
@@ -587,7 +1026,7 @@
             subpageQuickSwitch.innerHTML = Object.keys(OFFER_SUBPAGES_DATA).map(key => {
                 const item = OFFER_SUBPAGES_DATA[key];
                 const activeClass = key === rawHash ? 'active' : '';
-                return `<a href="#${key}" class="topic-pill ${activeClass}">${item.title}</a>`;
+                return `<a href="#${key}" class="filter-btn ${activeClass}">${item.title}</a>`;
             }).join('');
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
