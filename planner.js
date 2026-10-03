@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     const calendarGrid = document.getElementById('hqCalendarGrid');
-    if (!calendarGrid) return; // Skrypt uruchamia się tylko w admin.html
+    if (!calendarGrid) return; // Uruchamia się wyłącznie w admin.html
 
     // Elementy DOM Kalendarza
     const calMonthTitle = document.getElementById('calMonthTitle');
     const calPrevMonthBtn = document.getElementById('calPrevMonthBtn');
     const calNextMonthBtn = document.getElementById('calNextMonthBtn');
     const calTodayBtn = document.getElementById('calTodayBtn');
-    const calFilterOwner = document.getElementById('calFilterOwner');
+    const calFilterScope = document.getElementById('calFilterScope');
 
-    // Elementy DOM Kontenera (Modala) Dnia
+    // Elementy DOM Modala Wybranego Dnia
     const dayModal = document.getElementById('calendarDayModal');
     const closeDayModalBtn = document.getElementById('closeDayModalBtn');
     const dayModalDateTitle = document.getElementById('dayModalDateTitle');
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dayTaskTime = document.getElementById('dayTaskTime');
     const dayTaskProject = document.getElementById('dayTaskProject');
     const dayTaskOwner = document.getElementById('dayTaskOwner');
+    const dayTaskOwnerMineOption = document.getElementById('dayTaskOwnerMineOption');
     const dayTaskPriority = document.getElementById('dayTaskPriority');
 
     const MONTHS_PL = [
@@ -45,6 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${d} ${MONTHS_PL[m - 1]} ${y}`;
     }
 
+    // Pobiera aktualnie zalogowanego założyciela ('Mateusz' lub 'Bartek')
+    function getCurrentOwnerKey() {
+        if (window.WTB_HQ && typeof window.WTB_HQ.getCurrentOwner === 'function') {
+            return window.WTB_HQ.getCurrentOwner();
+        }
+        const savedEmail = (localStorage.getItem('wtb_admin_email') || '').toLowerCase();
+        return savedEmail.includes('bkoczara') ? 'Bartek' : 'Mateusz';
+    }
+
+    // Aktualizuje etykietę w formularzu modala dnia (np. "🔒 Tylko dla mnie (Mateusz)")
+    function updateMineOptionLabel() {
+        const me = getCurrentOwnerKey();
+        if (dayTaskOwnerMineOption) {
+            dayTaskOwnerMineOption.textContent = me === 'Bartek'
+                ? '🔵 Tylko dla mnie (Bartek - Prywatne)'
+                : '🟢 Tylko dla mnie (Mateusz - Prywatne)';
+        }
+    }
+
     function getTasksArray() {
         if (window.WTB_HQ && typeof window.WTB_HQ.getTasks === 'function') {
             return window.WTB_HQ.getTasks();
@@ -58,10 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Zasada prywatności: widzisz TYLKO swoje zadania oraz zadania Wspólne
+    function isTaskVisibleForCurrentUser(task) {
+        const me = getCurrentOwnerKey();
+        const taskOwner = task.owner || 'Wspólnie';
+        return taskOwner === me || taskOwner === 'Wspólnie';
+    }
+
     function priorityWeight(prio) {
         if (prio === 'high') return 3;
         if (prio === 'medium') return 2;
         return 1;
+    }
+
+    function priorityIcon(prio) {
+        if (prio === 'high') return '🔥';
+        if (prio === 'low') return '🟢';
+        return '⚡';
     }
 
     function priorityBadgeHTML(prio) {
@@ -71,9 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function ownerBadgeHTML(owner) {
-        if (owner === 'Mateusz') return '<span class="hq-pill mateusz">🟢 Mateusz</span>';
-        if (owner === 'Bartek') return '<span class="hq-pill bartek">🔵 Bartek</span>';
-        return '<span class="hq-pill wspolnie">⚡ Wspólnie</span>';
+        if (owner === 'Mateusz') return '<span class="hq-pill mateusz">🟢 Mateusz (Prywatne)</span>';
+        if (owner === 'Bartek') return '<span class="hq-pill bartek">🔵 Bartek (Prywatne)</span>';
+        return '<span class="hq-pill wspolnie">⚡ Wspólne</span>';
+    }
+
+    function ownerPillColorClass(owner) {
+        if (owner === 'Mateusz') return 'pill-owner-mateusz';
+        if (owner === 'Bartek') return 'pill-owner-bartek';
+        return 'pill-owner-wspolnie';
     }
 
     // =========================================================
@@ -81,26 +120,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================
     function renderCalendar() {
         if (!calendarGrid) return;
+        updateMineOptionLabel();
         calMonthTitle.innerText = `${MONTHS_PL[currentMonth]} ${currentYear}`;
 
+        const me = getCurrentOwnerKey();
         const allTasks = getTasksArray();
-        const ownerFilter = calFilterOwner ? calFilterOwner.value : 'all';
+        const scopeVal = calFilterScope ? calFilterScope.value : 'all';
 
-        const filteredTasks = allTasks.filter(t => {
-            if (ownerFilter === 'all') return true;
-            return t.owner === ownerFilter;
+        // Filtrowanie: najpierw ścisła prywatność (Moje + Wspólne), potem filtr widoku
+        const visibleTasks = allTasks.filter(t => {
+            if (!isTaskVisibleForCurrentUser(t)) return false;
+            if (scopeVal === 'mine') return t.owner === me;
+            if (scopeVal === 'shared') return (t.owner || 'Wspólnie') === 'Wspólnie';
+            return true;
         });
 
-        // Wyliczanie układu dni w miesiącu (Poniedziałek = 0 ... Niedziela = 6)
         const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-        const startWeekday = (firstDayOfMonth.getDay() + 6) % 7;
+        const startWeekday = (firstDayOfMonth.getDay() + 6) % 7; // Pon = 0 ... Ndz = 6
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
 
         const todayKey = formatDateKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
         let cellsHTML = '';
 
-        // Dni z poprzedniego miesiąca (wypełnienie początku siatki)
+        // Dni z poprzedniego miesiąca
         for (let i = startWeekday - 1; i >= 0; i--) {
             const prevDay = daysInPrevMonth - i;
             cellsHTML += `
@@ -118,25 +161,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const isToday = dateKey === todayKey;
             const isSelected = dateKey === selectedDateStr;
 
-            const dayTasks = filteredTasks
+            const dayTasks = visibleTasks
                 .filter(t => (t.date || todayKey) === dateKey)
                 .sort((a, b) => {
                     if (a.status === 'done' && b.status !== 'done') return 1;
                     if (a.status !== 'done' && b.status === 'done') return -1;
-                    return priorityWeight(b.priority) - priorityWeight(a.priority);
+                    if (priorityWeight(b.priority) !== priorityWeight(a.priority)) {
+                        return priorityWeight(b.priority) - priorityWeight(a.priority);
+                    }
+                    return (a.time || '23:59').localeCompare(b.time || '23:59');
                 });
 
             const activeCount = dayTasks.filter(t => t.status !== 'done').length;
 
+            // Pigułki na kafelku dnia z kolorem właściciela (Mateusz=Limonka, Bartek=Błękit, Wspólne=Pomarańcz)
             const pillsHTML = dayTasks.slice(0, 3).map(t => {
                 const doneClass = t.status === 'done' ? 'is-done' : '';
-                const prioClass = `pill-prio-${t.priority || 'medium'}`;
+                const ownerClass = ownerPillColorClass(t.owner || 'Wspólnie');
+                const pIcon = priorityIcon(t.priority || 'medium');
                 const timePrefix = t.time ? `${t.time} ` : '';
-                return `<div class="cal-task-pill ${prioClass} ${doneClass}">${timePrefix}${t.title}</div>`;
+                return `<div class="cal-task-pill ${ownerClass} ${doneClass}">${pIcon} ${timePrefix}${t.title}</div>`;
             }).join('');
 
             const moreHTML = dayTasks.length > 3
-                ? `<div class="cal-more-tasks">+${dayTasks.length - 3} więcej...</div>`
+                ? `<div class="cal-more-tasks">+${dayTasks.length - 3} więcej</div>`
                 : '';
 
             cellsHTML += `
@@ -153,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        // Dopełnienie siatki do pełnych wierszy (wielokrotność 7)
+        // Dopełnienie siatki do pełnych tygodni
         const totalCellsSoFar = startWeekday + daysInMonth;
         const remainingCells = (7 - (totalCellsSoFar % 7)) % 7;
         for (let nextDay = 1; nextDay <= remainingCells; nextDay++) {
@@ -168,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         calendarGrid.innerHTML = cellsHTML;
 
-        // Obsługa kliknięcia w kafelek konkretnej daty
         calendarGrid.querySelectorAll('.cal-day-cell[data-date]').forEach(cell => {
             cell.addEventListener('click', () => {
                 const clickedDate = cell.getAttribute('data-date');
@@ -178,10 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
-    // 2. KONTENER (MODAL) WYBRANEGO DNIA – LISTA I DODAWANIE ZADAŃ
+    // 2. KONTENER (MODAL) WYBRANEGO DNIA – TYLKO SWOJE I WSPÓLNE
     // =========================================================
     function openDayModal(dateKey) {
         selectedDateStr = dateKey;
+        updateMineOptionLabel();
         renderCalendar();
         renderDayModalTasks();
         if (dayModal) {
@@ -197,8 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const todayKey = formatDateKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
         const allTasks = getTasksArray();
+
+        // Pokazujemy tylko zadania z wybranego dnia należące do zalogowanego lub Wspólne
         const tasksForDay = allTasks
-            .filter(t => (t.date || todayKey) === selectedDateStr)
+            .filter(t => (t.date || todayKey) === selectedDateStr && isTaskVisibleForCurrentUser(t))
             .sort((a, b) => {
                 if (a.status === 'done' && b.status !== 'done') return 1;
                 if (a.status !== 'done' && b.status === 'done') return -1;
@@ -211,14 +261,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dayModalSubtitle) {
             const activeCount = tasksForDay.filter(t => t.status !== 'done').length;
             dayModalSubtitle.innerText = tasksForDay.length === 0
-                ? 'Brak zaplanowanych zadań na ten dzień – dodaj pierwsze poniżej.'
-                : `Łącznie zadań: ${tasksForDay.length} (Do wykonania: ${activeCount})`;
+                ? 'Brak Twoich lub wspólnych zadań na ten dzień – dodaj nowe poniżej.'
+                : `Widoczne zadania na ten dzień: ${tasksForDay.length} (Do wykonania: ${activeCount})`;
         }
 
         if (tasksForDay.length === 0) {
             dayTasksList.innerHTML = `
                 <li class="dash-task-item">
-                    <span class="task-meta">Ten dzień jest jeszcze pusty. Użyj formularza obok, aby zaplanować działania i ustawić priorytet.</span>
+                    <span class="task-meta">Ten dzień jest pusty. Zaplanuj zadanie dla siebie lub wspólne dla całego zespołu.</span>
                 </li>
             `;
             return;
@@ -234,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <li class="dash-task-item ${isDone ? 'cal-task-row-done' : ''}">
                     <div class="task-meta">
                         <div class="cal-task-row-badges">
-                            ${priorityBadgeHTML(t.priority || 'medium')}
                             ${ownerBadgeHTML(t.owner || 'Wspólnie')}
+                            ${priorityBadgeHTML(t.priority || 'medium')}
                             ${t.time ? `<span class="cal-time-badge">⏰ ${t.time}</span>` : ''}
                         </div>
                         <strong class="${isDone ? 'text-strike' : ''}">${t.title}</strong>
@@ -251,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        // Przełączanie statusu (Do zrobienia <-> Gotowe)
         dayTasksList.querySelectorAll('[data-toggle-day-task]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-toggle-day-task');
@@ -265,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Usuwanie zadania z wybranego dnia
         dayTasksList.querySelectorAll('[data-del-day-task]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-del-day-task');
@@ -277,12 +325,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Dodawanie nowego zadania w wybranym dniu
+    // Dodawanie nowego zadania (Prywatnego dla zalogowanego lub Wspólnego)
     if (dayTaskForm) {
         dayTaskForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const titleVal = (dayTaskTitle?.value || '').trim();
             if (!titleVal) return;
+
+            const me = getCurrentOwnerKey();
+            const selectedScope = dayTaskOwner ? dayTaskOwner.value : 'MINE';
+            const resolvedOwner = selectedScope === 'MINE' ? me : 'Wspólnie';
 
             const newTask = {
                 id: 'cal_' + Date.now(),
@@ -290,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 time: (dayTaskTime?.value || '').trim(),
                 title: titleVal,
                 project: (dayTaskProject?.value || '').trim() || 'Wake The Brand',
-                owner: dayTaskOwner ? dayTaskOwner.value : 'Wspólnie',
+                owner: resolvedOwner,
                 priority: dayTaskPriority ? dayTaskPriority.value : 'medium',
                 status: 'todo'
             };
@@ -300,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveTasksArray(currentAll);
 
             dayTaskForm.reset();
+            updateMineOptionLabel();
             renderDayModalTasks();
             renderCalendar();
         });
@@ -338,8 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (calFilterOwner) {
-        calFilterOwner.addEventListener('change', renderCalendar);
+    if (calFilterScope) {
+        calFilterScope.addEventListener('change', renderCalendar);
     }
 
     if (closeDayModalBtn && dayModal) {
@@ -349,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Nasłuchiwanie na aktualizacje z chmury Firebase (wywoływane przez script.js)
+    // Odświeżenie kalendarza przy aktualizacji danych z Firebase lub zmianie użytkownika
     window.addEventListener('wtb:workspace-updated', () => {
         renderCalendar();
         if (dayModal && dayModal.classList.contains('open')) {
