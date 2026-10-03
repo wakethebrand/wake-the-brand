@@ -509,7 +509,7 @@ ul {
     font-size: 0.9rem;
 }
 
-/* Karty Usług */
+/* Karty Usług & Klikalne Kafelki-Przyciski Oferty */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -525,6 +525,33 @@ ul {
 .service-card:hover {
     border-color: var(--border-hover);
     transform: translateY(-4px);
+}
+
+.offer-tile-link {
+    cursor: pointer;
+    position: relative;
+}
+
+.offer-tile-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.68rem 1.2rem;
+    border-radius: 12px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.offer-tile-link:hover .offer-tile-cta {
+    background: var(--accent-lime);
+    color: #07080c;
+    border-color: var(--accent-lime);
+    box-shadow: 0 6px 20px rgba(212, 255, 0, 0.22);
 }
 
 .service-icon {
@@ -554,52 +581,101 @@ ul {
 }
 
 /* =========================================================
-   4B. ROZBUDOWANA PODSTRONA OFERTA (oferta.html)
+   4B. DEDYKOWANE PODSTRONY USŁUG W OFERTA.HTML
    ========================================================= */
-.offer-detailed-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+.offer-back-row {
+    margin-bottom: 1.5rem;
 }
 
-.offer-detailed-card {
+.offer-subpage-hero {
+    padding: 2.8rem;
+    border-color: rgba(212, 255, 0, 0.28);
+}
+
+.offer-subpage-hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin: 0.4rem 0 1rem;
+}
+
+.offer-subpage-lead {
+    font-size: 1.08rem;
+    color: #e5e7eb;
+    max-width: 880px;
+    margin-bottom: 2.4rem;
+    padding-bottom: 1.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.offer-subpage-columns {
     display: grid;
     grid-template-columns: 1.35fr 1fr;
-    gap: 2.2rem;
-    align-items: center;
-    scroll-margin-top: 100px;
+    gap: 2.4rem;
+    align-items: start;
 }
 
-.offer-detailed-card:hover {
-    border-color: var(--border-hover);
+.offer-subpage-main h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.9rem;
+    color: #ffffff;
 }
 
-.offer-card-main h2 {
-    font-size: clamp(1.45rem, 2.5vw, 1.85rem);
-    margin: 0.35rem 0 0.9rem;
-}
-
-.offer-card-main p {
+.offer-subpage-main p {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-bottom: 0.95rem;
+    font-size: 0.96rem;
+    margin-bottom: 1.15rem;
 }
 
-.offer-card-main p:last-child {
-    margin-bottom: 0;
+.offer-process-steps {
+    margin-top: 0.8rem;
 }
 
 .offer-card-side {
-    background: rgba(0, 0, 0, 0.38);
+    background: rgba(0, 0, 0, 0.42);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.6rem;
+    border-radius: 18px;
+    padding: 1.8rem;
 }
 
 .offer-card-side h4 {
-    font-size: 0.96rem;
-    margin-bottom: 0.9rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
     color: var(--accent-lime);
+}
+
+.offer-benefit-highlight {
+    background: rgba(212, 255, 0, 0.07);
+    border: 1px solid rgba(212, 255, 0, 0.28);
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.4rem;
+}
+
+.offer-benefit-highlight small {
+    display: block;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.offer-benefit-highlight strong {
+    color: var(--accent-lime);
+    font-size: 0.94rem;
+}
+
+.offer-other-services-box {
+    margin-top: 2.5rem;
+    text-align: center;
+}
+
+.offer-other-services-box h3 {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+}
+
+.offer-other-services-box .topic-pills {
+    justify-content: center;
 }
 
 /* FAQ & Dolny Box CTA */
@@ -664,7 +740,7 @@ ul {
 }
 
 /* =========================================================
-   5. SKLEPY INTERNETOWE (koncepty.html) & PORTFOLIO (portfolio.html)
+   5. BRANŻE (koncepty.html) & PORTFOLIO (portfolio.html)
    ========================================================= */
 .ecom-highlight-grid {
     display: grid;
@@ -1382,7 +1458,6 @@ ul {
     font-size: 0.79rem;
 }
 
-/* Kolory właścicieli: Mateusz = Limonkowy, Bartek = Błękitny, Wspólne = Pomarańczowy */
 .hq-pill {
     padding: 0.22rem 0.65rem;
     border-radius: 20px;
@@ -1607,7 +1682,6 @@ ul {
     gap: 0.22rem;
 }
 
-/* Kolorowe pigułki zadań wg właściciela na siatce kalendarza */
 .cal-task-pill {
     font-size: 0.68rem;
     font-weight: 600;
@@ -1647,7 +1721,6 @@ ul {
     padding-left: 0.2rem;
 }
 
-/* Modal Wybranego Dnia */
 .cal-day-modal-box {
     max-width: 880px;
 }
@@ -1781,7 +1854,7 @@ ul {
     resize: vertical;
 }
 
-/* Wewnętrzny czat: własne wiadomości po prawej, wspólnika po lewej + indywidualny kolor */
+/* Wewnętrzny czat */
 .chat-container {
     display: flex;
     flex-direction: column;
@@ -2138,7 +2211,7 @@ ul {
 @media (max-width: 992px) {
     .contact-grid,
     .team-grid,
-    .offer-detailed-card,
+    .offer-subpage-columns,
     .dash-two-cols,
     .footer-container {
         grid-template-columns: 1fr;
@@ -2148,7 +2221,6 @@ ul {
         grid-template-columns: 1fr;
     }
 
-    /* Na telefonie i tablecie pasek boczny zamienia się w poziomy pasek zakładek */
     .dash-sidebar {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
@@ -2216,8 +2288,9 @@ ul {
         display: none;
     }
 
-    .glass-card {
-        padding: 1.3rem;
+    .glass-card,
+    .offer-subpage-hero {
+        padding: 1.35rem;
         border-radius: 16px;
     }
 
@@ -2257,7 +2330,6 @@ ul {
         grid-template-columns: 1fr;
     }
 
-    /* Kompaktowa 7-kolumnowa siatka kalendarza na smartfonie */
     .cal-toolbar {
         flex-direction: column;
         align-items: stretch;
@@ -2310,7 +2382,6 @@ ul {
         font-size: 0.55rem;
     }
 
-    /* Modal dnia dopasowany do ekranu telefonu */
     .modal-overlay {
         padding: 0.6rem;
     }
