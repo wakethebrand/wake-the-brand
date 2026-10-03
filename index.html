@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -48,18 +48,16 @@
                 <a href="portfolio.html" class="btn btn-outline">Zobacz nasze wyniki i Portfolio</a>
             </div>
 
-            <!-- PASEK ATUTÓW -->
+            <!-- NAPRAWIONY KONTENER ATUTÓW (RÓWNA SIATKA 3-KOLUMNOWA) -->
             <div class="hero-stats glass-card">
                 <div class="stat-item">
                     <span class="stat-num">ROAS</span>
                     <span class="stat-desc">Kampanie nastawione na zwrot z inwestycji</span>
                 </div>
-                <div class="stat-divider"></div>
                 <div class="stat-item">
                     <span class="stat-num">24h</span>
                     <span class="stat-desc">Czas reakcji na zapytanie ofertowe</span>
                 </div>
-                <div class="stat-divider"></div>
                 <div class="stat-item">
                     <span class="stat-num">100%</span>
                     <span class="stat-desc">Precyzyjnej analityki i mierzalnych danych</span>
@@ -67,6 +65,46 @@
             </div>
         </div>
     </section>
+
+    <!-- PŁYNĄCY SLIDER (MARQUEE) Z NASZYMI MOCNYMI STRONAMI -->
+    <div class="strengths-marquee" aria-label="Nasze mocne strony">
+        <div class="marquee-track">
+            <!-- Pierwszy zestaw elementów -->
+            <div class="marquee-group">
+                <span class="marquee-item"><strong>⚡ Nastawienie na ROAS i realny zysk</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>📊 100% transparentności danych w GA4 i GTM</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🤝 Bezpośredni kontakt z założycielami (Zero pośredników)</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🛡️ Ochrona budżetu przed przepalaniem</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🛒 Specjalizacja E-commerce & Algorytm Allegro</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>💻 Własne zaplecze techniczne, SEO i Web Dev</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>⏱️ Szybka reakcja i wdrożenia w 24h</strong></span>
+                <span class="marquee-sep">•</span>
+            </div>
+            <!-- Zduplikowany zestaw dla płynnej, nieskończonej pętli -->
+            <div class="marquee-group" aria-hidden="true">
+                <span class="marquee-item"><strong>⚡ Nastawienie na ROAS i realny zysk</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>📊 100% transparentności danych w GA4 i GTM</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🤝 Bezpośredni kontakt z założycielami (Zero pośredników)</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🛡️ Ochrona budżetu przed przepalaniem</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>🛒 Specjalizacja E-commerce & Algorytm Allegro</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>💻 Własne zaplecze techniczne, SEO i Web Dev</strong></span>
+                <span class="marquee-sep">•</span>
+                <span class="marquee-item"><strong>⏱️ Szybka reakcja i wdrożenia w 24h</strong></span>
+                <span class="marquee-sep">•</span>
+            </div>
+        </div>
+    </div>
 
     <!-- INTERAKTYWNY SYMULATOR: UŚPIONA SPRZEDAŻ VS OBUDZONA SPRZEDAŻ -->
     <section class="simulator-section section-padding">
