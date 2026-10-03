@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         chatMessages: [
             {
                 id: 'm_start_1',
-                author: 'System HQ ⚡',
+                author: '🟢 Mateusz Bugajski',
                 senderKey: 'Mateusz',
                 text: 'Wewnętrzny czat założycieli (Mateusz & Bartek) jest gotowy do pracy!',
                 time: 'Start'
@@ -83,11 +83,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
     }
 
+    function getLoggedInEmail() {
+        if (firebaseReady && auth && auth.currentUser && auth.currentUser.email) {
+            return auth.currentUser.email.trim().toLowerCase();
+        }
+        return (localStorage.getItem('wtb_admin_email') || '').trim().toLowerCase();
+    }
+
+    // Rozpoznaje automatycznie zalogowanego właściciela po adresie e-mail ('Mateusz' lub 'Bartek')
+    function getCurrentOwnerKey() {
+        const email = getLoggedInEmail();
+        if (email.includes('bkoczara') || email.includes('bart')) {
+            return 'Bartek';
+        }
+        return 'Mateusz';
+    }
+
     function isAdminCurrentlyLoggedIn() {
-        const savedEmail = localStorage.getItem('wtb_admin_email');
-        if (savedEmail && isOwnerEmail(savedEmail)) return true;
-        if (firebaseReady && auth && auth.currentUser && isOwnerEmail(auth.currentUser.email)) return true;
-        return false;
+        const email = getLoggedInEmail();
+        return email ? isOwnerEmail(email) : false;
     }
 
     function navigateToAdminOrLogin() {
@@ -350,10 +364,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     let leadsCache = getLocalLeads();
 
     const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
-    const savedAdminEmail = localStorage.getItem('wtb_admin_email');
-    if (adminEmailLabelEl && savedAdminEmail) {
-        adminEmailLabelEl.innerText = savedAdminEmail;
+    const hqChatActiveUserBadge = document.getElementById('hqChatActiveUserBadge');
+
+    function updateLoggedInIdentityUI() {
+        const ownerKey = getCurrentOwnerKey();
+        const email = getLoggedInEmail();
+
+        if (adminEmailLabelEl) {
+            adminEmailLabelEl.className = ownerKey === 'Bartek' ? 'hq-pill bartek' : 'hq-pill mateusz';
+            adminEmailLabelEl.innerText = ownerKey === 'Bartek'
+                ? `🔵 Bartosz Koczara (${email || 'HQ'})`
+                : `🟢 Mateusz Bugajski (${email || 'HQ'})`;
+        }
+
+        if (hqChatActiveUserBadge) {
+            hqChatActiveUserBadge.className = ownerKey === 'Bartek' ? 'hq-pill bartek' : 'hq-pill mateusz';
+            hqChatActiveUserBadge.innerText = ownerKey === 'Bartek'
+                ? '🔵 Piszesz jako: Bartosz Koczara'
+                : '🟢 Piszesz jako: Mateusz Bugajski';
+        }
     }
+
+    updateLoggedInIdentityUI();
 
     async function syncWorkspaceToCloud(updatedWorkspace) {
         workspaceCache = updatedWorkspace;
@@ -370,8 +402,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Udostępnienie prostego interfejsu dla osobnego pliku planner.js
+    // Mostek dla osobnego pliku planner.js
     window.WTB_HQ = {
+        getCurrentOwner: () => getCurrentOwnerKey(),
         getTasks: () => workspaceCache.tasks || [],
         saveTasks: (updatedTasksArray) => {
             workspaceCache.tasks = updatedTasksArray;
@@ -587,7 +620,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const hqInternalChatBox = document.getElementById('hqInternalChatBox');
     const hqInternalChatForm = document.getElementById('hqInternalChatForm');
-    const hqChatSenderSelect = document.getElementById('hqChatSenderSelect');
     const hqInternalChatInput = document.getElementById('hqInternalChatInput');
 
     function leadStatusBadgeHTML(crmStatus) {
@@ -683,14 +715,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 7B. Renderowanie KPI, Notatnika, Dysku Google, Historii Wycen i Czatu
+    // 7B. Renderowanie KPI (tylko Twoje + Wspólne zadania), Notatnika, Drive, Historii Wycen i Czatu
     function renderHQWorkspaceUI() {
+        updateLoggedInIdentityUI();
+        const me = getCurrentOwnerKey();
         const tasks = workspaceCache.tasks || [];
         const driveFiles = workspaceCache.driveFiles || [];
         const savedQuotes = workspaceCache.savedQuotes || [];
         const chatMessages = workspaceCache.chatMessages || [];
 
-        const activeTasksCount = tasks.filter(t => t.status !== 'done').length;
+        // Zliczamy wyłącznie zadania zalogowanego właściciela oraz Wspólne
+        const activeTasksCount = tasks.filter(t => {
+            const owner = t.owner || 'Wspólnie';
+            return (owner === me || owner === 'Wspólnie') && t.status !== 'done';
+        }).length;
+
         if (statActiveTasks) statActiveTasks.innerText = activeTasksCount;
         if (statDriveFiles) statDriveFiles.innerText = driveFiles.length;
         if (statSavedQuotes) statSavedQuotes.innerText = savedQuotes.length;
@@ -718,7 +757,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <small>${d.note || 'Brak opisu'} • Dodano: ${d.createdAt}</small>
                         </div>
                         <div class="cookie-actions">
-                            <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️ Otwórz w Drive →</a>
+                            <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️️ Otwórz w Drive →</a>
                             <button type="button" class="btn-mini btn-danger" data-del-drive="${d.id}">🗑️</button>
                         </div>
                     </div>
@@ -755,13 +794,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        // Czat: własne wiadomości zawsze po prawej (.chat-mine), wspólnika po lewej (.chat-partner)
         if (hqInternalChatBox) {
-            hqInternalChatBox.innerHTML = chatMessages.map(m => `
-                <div class="chat-bubble ${m.senderKey === 'Bartek' ? 'from-agency' : 'from-client'}">
-                    <span class="chat-sender">${m.author} • ${m.time}</span>
-                    <div>${m.text}</div>
-                </div>
-            `).join('');
+            hqInternalChatBox.innerHTML = chatMessages.map(m => {
+                const isMine = m.senderKey === me;
+                const alignClass = isMine ? 'chat-mine' : 'chat-partner';
+                const colorClass = m.senderKey === 'Bartek' ? 'bubble-bartek' : 'bubble-mateusz';
+                return `
+                    <div class="chat-bubble ${alignClass} ${colorClass}">
+                        <span class="chat-sender">${m.author} • ${m.time}</span>
+                        <div>${m.text}</div>
+                    </div>
+                `;
+            }).join('');
             hqInternalChatBox.scrollTop = hqInternalChatBox.scrollHeight;
         }
     }
@@ -1300,7 +1345,7 @@ Zespół Wake The Brand`;
             syncWorkspaceToCloud(workspaceCache);
             if (scratchpadSavedInfo) {
                 scratchpadSavedInfo.innerText = '✓ Zapisano!';
-                setTimeout(() => { scratchpadSavedInfo.innerText = 'Notatnik HQ'; }, 2000);
+                setTimeout(() => { scratchpadSavedInfo.innerText = 'Wspólny Notatnik'; }, 2000);
             }
         });
     }
@@ -1326,12 +1371,14 @@ Zespół Wake The Brand`;
         driveSearchInput.addEventListener('input', renderHQWorkspaceUI);
     }
 
+    // Wewnętrzny czat: wysyła automatycznie z konta zalogowanego założyciela
     if (hqInternalChatForm && hqInternalChatInput) {
         hqInternalChatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = hqInternalChatInput.value.trim();
             if (!text) return;
-            const senderKey = hqChatSenderSelect ? hqChatSenderSelect.value : 'Mateusz';
+
+            const senderKey = getCurrentOwnerKey();
             workspaceCache.chatMessages = workspaceCache.chatMessages || [];
             workspaceCache.chatMessages.push({
                 id: 'msg_' + Date.now(),
@@ -1376,10 +1423,8 @@ Zespół Wake The Brand`;
         if (auth.currentUser && auth.currentUser.email) {
             const email = auth.currentUser.email.toLowerCase();
             localStorage.setItem('wtb_admin_email', email);
-            if (adminEmailLabelEl) adminEmailLabelEl.innerText = email;
-            if (hqChatSenderSelect && email.includes('bkoczara')) {
-                hqChatSenderSelect.value = 'Bartek';
-            }
+            updateLoggedInIdentityUI();
+            window.dispatchEvent(new CustomEvent('wtb:workspace-updated'));
             if (loginForm) {
                 window.location.href = 'admin.html';
             }
