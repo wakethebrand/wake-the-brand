@@ -9,7 +9,109 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=10">
+
+    <!-- WBUDOWANE STYLE NEONOWEGO SLIDERA I KONTENERÓW (GWARANCJA DZIAŁANIA OD RĘKI) -->
+    <style>
+        .hero-stats {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            align-items: center !important;
+            gap: 1.5rem !important;
+            max-width: 900px !important;
+            margin: 0 auto !important;
+            padding: 1.6rem 2rem !important;
+        }
+        .stat-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            padding: 0 1rem !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .stat-item:last-child {
+            border-right: none !important;
+        }
+        .strengths-marquee {
+            width: 100%;
+            overflow: hidden;
+            background: linear-gradient(90deg, rgba(7, 8, 12, 0.96) 0%, rgba(212, 255, 0, 0.1) 50%, rgba(7, 8, 12, 0.96) 100%);
+            border-top: 1px solid rgba(212, 255, 0, 0.6);
+            border-bottom: 1px solid rgba(212, 255, 0, 0.6);
+            box-shadow: 0 0 38px rgba(212, 255, 0, 0.18), inset 0 0 24px rgba(212, 255, 0, 0.09);
+            padding: 1.15rem 0;
+            margin: 1.5rem 0 2.5rem;
+            position: relative;
+            z-index: 2;
+            pointer-events: none !important;
+        }
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: wtbNeonScroll 26s linear infinite !important;
+            animation-play-state: running !important;
+        }
+        .strengths-marquee:hover .marquee-track {
+            animation-play-state: running !important;
+        }
+        .marquee-group {
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            padding-right: 1.6rem;
+        }
+        .marquee-item {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #d4ff00;
+            text-shadow: 0 0 12px rgba(212, 255, 0, 0.6);
+            background: rgba(212, 255, 0, 0.1);
+            border: 1px solid rgba(212, 255, 0, 0.55);
+            box-shadow: 0 0 18px rgba(212, 255, 0, 0.2), inset 0 0 10px rgba(212, 255, 0, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+        .neon-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d4ff00;
+            box-shadow: 0 0 10px #d4ff00, 0 0 18px #d4ff00;
+            display: inline-block;
+        }
+        .marquee-sep {
+            color: #ff6b00;
+            font-size: 1.15rem;
+            filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.85));
+        }
+        @keyframes wtbNeonScroll {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+        @media (max-width: 768px) {
+            .hero-stats {
+                grid-template-columns: 1fr !important;
+            }
+            .stat-item {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+                padding-bottom: 1rem !important;
+            }
+            .stat-item:last-child {
+                border-bottom: none !important;
+                padding-bottom: 0 !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -66,10 +168,9 @@
         </div>
     </section>
 
-    <!-- NEONOWY SLIDER (MARQUEE) Z NASZYMI MOCNYMI STRONAMI (BEZ ZATRZYMYWANIA) -->
+    <!-- NEONOWY SLIDER (MARQUEE) Z NASZYMI MOCNYMI STRONAMI (PŁYNIE CAŁY CZAS) -->
     <div class="strengths-marquee" aria-label="Nasze mocne strony">
         <div class="marquee-track">
-            <!-- Pierwszy zestaw neonowych kapsuł -->
             <div class="marquee-group">
                 <span class="marquee-item"><span class="neon-dot"></span> NASTAWIENIE NA ROAS & REALNY ZYSK</span>
                 <span class="marquee-sep">⚡</span>
@@ -86,7 +187,6 @@
                 <span class="marquee-item"><span class="neon-dot"></span> SZYBKA REAKCJA I WDROŻENIA W 24H</span>
                 <span class="marquee-sep">⚡</span>
             </div>
-            <!-- Drugi zestaw dla idealnie płynnej pętli -->
             <div class="marquee-group" aria-hidden="true">
                 <span class="marquee-item"><span class="neon-dot"></span> NASTAWIENIE NA ROAS & REALNY ZYSK</span>
                 <span class="marquee-sep">⚡</span>
