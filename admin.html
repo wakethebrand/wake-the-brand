@@ -16,11 +16,11 @@
     <header class="dash-topbar">
         <div class="dash-topbar-left">
             <a href="index.html" class="logo">WAKE THE BRAND<span class="dot">.</span></a>
-            <span class="dash-badge">⚡ Wewnętrzny Panel Założycieli (HQ)</span>
+            <span class="dash-badge">⚡ Panel HQ</span>
         </div>
         <div class="dash-topbar-right">
             <span class="hq-pill mateusz" id="loggedInAdminEmail">Założyciel WTB</span>
-            <a href="index.html" class="btn btn-outline btn-sm">🌐 Zobacz stronę</a>
+            <a href="index.html" class="btn btn-outline btn-sm">🌐 Strona WWW</a>
             <button type="button" class="btn btn-sm btn-client" id="adminLogoutBtn">Wyloguj</button>
         </div>
     </header>
@@ -28,9 +28,9 @@
     <!-- GŁÓWNY UKŁAD PANELU -->
     <div class="dashboard-layout">
         
-        <!-- BOCZNY PASEK NAWIGACJI -->
+        <!-- BOCZNY PASEK NAWIGACJI (NA TELEFONIE POZIOMY PASEK ZAKŁADEK) -->
         <aside class="dash-sidebar">
-            <div>
+            <div class="dash-sidebar-nav-wrap">
                 <div class="sidebar-section-label">Narzędzia Założycieli</div>
                 <nav class="dash-nav">
                     <button type="button" class="dash-nav-btn active" data-tab="hq-tab-leads">
@@ -40,16 +40,16 @@
                         <span>📅</span> Kalendarz & Planer
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-drive">
-                        <span>📁</span> Dysk Google & Pliki
+                        <span>📁</span> Dysk Google
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-pricing">
-                        <span>🧮</span> Wewnętrzna Wycena
+                        <span>🧮</span> Wycena (1–10)
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-docs">
-                        <span>🖨️️</span> Generator Druków A4
+                        <span>🖨️</span> Druki A4
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-chat">
-                        <span>💬</span> Nasz Wewnętrzny Czat
+                        <span>💬</span> Czat HQ
                     </button>
                 </nav>
             </div>
@@ -69,24 +69,24 @@
             <!-- GÓRNE KARTY PODSUMOWANIA -->
             <div class="dash-kpi-grid">
                 <div class="dash-kpi-card glass-card">
-                    <span class="kpi-label">Zapytania od Klientów</span>
+                    <span class="kpi-label">Zapytania Klientów</span>
                     <div class="kpi-val" id="statTotalLeads">0</div>
                     <span class="kpi-sub">Z formularza kontaktowego</span>
                 </div>
                 <div class="dash-kpi-card glass-card">
-                    <span class="kpi-label">Zadania w Kalendarzu</span>
+                    <span class="kpi-label">Twoje & Wspólne Zadania</span>
                     <div class="kpi-val" id="statActiveTasks">0</div>
-                    <span class="kpi-sub">Niewykonane zaplanowane zadania</span>
+                    <span class="kpi-sub">Niewykonane w kalendarzu</span>
                 </div>
                 <div class="dash-kpi-card glass-card">
-                    <span class="kpi-label">Pliki / Foldery Drive</span>
+                    <span class="kpi-label">Pliki Google Drive</span>
                     <div class="kpi-val" id="statDriveFiles">0</div>
-                    <span class="kpi-sub">W katalogu Google Drive</span>
+                    <span class="kpi-sub">W katalogu zespołu</span>
                 </div>
                 <div class="dash-kpi-card glass-card">
                     <span class="kpi-label">Zapisane Wyceny</span>
                     <div class="kpi-val" id="statSavedQuotes">0</div>
-                    <span class="kpi-sub">W kalkulatorze wewnętrznym</span>
+                    <span class="kpi-sub">W kalkulatorze HQ</span>
                 </div>
             </div>
 
@@ -97,7 +97,7 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Pierwszy Kontakt od Klienta</span>
                     <h2>📬 Wiadomości przesłane przez formularz na stronie</h2>
-                    <p>Tutaj trafiają wszystkie zapytania z podstrony Kontakt. Możesz zmieniać ich status, przejść do kalkulatora wyceny lub jednym kliknięciem wygenerować Kartę Klienta do druku.</p>
+                    <p>Tutaj trafiają wszystkie zapytania z podstrony Kontakt. Możesz zmieniać ich status, przejść do kalkulatora wyceny lub wygenerować Kartę Klienta do druku.</p>
                 </div>
 
                 <div class="glass-card">
@@ -106,31 +106,35 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 2: INTERAKTYWNY KALENDARZ & NOTATNIK (planner.js)
+                 MODUŁ 2: INTERAKTYWNY KALENDARZ (SWOJE + WSPÓLNE)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-planner">
                 <div class="dash-section-title">
-                    <span class="section-tag">Harmonogram Zespołu (Mateusz & Bartek)</span>
-                    <h2>📅 Interaktywny Kalendarz Zadań & Notatnik</h2>
-                    <p>Kliknij w dowolny dzień na kalendarzu, aby otworzyć okno dnia, zaplanować działania, przypisać osobę oraz ustawić priorytet.</p>
+                    <span class="section-tag">Harmonogram Zespołu</span>
+                    <h2>📅 Twój Kalendarz & Zadania Wspólne</h2>
+                    <p>W kalendarzu widzisz wyłącznie <strong>swoje prywatne zadania</strong> oraz <strong>zadania wspólne</strong>. Kliknij dowolny dzień, aby zaplanować działania.</p>
                 </div>
 
                 <!-- GŁÓWNY KONTENER KALENDARZA -->
                 <div class="glass-card cal-wrapper-card">
                     <div class="cal-toolbar">
                         <div class="cal-nav-group">
-                            <button type="button" class="btn-mini" id="calPrevMonthBtn">◀ Poprzedni</button>
+                            <button type="button" class="btn-mini" id="calPrevMonthBtn">◀</button>
                             <h3 id="calMonthTitle" class="cal-month-heading">Październik 2026</h3>
-                            <button type="button" class="btn-mini" id="calNextMonthBtn">Następny ▶</button>
+                            <button type="button" class="btn-mini" id="calNextMonthBtn">▶</button>
                             <button type="button" class="btn-mini btn-accent" id="calTodayBtn">Dzisiaj</button>
                         </div>
 
-                        <div class="cal-filter-group">
-                            <select id="calFilterOwner" class="admin-select">
-                                <option value="all">Wszyscy (Mateusz & Bartek)</option>
-                                <option value="Mateusz">🟢 Tylko Mateusz</option>
-                                <option value="Bartek">🔵 Tylko Bartek</option>
-                                <option value="Wspólnie">⚡ Wspólne</option>
+                        <div class="cal-legend-And-filter">
+                            <div class="cal-color-legend">
+                                <span class="hq-pill mateusz">🟢 Mateusz</span>
+                                <span class="hq-pill bartek">🔵 Bartek</span>
+                                <span class="hq-pill wspolnie">⚡ Wspólne</span>
+                            </div>
+                            <select id="calFilterScope" class="admin-select cal-scope-select">
+                                <option value="all">Wszystkie dostępne (Moje + Wspólne)</option>
+                                <option value="mine">🔒 Tylko moje prywatne</option>
+                                <option value="shared">⚡ Tylko Wspólne</option>
                             </select>
                         </div>
                     </div>
@@ -154,7 +158,7 @@
                 <form class="glass-card" id="hqScratchpadForm">
                     <div class="card-header-between">
                         <h3>📝 Wspólny Notatnik Operacyjny (Scratchpad)</h3>
-                        <span id="scratchpadSavedInfo" class="hq-pill mateusz">Notatnik HQ</span>
+                        <span id="scratchpadSavedInfo" class="hq-pill wspolnie">Wspólny Notatnik</span>
                     </div>
                     <div class="form-group">
                         <textarea id="hqScratchpadInput" rows="4" placeholder="Wpisz luźne notatki, szybkie linki i ustalenia dla Was dwóch..."></textarea>
@@ -375,7 +379,7 @@
 
                         <div class="glass-card">
                             <div class="card-header-between">
-                                <h3>🗂️️ Zapisane wyceny</h3>
+                                <h3>🗂️ Zapisane wyceny</h3>
                             </div>
                             <ul class="dash-task-list" id="hqSavedQuotesList"></ul>
                         </div>
@@ -481,24 +485,21 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 6: WEWNĘTRZNY CZAT ZAŁOŻYCIELI
+                 MODUŁ 6: WEWNĘTRZNY CZAT ZAŁOŻYCIELI (AUTOMATYCZNA TOŻSAMOŚĆ)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-chat">
                 <div class="dash-section-title">
                     <span class="section-tag">Prywatny Komunikator Właścicieli</span>
                     <h2>💬 Wewnętrzny Czat Założycieli (Mateusz & Bartek)</h2>
-                    <p>Wasz wewnętrzny czat na żywo połączony z Firebase – wrzucajcie tu szybkie linki, statusy rozmów z klientami i bieżące ustalenia.</p>
+                    <p>Każdy pisze automatycznie ze swojego zalogowanego konta. Twoje wiadomości są po prawej stronie, a wiadomości wspólnika po lewej.</p>
                 </div>
 
                 <div class="chat-container glass-card">
                     <div class="chat-messages" id="hqInternalChatBox"></div>
 
                     <form class="chat-input-row" id="hqInternalChatForm">
-                        <select id="hqChatSenderSelect" class="admin-select">
-                            <option value="Mateusz">🟢 Jako: Mateusz</option>
-                            <option value="Bartek">🔵 Jako: Bartek</option>
-                        </select>
-                        <input type="text" id="hqInternalChatInput" required placeholder="Napisz wiadomość na wewnętrznym czacie HQ...">
+                        <span class="hq-pill mateusz" id="hqChatActiveUserBadge">🟢 Piszesz jako: Mateusz Bugajski</span>
+                        <input type="text" id="hqInternalChatInput" required placeholder="Napisz wiadomość do wspólnika...">
                         <button type="submit" class="btn btn-primary">Wyślij ⚡</button>
                     </form>
                 </div>
@@ -516,15 +517,15 @@
 
             <span class="section-tag">Harmonogram Dnia • Wake The Brand</span>
             <h2 id="dayModalDateTitle">📅 Plan na dzień</h2>
-            <p id="dayModalSubtitle" class="cal-modal-sub">Wybierz i zaplanuj zadania oraz priorytety na ten dzień.</p>
+            <p id="dayModalSubtitle" class="cal-modal-sub">Widzisz tu swoje prywatne zadania oraz zadania wspólne zaplanowane na ten dzień.</p>
 
             <div class="dash-two-cols cal-modal-columns">
                 <!-- Formularz dodawania zadania na kliknięty dzień -->
                 <form id="dayTaskForm" class="cal-modal-form">
-                    <h4>➕ Zaplanuj na ten dzień</h4>
+                    <h4>➕ Zaplanuj zadanie na ten dzień</h4>
 
                     <div class="form-group">
-                        <label for="dayTaskTitle">Zadanie do wykonania</label>
+                        <label for="dayTaskTitle">Co planujesz zrobić?</label>
                         <input type="text" id="dayTaskTitle" required placeholder="np. Audyt Google Ads / Optymalizacja 15 ofert Allegro">
                     </div>
 
@@ -545,11 +546,11 @@
 
                     <div class="two-inputs-grid">
                         <div class="form-group">
-                            <label for="dayTaskOwner">Kto odpowiada?</label>
+                            <label for="dayTaskOwner">Dla kogo widoczne?</label>
+                            <!-- Opcje ustawiane automatycznie pod zalogowanego założyciela w planner.js -->
                             <select id="dayTaskOwner" class="admin-select">
-                                <option value="Wspólnie">⚡ Wspólnie</option>
-                                <option value="Mateusz">🟢 Mateusz</option>
-                                <option value="Bartek">🔵 Bartek</option>
+                                <option value="MINE" id="dayTaskOwnerMineOption">🔒 Tylko dla mnie (Prywatne)</option>
+                                <option value="Wspólnie">⚡ Wspólne (Widoczne dla obu)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -565,7 +566,7 @@
 
                 <!-- Lista zadań zaplanowanych na ten dzień -->
                 <div>
-                    <h4 class="cal-modal-list-heading">📌 Zadania zaplanowane na ten dzień</h4>
+                    <h4 class="cal-modal-list-heading">📌 Zadania na ten dzień</h4>
                     <ul class="dash-task-list" id="dayTasksList"></ul>
                 </div>
             </div>
