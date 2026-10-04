@@ -9,7 +9,250 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
+
+    <!-- WBUDOWANE STYLE WEWNĘTRZNEGO MESSENGERA HQ -->
+    <style>
+        .hq-messenger-grid {
+            display: grid;
+            grid-template-columns: 330px minmax(0, 1fr);
+            gap: 1.4rem;
+            height: 620px;
+            align-items: stretch;
+        }
+        .msg-sidebar-card {
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+            height: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .msg-sidebar-header {
+            margin-bottom: 0.9rem;
+        }
+        .msg-sidebar-header h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.6rem;
+        }
+        .msg-contacts-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            padding-right: 0.2rem;
+        }
+        .msg-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            width: 100%;
+            padding: 0.8rem 0.9rem;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #f3f4f6;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .msg-contact-item:hover {
+            border-color: rgba(212, 255, 0, 0.35);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .msg-contact-item.active {
+            background: rgba(212, 255, 0, 0.11);
+            border-color: #d4ff00;
+            box-shadow: 0 0 18px rgba(212, 255, 0, 0.12);
+        }
+        .msg-contact-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+        .msg-contact-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.12rem;
+        }
+        .msg-contact-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .msg-contact-top strong {
+            font-size: 0.88rem;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .msg-contact-role {
+            font-size: 0.72rem;
+            color: #d4ff00;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .msg-contact-preview {
+            font-size: 0.76rem;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .msg-unread-pill {
+            background: #d4ff00;
+            color: #07080c;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            flex-shrink: 0;
+        }
+
+        /* OKNO ROZMOWY PO PRAWEJ */
+        .msg-window-card {
+            display: flex;
+            flex-direction: column;
+            padding: 1.35rem;
+            height: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .msg-window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding-bottom: 0.9rem;
+            margin-bottom: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .msg-window-header h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.15rem;
+        }
+        .msg-window-header p {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+        .msg-stream-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 0.95rem;
+        }
+        .msg-empty-state {
+            margin: auto;
+            text-align: center;
+            color: #9ca3af;
+            max-width: 340px;
+            font-size: 0.88rem;
+        }
+        .chat-bubble.bubble-employee {
+            background: rgba(255, 107, 0, 0.13);
+            border: 1px solid rgba(255, 107, 0, 0.38);
+        }
+        .chat-bubble.msg-bubble-urgent {
+            border-color: #ff6b00 !important;
+            box-shadow: 0 0 18px rgba(255, 107, 0, 0.22);
+        }
+        .msg-bubble-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        .msg-bubble-body {
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        .msg-del-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 0.2rem;
+        }
+        .msg-del-btn:hover {
+            color: #ef4444;
+        }
+        .msg-compose-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+        .msg-compose-bar input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.55);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+        }
+        .msg-compose-bar input[type="text"]:focus {
+            outline: none;
+            border-color: #d4ff00;
+        }
+        .msg-urgent-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #ffb074;
+            padding: 0.45rem 0.75rem;
+            border-radius: 10px;
+            background: rgba(255, 107, 0, 0.12);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            cursor: pointer;
+            user-select: none;
+        }
+        .msg-urgent-label input {
+            accent-color: #ff6b00;
+            cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .hq-messenger-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .msg-sidebar-card {
+                max-height: 260px;
+            }
+            .msg-window-card {
+                height: 500px;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
 
@@ -50,7 +293,8 @@
                         <span>🖨️</span> Druki A4
                     </button>
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-chat">
-                        <span>💬</span> Czat HQ
+                        <span>💬</span> Messenger HQ
+                        <span id="sidebarChatUnread" class="msg-unread-pill hidden">0</span>
                     </button>
                     <!-- ZAKŁADKA WIDOCZNA WYŁĄCZNIE DLA MATEUSZA BUGAJSKIEGO (ROOT ADMIN) -->
                     <button type="button" class="dash-nav-btn hidden" id="navBtnAccounts" data-tab="hq-tab-accounts">
@@ -60,7 +304,7 @@
             </div>
 
             <div class="sidebar-help-box glass-card">
-                <strong>☁️️ Synchronizacja HQ</strong>
+                <strong>☁ Synchronizacja HQ</strong>
                 <p id="firebaseStatusText">Łączenie z bazą Firebase...</p>
                 <a href="https://mail.google.com/" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-full">
                     ✉️ Otwórz Gmaila WTB →
@@ -490,23 +734,48 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 6: WEWNĘTRZNY CZAT ZESPOŁU (AUTOMATYCZNA TOŻSAMOŚĆ)
+                 MODUŁ 6: WEWNĘTRZNY MESSENGER HQ (KANAŁ OGÓLNY + ROZMOWY 1-NA-1)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-chat">
                 <div class="dash-section-title">
-                    <span class="section-tag">Wewnętrzny Komunikator HQ</span>
-                    <h2>💬 Wewnętrzny Czat Zespołu Wake The Brand</h2>
-                    <p>Każdy pisze automatycznie ze swojego zalogowanego konta. Twoje wiadomości są po prawej stronie, a wiadomości pozostałych członków zespołu po lewej.</p>
+                    <span class="section-tag">Wewnętrzny Komunikator Zespołu</span>
+                    <h2>💬 Messenger HQ (Kanał Ogólny & Rozmowy Prywatne 1-na-1)</h2>
+                    <p>Wybierz z listy po lewej stronie <strong>Kanał Ogólny (#wszyscy)</strong> lub kliknij w wybraną osobę z zespołu, aby prowadzić <strong>prywatną rozmowę 1-na-1</strong> widoczną wyłącznie dla Was dwojga.</p>
                 </div>
 
-                <div class="chat-container glass-card">
-                    <div class="chat-messages" id="hqInternalChatBox"></div>
+                <div class="hq-messenger-grid" id="hqMessengerLayout">
+                    <!-- LEWY PANEL: LISTA KANAŁÓW I KONTAKTÓW ZESPOŁU -->
+                    <div class="glass-card msg-sidebar-card">
+                        <div class="msg-sidebar-header">
+                            <h3>👥 Zespół & Konwersacje</h3>
+                            <input type="text" id="msgContactSearch" class="admin-select" placeholder="🔍 Szukaj osoby z zespołu...">
+                        </div>
 
-                    <form class="chat-input-row" id="hqInternalChatForm">
-                        <span class="hq-pill mateusz" id="hqChatActiveUserBadge">🟢 Piszesz jako: Mateusz Bugajski</span>
-                        <input type="text" id="hqInternalChatInput" required placeholder="Napisz wiadomość na czacie zespołu...">
-                        <button type="submit" class="btn btn-primary">Wyślij ⚡</button>
-                    </form>
+                        <div class="msg-contacts-list" id="msgContactsList"></div>
+                    </div>
+
+                    <!-- PRAWY PANEL: AKTYWNE OKNO ROZMOWY -->
+                    <div class="glass-card msg-window-card">
+                        <div class="msg-window-header">
+                            <div>
+                                <h3 id="msgActiveRoomTitle">🌐 Kanał Ogólny (#wszyscy)</h3>
+                                <p id="msgActiveRoomSub">Wszystkie wiadomości tutaj są widoczne dla całego zespołu Wake The Brand.</p>
+                            </div>
+                            <span class="hq-pill mateusz" id="msgActiveRoomBadge">🌐 Kanał Zespołu</span>
+                        </div>
+
+                        <div class="msg-stream-box" id="msgMessagesStream"></div>
+
+                        <form class="msg-compose-bar" id="msgSendForm">
+                            <span class="hq-pill mateusz" id="msgCurrentSenderBadge">🟢 Mateusz Bugajski</span>
+                            <input type="text" id="msgTextInput" required placeholder="Napisz wiadomość lub wklej link (https://...)...">
+                            <label class="msg-urgent-label" title="Oznacz wiadomość jako pilną">
+                                <input type="checkbox" id="msgUrgentCheck">
+                                🔥 Pilne
+                            </label>
+                            <button type="submit" class="btn btn-primary btn-sm">Wyślij ⚡</button>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -517,7 +786,7 @@
                 <div class="dash-section-title">
                     <span class="section-tag">👑 Panel Głównego Administratora (Tylko Mateusz Bugajski)</span>
                     <h2>👥 Zarządzanie Kontami Pracowników & Uprawnieniami</h2>
-                    <p>Jako właściciel infrastruktury strony możesz tutaj tworzyć konta dla pracowników, nadawać im uprawnienia do wybranych zakładek, zawieszać dostęp lub resetować hasła. Ta sekcja jest całkowicie niewidoczna dla drugiego współzałożyciela oraz pracowników.</p>
+                    <p>Jako właściciel infrastruktury strony możesz tutaj tworzyć konta dla pracowników, nadawać im uprawnienia do wybranych zakładek, zawieszać dostęp lub resetować hasła. Każda dodana osoba automatycznie pojawia się też w Messengerze HQ i Kalendarzu.</p>
                 </div>
 
                 <div class="dash-two-cols">
@@ -560,7 +829,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Dostęp pracownika do wrażliwych modułów (Kalendarz, Dysk i Czat są aktywne zawsze):</label>
+                            <label>Dostęp pracownika do wrażliwych modułów (Kalendarz, Dysk i Messenger są aktywne zawsze):</label>
                             <label class="calc-service-row">
                                 <span>
                                     <input type="checkbox" id="empAccessLeads" checked>
@@ -667,5 +936,6 @@
     <script src="script.js"></script>
     <script src="planner.js"></script>
     <script src="accounts.js"></script>
+    <script src="messenger.js"></script>
 </body>
 </html>
