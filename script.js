@@ -65,10 +65,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         chatMessages: [
             {
                 id: 'm_start_1',
+                roomId: 'GLOBAL',
+                recipientKey: 'GLOBAL',
                 author: '🟢 Mateusz Bugajski',
                 senderKey: 'Mateusz',
-                text: 'Wewnętrzny czat zespołu Wake The Brand jest gotowy do pracy!',
-                time: 'Start'
+                text: 'Wewnętrzny Messenger HQ Wake The Brand jest gotowy! Możecie pisać tutaj na kanale ogólnym lub kliknąć wybraną osobę po lewej stronie, aby rozpocząć prywatną rozmowę 1-na-1.',
+                urgent: false,
+                time: 'Start',
+                timestamp: 1
             }
         ]
     };
@@ -127,7 +131,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return email ? FOUNDER_EMAILS.includes(email.trim().toLowerCase()) : false;
     }
 
-    // Sprawdza, czy podany e-mail należy do Założyciela lub aktywnego (niezawieszonego) Pracownika
     function isAuthorizedStaffEmail(email) {
         if (!email) return false;
         const clean = email.trim().toLowerCase();
@@ -136,7 +139,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return Boolean(emp && emp.status !== 'suspended');
     }
 
-    // Zwraca klucz właściciela do Kalendarza i Czatu ('Mateusz', 'Bartek' lub Imię i Nazwisko pracownika)
     function getCurrentOwnerKey() {
         const email = getLoggedInEmail();
         if (email.includes('bkoczara') || email.includes('bart')) {
@@ -152,7 +154,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return 'Mateusz';
     }
 
-    // Zwraca pełny profil zalogowanego użytkownika (do wyświetlania w topbarze i czacie)
     function getCurrentUserProfile() {
         const email = getLoggedInEmail();
         if (email.includes('bkoczara') || email.includes('bart')) {
@@ -427,10 +428,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 4. DANE WORKSPACE & MOSTEK DLA PLANNER.JS ORAZ ACCOUNTS.JS
+    // 4. DANE WORKSPACE & MOSTEK DLA PLANNER.JS, ACCOUNTS.JS & MESSENGER.JS
     // =========================================================
     const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
-    const hqChatActiveUserBadge = document.getElementById('hqChatActiveUserBadge');
 
     function updateLoggedInIdentityUI() {
         const profile = getCurrentUserProfile();
@@ -439,11 +439,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (adminEmailLabelEl) {
             adminEmailLabelEl.className = profile.pillClass;
             adminEmailLabelEl.innerText = `${profile.icon} ${profile.displayName} • ${profile.roleLabel} (${email || 'HQ'})`;
-        }
-
-        if (hqChatActiveUserBadge) {
-            hqChatActiveUserBadge.className = profile.pillClass;
-            hqChatActiveUserBadge.innerText = `${profile.icon} Piszesz jako: ${profile.displayName}`;
         }
     }
 
@@ -496,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Mostek globalny dla planner.js oraz accounts.js
+    // Mostek globalny dla planner.js, accounts.js oraz messenger.js
     window.WTB_HQ = {
         getLoggedInEmail: () => getLoggedInEmail(),
         getCurrentOwner: () => getCurrentOwnerKey(),
@@ -509,6 +504,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         getEmployees: () => workspaceCache.employees || [],
         saveEmployees: (updatedEmployeesArray) => {
             workspaceCache.employees = updatedEmployeesArray;
+            syncWorkspaceToCloud(workspaceCache);
+        },
+        getMessages: () => workspaceCache.chatMessages || [],
+        saveMessages: (updatedMessagesArray) => {
+            workspaceCache.chatMessages = updatedMessagesArray;
             syncWorkspaceToCloud(workspaceCache);
         },
         registerEmployeeInFirebase,
@@ -614,7 +614,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const password = document.getElementById('loginPassword').value;
             const loginFeedback = document.getElementById('loginFeedback');
 
-            // Pobranie najświeższej listy pracowników z chmury przed sprawdzeniem dostępu
             if (firebaseReady && db) {
                 try {
                     const snap = await fbFns.getDoc(fbFns.doc(db, 'settings', 'hq_workspace'));
@@ -738,10 +737,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const triggerPrintDocBtn = document.getElementById('triggerPrintDocBtn');
     const printableDocumentArea = document.getElementById('printableDocumentArea');
 
-    const hqInternalChatBox = document.getElementById('hqInternalChatBox');
-    const hqInternalChatForm = document.getElementById('hqInternalChatForm');
-    const hqInternalChatInput = document.getElementById('hqInternalChatInput');
-
     function leadStatusBadgeHTML(crmStatus) {
         if (crmStatus === 'client') return '<span class="badge-status done">✅ Dogadane</span>';
         if (crmStatus === 'contacted') return '<span class="badge-status progress">📞 W kontakcie</span>';
@@ -835,14 +830,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 7B. Renderowanie KPI, Notatnika, Drive, Historii Wycen i Czatu
+    // 7B. Renderowanie KPI, Notatnika, Drive i Historii Wycen
     function renderHQWorkspaceUI() {
         updateLoggedInIdentityUI();
         const me = getCurrentOwnerKey();
         const tasks = workspaceCache.tasks || [];
         const driveFiles = workspaceCache.driveFiles || [];
         const savedQuotes = workspaceCache.savedQuotes || [];
-        const chatMessages = workspaceCache.chatMessages || [];
 
         const activeTasksCount = tasks.filter(t => {
             const owner = t.owner || 'Wspólnie';
@@ -911,21 +905,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     syncWorkspaceToCloud(workspaceCache);
                 });
             });
-        }
-
-        if (hqInternalChatBox) {
-            hqInternalChatBox.innerHTML = chatMessages.map(m => {
-                const isMine = m.senderKey === me;
-                const alignClass = isMine ? 'chat-mine' : 'chat-partner';
-                const colorClass = m.senderKey === 'Bartek' ? 'bubble-bartek' : 'bubble-mateusz';
-                return `
-                    <div class="chat-bubble ${alignClass} ${colorClass}">
-                        <span class="chat-sender">${m.author} • ${m.time}</span>
-                        <div>${m.text}</div>
-                    </div>
-                `;
-            }).join('');
-            hqInternalChatBox.scrollTop = hqInternalChatBox.scrollHeight;
         }
     }
 
@@ -1447,7 +1426,7 @@ Zespół Wake The Brand`;
     }
 
     // =========================================================
-    // 7E. OBSŁUGA FORMULARZY W ADMIN.HTML (NOTATNIK, DRIVE, CZAT)
+    // 7E. OBSŁUGA FORMULARZY W ADMIN.HTML (NOTATNIK, DRIVE)
     // =========================================================
     if (hqScratchpadForm && hqScratchpadInput) {
         hqScratchpadInput.addEventListener('focus', () => { hqScratchpadInput.dataset.editing = '1'; });
@@ -1482,26 +1461,6 @@ Zespół Wake The Brand`;
 
     if (driveSearchInput) {
         driveSearchInput.addEventListener('input', renderHQWorkspaceUI);
-    }
-
-    if (hqInternalChatForm && hqInternalChatInput) {
-        hqInternalChatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = hqInternalChatInput.value.trim();
-            if (!text) return;
-
-            const profile = getCurrentUserProfile();
-            workspaceCache.chatMessages = workspaceCache.chatMessages || [];
-            workspaceCache.chatMessages.push({
-                id: 'msg_' + Date.now(),
-                senderKey: profile.key,
-                author: `${profile.icon} ${profile.displayName}`,
-                text,
-                time: getCurrentTimeStr()
-            });
-            hqInternalChatInput.value = '';
-            syncWorkspaceToCloud(workspaceCache);
-        });
     }
 
     if (adminLeadsList || statActiveTasks) {
@@ -1549,7 +1508,6 @@ Zespół Wake The Brand`;
                     workspaceCache = { ...defaultWorkspace, ...docSnap.data() };
                     saveLocalWorkspace(workspaceCache);
 
-                    // Jeśli zalogowany pracownik został właśnie zawieszony przez Mateusza – wyloguj go
                     const currentEmail = getLoggedInEmail();
                     const empRec = findEmployeeByEmail(currentEmail);
                     if (empRec && empRec.status === 'suspended') {
