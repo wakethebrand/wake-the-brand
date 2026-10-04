@@ -1,9 +1,9 @@
 /* =========================================================
    DEDYKOWANY ARKUSZ STYLÓW PANELU HQ (admin.css)
-   Pełna responsywność Desktop + Tablet + Smartfon (iOS / Android)
+   100% stylów Dashboardu, Kalendarza, Messengera, Wycen i Druków A4
    ========================================================= */
 
-/* 1. ZABEZPIECZENIE GŁÓWNEGO KONTENERA PRZED ROZPYCHANIEM EKRANU */
+/* 1. BAZA DASHBOARDU & BLOKADA SZEROKOŚCI EKRANU NA SMARTFONIE */
 html,
 body.dashboard-body {
     width: 100%;
@@ -30,7 +30,7 @@ body.dashboard-body {
     background: rgba(10, 12, 18, 0.96);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 600;
@@ -54,6 +54,16 @@ body.dashboard-body {
     min-width: 0;
 }
 
+.dash-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: rgba(212, 255, 0, 0.12);
+    color: var(--accent-lime);
+    border: 1px solid rgba(212, 255, 0, 0.3);
+}
+
 #loggedInAdminEmail {
     max-width: 340px;
     white-space: nowrap;
@@ -74,7 +84,7 @@ body.dashboard-body {
 
 .dash-sidebar {
     background: rgba(10, 12, 18, 0.75);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid var(--border-color);
     padding: 1.4rem 0.95rem;
     display: flex;
     flex-direction: column;
@@ -86,7 +96,7 @@ body.dashboard-body {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 700;
     padding: 0 0.75rem;
     margin-bottom: 0.55rem;
@@ -107,8 +117,8 @@ body.dashboard-body {
     border-radius: 12px;
     border: 1px solid transparent;
     background: transparent;
-    color: #9ca3af;
-    font-family: 'Inter', sans-serif;
+    color: var(--text-muted);
+    font-family: var(--font-body);
     font-size: 0.87rem;
     font-weight: 600;
     text-align: left;
@@ -124,9 +134,19 @@ body.dashboard-body {
 
 .dash-nav-btn.active {
     background: rgba(212, 255, 0, 0.13);
-    color: #d4ff00;
+    color: var(--accent-lime);
     border-color: rgba(212, 255, 0, 0.35);
     box-shadow: 0 0 18px rgba(212, 255, 0, 0.08);
+}
+
+.sidebar-help-box {
+    padding: 1.2rem;
+    font-size: 0.83rem;
+}
+
+.sidebar-help-box p {
+    color: var(--text-muted);
+    margin: 0.3rem 0 0.8rem;
 }
 
 .dash-main {
@@ -136,7 +156,21 @@ body.dashboard-body {
     overflow-x: hidden;
 }
 
-/* 4. KARTY KPI & UKŁAD DWUKOLUMNOWY */
+.dash-section-title {
+    margin-bottom: 1.8rem;
+}
+
+.dash-section-title h2 {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    margin: 0.3rem 0 0.45rem;
+}
+
+.dash-section-title p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+/* 4. KARTY KPI, PLAKIETKI, PRZYCISKI MINI & UKŁAD KOLUMN */
 .dash-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -153,14 +187,14 @@ body.dashboard-body {
 
 .kpi-label {
     font-size: 0.72rem;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
 }
 
 .kpi-val {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.75rem;
     font-weight: 700;
     margin: 0.2rem 0;
@@ -169,7 +203,7 @@ body.dashboard-body {
 
 .kpi-sub {
     font-size: 0.76rem;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .dash-two-cols {
@@ -183,6 +217,101 @@ body.dashboard-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.8rem;
+}
+
+.card-header-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.1rem;
+}
+
+.hq-pill {
+    padding: 0.22rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.71rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.hq-pill.mateusz {
+    background: rgba(212, 255, 0, 0.14);
+    color: var(--accent-lime);
+    border: 1px solid rgba(212, 255, 0, 0.38);
+}
+
+.hq-pill.bartek {
+    background: rgba(56, 189, 248, 0.16);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.42);
+}
+
+.hq-pill.wspolnie {
+    background: rgba(255, 107, 0, 0.16);
+    color: #ffb074;
+    border: 1px solid rgba(255, 107, 0, 0.42);
+}
+
+.badge-status {
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.badge-status.done {
+    background: rgba(34, 197, 94, 0.16);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.badge-status.progress {
+    background: rgba(255, 107, 0, 0.16);
+    color: #ffb074;
+    border: 1px solid rgba(255, 107, 0, 0.4);
+}
+
+.badge-status.todo {
+    background: rgba(255, 255, 255, 0.07);
+    color: #d1d5db;
+    border: 1px solid var(--border-color);
+}
+
+.btn-mini {
+    padding: 0.42rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    transition: var(--transition);
+    font-family: var(--font-body);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-mini:hover {
+    border-color: var(--accent-lime);
+    color: var(--accent-lime);
+}
+
+.btn-mini.btn-accent {
+    background: var(--accent-lime);
+    color: #07080c !important;
+    border-color: var(--accent-lime);
+    font-weight: 700;
+}
+
+.btn-mini.btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 /* 5. WIERSZE ZADAŃ, LEADÓW, KONT I PLIKÓW DRIVE */
@@ -201,7 +330,7 @@ body.dashboard-body {
     gap: 1rem;
     padding: 1.05rem 1.2rem;
     background: rgba(0, 0, 0, 0.42);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
     border-radius: 14px;
     width: 100%;
     overflow-wrap: break-word;
@@ -225,7 +354,7 @@ body.dashboard-body {
 
 .task-meta small,
 .task-meta p {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 0.82rem;
     line-height: 1.45;
     overflow-wrap: break-word;
@@ -241,7 +370,7 @@ body.dashboard-body {
     align-items: center;
 }
 
-/* 6. KALENDARZ MIESIĘCZNY */
+/* 6. INTERAKTYWNY KALENDARZ MIESIĘCZNY & MODAL DNIA (planner.js) */
 .cal-wrapper-card {
     margin-bottom: 1.5rem;
     width: 100%;
@@ -284,6 +413,13 @@ body.dashboard-body {
     flex-wrap: wrap;
 }
 
+.cal-scope-select {
+    width: auto;
+    min-width: 210px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem;
+}
+
 .cal-weekdays-row {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -293,7 +429,7 @@ body.dashboard-body {
     font-size: 0.74rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .cal-days-grid {
@@ -308,7 +444,7 @@ body.dashboard-body {
     padding: 0.5rem;
     border-radius: 12px;
     background: rgba(0, 0, 0, 0.42);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -318,7 +454,234 @@ body.dashboard-body {
     overflow: hidden;
 }
 
-/* 7. WEWNĘTRZNY MESSENGER HQ */
+.cal-day-cell:hover {
+    border-color: var(--border-hover);
+    background: rgba(212, 255, 0, 0.04);
+    transform: translateY(-2px);
+}
+
+.cal-day-cell.cal-day-outside {
+    opacity: 0.25;
+    cursor: default;
+    pointer-events: none;
+}
+
+.cal-day-cell.is-today {
+    border-color: var(--accent-lime);
+    box-shadow: inset 0 0 14px rgba(212, 255, 0, 0.12);
+}
+
+.cal-day-cell.is-selected {
+    background: rgba(212, 255, 0, 0.07);
+    border-color: var(--accent-lime);
+}
+
+.cal-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.cal-day-num {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cal-day-cell.is-today .cal-day-num {
+    color: var(--accent-lime);
+}
+
+.cal-day-count {
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 0.08rem 0.42rem;
+    border-radius: 20px;
+    background: rgba(212, 255, 0, 0.18);
+    color: var(--accent-lime);
+}
+
+.cal-day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+}
+
+.cal-task-pill {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.16rem 0.42rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-task-pill.pill-owner-mateusz {
+    background: rgba(212, 255, 0, 0.16);
+    color: var(--accent-lime);
+    border-left: 2.5px solid var(--accent-lime);
+}
+
+.cal-task-pill.pill-owner-bartek {
+    background: rgba(56, 189, 248, 0.18);
+    color: #7dd3fc;
+    border-left: 2.5px solid var(--accent-blue);
+}
+
+.cal-task-pill.pill-owner-wspolnie {
+    background: rgba(255, 107, 0, 0.2);
+    color: #ffb074;
+    border-left: 2.5px solid var(--accent-orange);
+}
+
+.cal-task-pill.is-done {
+    opacity: 0.42;
+    text-decoration: line-through;
+}
+
+.cal-more-tasks {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    padding-left: 0.2rem;
+}
+
+.cal-day-modal-box {
+    max-width: 880px;
+}
+
+.cal-modal-sub {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.4rem;
+}
+
+.cal-modal-columns {
+    margin-top: 0.4rem;
+}
+
+.cal-modal-form {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.3rem;
+}
+
+.cal-modal-form h4,
+.cal-modal-list-heading {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.cal-task-row-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.2rem;
+}
+
+.cal-prio-badge {
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.cal-prio-badge.prio-high {
+    background: rgba(255, 107, 0, 0.18);
+    color: #ffb074;
+    border: 1px solid rgba(255, 107, 0, 0.4);
+}
+
+.cal-prio-badge.prio-medium {
+    background: rgba(212, 255, 0, 0.13);
+    color: var(--accent-lime);
+    border: 1px solid rgba(212, 255, 0, 0.35);
+}
+
+.cal-prio-badge.prio-low {
+    background: rgba(56, 189, 248, 0.14);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.cal-time-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.18rem 0.5rem;
+    border-radius: 8px;
+}
+
+.cal-task-row-done {
+    opacity: 0.65;
+}
+
+.text-strike {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* 7. WEWNĘTRZNY KALKULATOR WYCENY */
+.calc-service-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 0.55rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.calc-service-row:hover {
+    border-color: var(--border-hover);
+}
+
+.calc-service-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-lime);
+    margin-right: 0.6rem;
+    cursor: pointer;
+}
+
+.calc-summary-box {
+    padding: 1.6rem;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(212, 255, 0, 0.07), rgba(0, 0, 0, 0.5));
+    border: 1px solid rgba(212, 255, 0, 0.32);
+}
+
+.calc-total-price {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    color: var(--accent-lime);
+    font-weight: 700;
+}
+
+.quote-preview-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.9rem;
+    color: #e5e7eb;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0.75rem 0;
+    resize: vertical;
+}
+
+/* 8. WEWNĘTRZNY MESSENGER HQ (messenger.js) */
 .hq-messenger-grid {
     display: grid;
     grid-template-columns: 320px minmax(0, 1fr);
@@ -369,7 +732,7 @@ body.dashboard-body {
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
 }
 
 .msg-contact-item:hover {
@@ -379,7 +742,7 @@ body.dashboard-body {
 
 .msg-contact-item.active {
     background: rgba(212, 255, 0, 0.11);
-    border-color: #d4ff00;
+    border-color: var(--accent-lime);
     box-shadow: 0 0 18px rgba(212, 255, 0, 0.12);
 }
 
@@ -421,7 +784,7 @@ body.dashboard-body {
 
 .msg-contact-role {
     font-size: 0.71rem;
-    color: #d4ff00;
+    color: var(--accent-lime);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -429,14 +792,14 @@ body.dashboard-body {
 
 .msg-contact-preview {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .msg-unread-pill {
-    background: #d4ff00;
+    background: var(--accent-lime);
     color: #07080c;
     font-size: 0.68rem;
     font-weight: 800;
@@ -462,7 +825,7 @@ body.dashboard-body {
     flex-wrap: wrap;
     padding-bottom: 0.85rem;
     margin-bottom: 0.85rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .msg-window-header h3 {
@@ -472,7 +835,7 @@ body.dashboard-body {
 
 .msg-window-header p {
     font-size: 0.79rem;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .msg-stream-box {
@@ -492,10 +855,35 @@ body.dashboard-body {
 .msg-empty-state {
     margin: auto;
     text-align: center;
-    color: #9ca3af;
+    color: var(--text-muted);
     max-width: 320px;
     font-size: 0.86rem;
     padding: 1rem;
+}
+
+.chat-bubble {
+    max-width: 80%;
+    padding: 0.8rem 1.1rem;
+    border-radius: 14px;
+    font-size: 0.91rem;
+}
+
+.chat-bubble.chat-mine {
+    align-self: flex-end;
+}
+
+.chat-bubble.chat-partner {
+    align-self: flex-start;
+}
+
+.chat-bubble.bubble-mateusz {
+    background: rgba(212, 255, 0, 0.11);
+    border: 1px solid rgba(212, 255, 0, 0.35);
+}
+
+.chat-bubble.bubble-bartek {
+    background: rgba(56, 189, 248, 0.13);
+    border: 1px solid rgba(56, 189, 248, 0.38);
 }
 
 .chat-bubble.bubble-employee {
@@ -504,8 +892,15 @@ body.dashboard-body {
 }
 
 .chat-bubble.msg-bubble-urgent {
-    border-color: #ff6b00 !important;
+    border-color: var(--accent-orange) !important;
     box-shadow: 0 0 18px rgba(255, 107, 0, 0.22);
+}
+
+.chat-sender {
+    display: block;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .msg-bubble-header {
@@ -525,7 +920,7 @@ body.dashboard-body {
 .msg-del-btn {
     background: none;
     border: none;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 1.05rem;
     cursor: pointer;
     line-height: 1;
@@ -551,13 +946,13 @@ body.dashboard-body {
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(0, 0, 0, 0.55);
     color: #ffffff;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.9rem;
 }
 
 .msg-compose-bar input[type="text"]:focus {
     outline: none;
-    border-color: #d4ff00;
+    border-color: var(--accent-lime);
 }
 
 .msg-urgent-label {
@@ -575,24 +970,298 @@ body.dashboard-body {
     user-select: none;
 }
 
-/* 8. PODGLĄD DOKUMENTÓW A4 BEZ ROZPYCHANIA STRONY */
+.msg-urgent-label input {
+    accent-color: var(--accent-orange);
+    cursor: pointer;
+}
+
+/* 9. GENERATOR DOKUMENTÓW DO DRUKU A4 (PODGLĄD & @MEDIA PRINT) */
 .print-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-/* =========================================================
-   9. TABLETY I MNIEJSZE LAPTOPY (poniżej 1024px)
-   ========================================================= */
+.print-sheet-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.print-page-a4 {
+    background: #ffffff;
+    color: #111827;
+    border-radius: 12px;
+    padding: 2.2rem 2.4rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    border: 1px solid #d1d5db;
+    overflow-x: auto;
+}
+
+.print-page-a4 h1,
+.print-page-a4 h2,
+.print-page-a4 h3,
+.print-page-a4 h4 {
+    color: #090b10;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.print-doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 1rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 2px solid #090b10;
+}
+
+.print-brand-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #090b10;
+}
+
+.print-brand-sub {
+    font-size: 0.75rem;
+    color: #4b5563;
+    margin-top: 0.15rem;
+}
+
+.print-meta-box {
+    text-align: right;
+    font-size: 0.78rem;
+    color: #374151;
+}
+
+.print-doc-banner {
+    background: #f3f4f6;
+    border-left: 4px solid #090b10;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.print-doc-banner h2 {
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.print-doc-banner p {
+    font-size: 0.76rem;
+    color: #4b5563;
+    margin-top: 0.15rem;
+}
+
+.print-section-block {
+    margin-bottom: 1.2rem;
+}
+
+.print-section-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #111827;
+    background: #e5e7eb;
+    padding: 0.35rem 0.65rem;
+    margin-bottom: 0.65rem;
+    border-radius: 4px;
+}
+
+.print-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1.2rem;
+}
+
+.print-field-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.45rem;
+}
+
+.print-field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #4b5563;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+}
+
+.print-field-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #090b10;
+    min-height: 1.55rem;
+    padding-bottom: 0.15rem;
+    border-bottom: 1px solid #d1d5db;
+    word-break: break-word;
+}
+
+.print-dotted-line {
+    display: block;
+    width: 100%;
+    height: 1.65rem;
+    border-bottom: 1.5px dotted #6b7280;
+    margin-bottom: 0.35rem;
+}
+
+.print-notes-box {
+    border: 1px solid #9ca3af;
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    min-height: 4.5rem;
+    background: #fafafa;
+}
+
+.print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+}
+
+.print-table th,
+.print-table td {
+    border: 1px solid #9ca3af;
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+}
+
+.print-table th {
+    background: #f3f4f6;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.print-check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 1rem;
+    font-size: 0.82rem;
+}
+
+.print-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.25rem 0;
+}
+
+.print-checkbox-square {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #111827;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.print-total-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f3f4f6;
+    border: 1.5px solid #111827;
+    padding: 0.7rem 1rem;
+    margin-top: 0.75rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.print-signatures-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-top: 2.2rem;
+    padding-top: 1rem;
+}
+
+.print-sign-box {
+    border-top: 1px solid #374151;
+    padding-top: 0.4rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #4b5563;
+}
+
+.print-footer-note {
+    margin-top: 1.4rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* 10. TRYB DRUKU (@MEDIA PRINT) – CZYSTE KARTKI A4 */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+
+    body,
+    .dashboard-body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    body::before,
+    body::after,
+    .dash-topbar,
+    .dash-sidebar,
+    .dash-kpi-grid,
+    .dash-section-title,
+    .no-print {
+        display: none !important;
+    }
+
+    .dashboard-layout,
+    .dash-main,
+    .dash-two-cols,
+    .print-preview-wrapper,
+    .print-sheet-container {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .print-page-a4 {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .page-break-after {
+        page-break-after: always;
+        break-after: page;
+    }
+}
+
+/* 11. TABLETY I MNIEJSZE LAPTOPY (poniżej 1024px) */
 @media (max-width: 1024px) {
     .dashboard-layout {
         grid-template-columns: 1fr;
         min-height: auto;
     }
 
-    /* Poziomy pasek zakładek pod górnym paskiem */
     .dash-sidebar {
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -668,11 +1337,8 @@ body.dashboard-body {
     }
 }
 
-/* =========================================================
-   10. SMARTFONY (iOS / Android - poniżej 768px)
-   ========================================================= */
+/* 12. SMARTFONY (iOS / Android - poniżej 768px) */
 @media (max-width: 768px) {
-    /* Kompaktowy Topbar */
     .dash-topbar {
         padding: 0.65rem 0.85rem;
         gap: 0.5rem;
@@ -711,7 +1377,6 @@ body.dashboard-body {
         padding: 1rem 0.75rem 2.5rem;
     }
 
-    /* Nagłówki sekcji */
     .dash-section-title {
         margin-bottom: 1.2rem;
     }
@@ -725,7 +1390,6 @@ body.dashboard-body {
         font-size: 0.84rem;
     }
 
-    /* Karty KPI 2x2 */
     .dash-kpi-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.6rem;
@@ -749,7 +1413,6 @@ body.dashboard-body {
         font-size: 0.68rem;
     }
 
-    /* Karty Glass-Card i Formularze (16px zapobiega auto-zoomowi na iOS!) */
     .dashboard-body .glass-card {
         padding: 1.1rem;
         border-radius: 16px;
@@ -768,7 +1431,6 @@ body.dashboard-body {
         padding: 0.72rem 0.85rem;
     }
 
-    /* Wiersze zadań, leadów i kont – przyciski na pełną szerokość pod treścią */
     .dash-task-item,
     .drive-card-row {
         flex-direction: column;
@@ -793,7 +1455,6 @@ body.dashboard-body {
         font-size: 0.75rem;
     }
 
-    /* Kalendarz na smartfonie */
     .cal-toolbar {
         flex-direction: column;
         align-items: stretch;
@@ -859,7 +1520,6 @@ body.dashboard-body {
         display: none;
     }
 
-    /* Modal wybranego dnia w kalendarzu jako wygodny ekran mobilny */
     .modal-overlay {
         padding: 0.4rem;
         align-items: flex-end;
@@ -876,7 +1536,6 @@ body.dashboard-body {
         padding: 0.95rem;
     }
 
-    /* Kalkulator wyceny na telefonie */
     .calc-service-row {
         padding: 0.7rem 0.8rem;
         font-size: 0.84rem;
@@ -886,7 +1545,6 @@ body.dashboard-body {
         font-size: 1.75rem;
     }
 
-    /* Messenger HQ na telefonie */
     .msg-sidebar-card {
         max-height: 215px;
         padding: 0.95rem;
@@ -934,7 +1592,6 @@ body.dashboard-body {
         padding: 0.6rem 1rem;
     }
 
-    /* Podgląd kartki A4 na telefonie */
     .print-page-a4 {
         padding: 1rem 0.85rem;
         font-size: 0.76rem;
