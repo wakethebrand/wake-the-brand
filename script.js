@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
     // =========================================================
-    // 0. KONFIGURACJA FIREBASE & UPRAWNIENIA ZAŁOŻYCIELI (HQ)
+    // 0. KONFIGURACJA FIREBASE & UPRAWNIENIA (HQ + PRACOWNICY)
     // =========================================================
     const firebaseConfig = {
         apiKey: "AIzaSyBBPECw6qPYOd7g1NUFzHNQMzljUBOwL9I",
@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const CONTACT_RECEIVER_EMAIL = "wakethebrand.kontakt@gmail.com";
 
-    const ADMIN_EMAILS = [
+    // Konta Założycieli (Mateusz = Root Admin, Bartosz = Współzałożyciel)
+    const FOUNDER_EMAILS = [
         'mbugajski@wakethebrand.pl',
         'bkoczara@wakethebrand.pl',
         'kontakt@wakethebrand.pl',
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let auth = null;
     let db = null;
+    let fbAppMod = null;
     let fbFns = {};
     let firebaseReady = false;
 
@@ -35,12 +37,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const todayKeyInit = `${nowInit.getFullYear()}-${String(nowInit.getMonth() + 1).padStart(2, '0')}-${String(nowInit.getDate()).padStart(2, '0')}`;
 
     const defaultWorkspace = {
+        employees: [],
         tasks: [
             {
                 id: 't_start_1',
                 date: todayKeyInit,
                 time: '10:00',
-                title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny (1-10 usług)',
+                title: 'Sprawdzić nowe zapytania z formularza i przygotować wyceny',
                 project: 'Wake The Brand HQ',
                 owner: 'Wspólnie',
                 priority: 'high',
@@ -54,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 title: 'Główny Folder Projektowy Wake The Brand',
                 category: '📂 Folder Klienta',
                 url: 'https://drive.google.com/',
-                note: 'Główny dysk współdzielony założycieli (Audyty, Allegro, Kampanie Ads, SEO)',
+                note: 'Główny dysk współdzielony zespołu (Audyty, Allegro, Kampanie Ads, SEO)',
                 createdAt: 'Start'
             }
         ],
@@ -64,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 id: 'm_start_1',
                 author: '🟢 Mateusz Bugajski',
                 senderKey: 'Mateusz',
-                text: 'Wewnętrzny czat założycieli (Mateusz & Bartek) jest gotowy do pracy!',
+                text: 'Wewnętrzny czat zespołu Wake The Brand jest gotowy do pracy!',
                 time: 'Start'
             }
         ]
@@ -77,39 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const h = String(now.getHours()).padStart(2, '0');
         const min = String(now.getMinutes()).padStart(2, '0');
         return `${d}.${m}, ${h}:${min}`;
-    }
-
-    function isOwnerEmail(email) {
-        return email ? ADMIN_EMAILS.includes(email.trim().toLowerCase()) : false;
-    }
-
-    function getLoggedInEmail() {
-        if (firebaseReady && auth && auth.currentUser && auth.currentUser.email) {
-            return auth.currentUser.email.trim().toLowerCase();
-        }
-        return (localStorage.getItem('wtb_admin_email') || '').trim().toLowerCase();
-    }
-
-    // Rozpoznaje automatycznie zalogowanego właściciela po adresie e-mail ('Mateusz' lub 'Bartek')
-    function getCurrentOwnerKey() {
-        const email = getLoggedInEmail();
-        if (email.includes('bkoczara') || email.includes('bart')) {
-            return 'Bartek';
-        }
-        return 'Mateusz';
-    }
-
-    function isAdminCurrentlyLoggedIn() {
-        const email = getLoggedInEmail();
-        return email ? isOwnerEmail(email) : false;
-    }
-
-    function navigateToAdminOrLogin() {
-        if (isAdminCurrentlyLoggedIn()) {
-            window.location.href = 'admin.html';
-        } else {
-            window.location.href = 'logowanie.html';
-        }
     }
 
     function getLocalWorkspace() {
@@ -134,6 +104,105 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function saveLocalLeads(arr) {
         try { localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(arr)); } catch (e) {}
+    }
+
+    let workspaceCache = getLocalWorkspace();
+    let leadsCache = getLocalLeads();
+
+    function getLoggedInEmail() {
+        if (firebaseReady && auth && auth.currentUser && auth.currentUser.email) {
+            return auth.currentUser.email.trim().toLowerCase();
+        }
+        return (localStorage.getItem('wtb_admin_email') || '').trim().toLowerCase();
+    }
+
+    function findEmployeeByEmail(email) {
+        if (!email) return null;
+        const clean = email.trim().toLowerCase();
+        const emps = workspaceCache.employees || [];
+        return emps.find(e => (e.email || '').toLowerCase() === clean) || null;
+    }
+
+    function isFounderEmail(email) {
+        return email ? FOUNDER_EMAILS.includes(email.trim().toLowerCase()) : false;
+    }
+
+    // Sprawdza, czy podany e-mail należy do Założyciela lub aktywnego (niezawieszonego) Pracownika
+    function isAuthorizedStaffEmail(email) {
+        if (!email) return false;
+        const clean = email.trim().toLowerCase();
+        if (isFounderEmail(clean)) return true;
+        const emp = findEmployeeByEmail(clean);
+        return Boolean(emp && emp.status !== 'suspended');
+    }
+
+    // Zwraca klucz właściciela do Kalendarza i Czatu ('Mateusz', 'Bartek' lub Imię i Nazwisko pracownika)
+    function getCurrentOwnerKey() {
+        const email = getLoggedInEmail();
+        if (email.includes('bkoczara') || email.includes('bart')) {
+            return 'Bartek';
+        }
+        if (isFounderEmail(email)) {
+            return 'Mateusz';
+        }
+        const emp = findEmployeeByEmail(email);
+        if (emp && emp.name) {
+            return emp.name;
+        }
+        return 'Mateusz';
+    }
+
+    // Zwraca pełny profil zalogowanego użytkownika (do wyświetlania w topbarze i czacie)
+    function getCurrentUserProfile() {
+        const email = getLoggedInEmail();
+        if (email.includes('bkoczara') || email.includes('bart')) {
+            return {
+                key: 'Bartek',
+                displayName: 'Bartosz Koczara',
+                roleLabel: 'Współzałożyciel',
+                pillClass: 'hq-pill bartek',
+                icon: '🔵',
+                isFounder: true
+            };
+        }
+        const emp = findEmployeeByEmail(email);
+        if (emp) {
+            const pillMap = {
+                lime: 'hq-pill mateusz',
+                blue: 'hq-pill bartek',
+                orange: 'hq-pill wspolnie'
+            };
+            const iconMap = { lime: '🟢', blue: '🔵', orange: '🟠' };
+            return {
+                key: emp.name,
+                displayName: emp.name,
+                roleLabel: emp.roleTitle || 'Zespół WTB',
+                pillClass: pillMap[emp.color] || 'hq-pill wspolnie',
+                icon: iconMap[emp.color] || '🟠',
+                isFounder: false
+            };
+        }
+        return {
+            key: 'Mateusz',
+            displayName: 'Mateusz Bugajski',
+            roleLabel: 'Root Admin',
+            pillClass: 'hq-pill mateusz',
+            icon: '🟢',
+            isFounder: true
+        };
+    }
+
+    function isAdminCurrentlyLoggedIn() {
+        const email = getLoggedInEmail();
+        return email ? isAuthorizedStaffEmail(email) : false;
+    }
+
+    function navigateToAdminOrLogin() {
+        if (isAdminCurrentlyLoggedIn()) {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'logowanie.html';
+        }
     }
 
     // =========================================================
@@ -250,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // =========================================================
-    // 3. FILTRY PORTFOLIO & MODALE (10 USŁUG WAKE THE BRAND)
+    // 3. FILTRY PORTFOLIO & MODALE
     // =========================================================
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioCards = document.querySelectorAll('.portfolio-card');
@@ -301,7 +370,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             title: "Home & Garden Allegro – ROAS 840% po przebudowie konta",
             steps: [
                 "<strong>Wyzwanie:</strong> Wysoki koszt kliknięcia w Allegro Ads (ACOS powyżej 28%) i niska pozycja kluczowych aukcji w wynikach trafności.",
-                "<strong>Wdrożone usługi:</strong> 1. Audyt konta reklamowego, 2. Optymalizacja ofert Allegro (120 aukcji), 5. Kampanie Allegro Ads.",
+                "<strong>Wdrożone usługi:</strong> Audyt konta reklamowego, Optymalizacja ofert Allegro (120 aukcji), Kampanie Allegro Ads.",
                 "<strong>Rezultat:</strong> Spadek ACOS do 11,9% (ROAS 840%) i trwały wzrost sprzedaży organicznej dzięki poprawie trafności ofert."
             ]
         },
@@ -310,7 +379,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             title: "Urban Wear E-commerce – Redukcja kosztu zakupu o 38%",
             steps: [
                 "<strong>Wyzwanie:</strong> Błędnie zliczane konwersje w sklepie i przepalany budżet w ogólnych kampaniach Performance Max.",
-                "<strong>Wdrożone usługi:</strong> 1. Audyt konta reklamowego, 3. Konfiguracja analityki (GA4 + GTM + Pixel), 6. Kampanie Google Ads, 7. Kampanie Facebook i Instagram Ads.",
+                "<strong>Wdrożone usługi:</strong> Audyt konta reklamowego, Konfiguracja analityki (GA4 + GTM + Pixel), Kampanie Google Ads, Kampanie Facebook i Instagram Ads.",
                 "<strong>Rezultat:</strong> Pełna przejrzystość danych sprzedażowych i obniżenie kosztu pozyskania zamówienia (CPA) o 38%."
             ]
         },
@@ -319,7 +388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             title: "TechParts Sklep Online – +165% ruchu organicznego z Google",
             steps: [
                 "<strong>Wyzwanie:</strong> Duplikacja treści w sklepie, wolne działanie wersji mobilnej i brak widoczności kategorii na frazy produktowe.",
-                "<strong>Wdrożone usługi:</strong> 4. Audyt SEO, 10. Pozycjonowanie (SEO), 3. Konfiguracja analityki.",
+                "<strong>Wdrożone usługi:</strong> Audyt SEO, Pozycjonowanie (SEO), Konfiguracja analityki.",
                 "<strong>Rezultat:</strong> Wzrost bezpłatnego ruchu z wyszukiwarki Google o 165% w ciągu 5 miesięcy systematycznej optymalizacji."
             ]
         },
@@ -328,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             title: "Pro-Fit Supplements – Konwersja 6,8% na starcie nowej linii",
             steps: [
                 "<strong>Wyzwanie:</strong> Wprowadzenie nowego produktu na konkurencyjny rynek bez wcześniej przygotowanego lejka sprzedażowego.",
-                "<strong>Wdrożone usługi:</strong> 9. Strategia marketingowa, 8. Landing page pod kampanię, 3. Konfiguracja analityki.",
+                "<strong>Wdrożone usługi:</strong> Strategia marketingowa, Landing page pod kampanię, Konfiguracja analityki.",
                 "<strong>Rezultat:</strong> Dedykowany, ultraszybki Landing Page osiągnął współczynnik konwersji na poziomie 6,8% z kampanii Google i Meta Ads."
             ]
         }
@@ -358,30 +427,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 4. DANE WORKSPACE & MOSTEK DLA PLANNER.JS (window.WTB_HQ)
+    // 4. DANE WORKSPACE & MOSTEK DLA PLANNER.JS ORAZ ACCOUNTS.JS
     // =========================================================
-    let workspaceCache = getLocalWorkspace();
-    let leadsCache = getLocalLeads();
-
     const adminEmailLabelEl = document.getElementById('loggedInAdminEmail');
     const hqChatActiveUserBadge = document.getElementById('hqChatActiveUserBadge');
 
     function updateLoggedInIdentityUI() {
-        const ownerKey = getCurrentOwnerKey();
+        const profile = getCurrentUserProfile();
         const email = getLoggedInEmail();
 
         if (adminEmailLabelEl) {
-            adminEmailLabelEl.className = ownerKey === 'Bartek' ? 'hq-pill bartek' : 'hq-pill mateusz';
-            adminEmailLabelEl.innerText = ownerKey === 'Bartek'
-                ? `🔵 Bartosz Koczara (${email || 'HQ'})`
-                : `🟢 Mateusz Bugajski (${email || 'HQ'})`;
+            adminEmailLabelEl.className = profile.pillClass;
+            adminEmailLabelEl.innerText = `${profile.icon} ${profile.displayName} • ${profile.roleLabel} (${email || 'HQ'})`;
         }
 
         if (hqChatActiveUserBadge) {
-            hqChatActiveUserBadge.className = ownerKey === 'Bartek' ? 'hq-pill bartek' : 'hq-pill mateusz';
-            hqChatActiveUserBadge.innerText = ownerKey === 'Bartek'
-                ? '🔵 Piszesz jako: Bartosz Koczara'
-                : '🟢 Piszesz jako: Mateusz Bugajski';
+            hqChatActiveUserBadge.className = profile.pillClass;
+            hqChatActiveUserBadge.innerText = `${profile.icon} Piszesz jako: ${profile.displayName}`;
         }
     }
 
@@ -402,14 +464,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Mostek dla osobnego pliku planner.js
+    // Rejestracja konta pracownika w Firebase Auth za pomocą pomocniczej instancji (nie wylogowuje Mateusza!)
+    async function registerEmployeeInFirebase(email, password) {
+        if (!firebaseReady || !fbAppMod || !fbFns.createUserWithEmailAndPassword) return false;
+        let secondaryApp = null;
+        try {
+            const appName = 'SecondaryEmpCreator_' + Date.now();
+            secondaryApp = fbAppMod.initializeApp(firebaseConfig, appName);
+            const secondaryAuth = fbFns.getAuth(secondaryApp);
+            await fbFns.createUserWithEmailAndPassword(secondaryAuth, email, password);
+            await fbFns.signOut(secondaryAuth);
+            if (typeof fbAppMod.deleteApp === 'function') {
+                await fbAppMod.deleteApp(secondaryApp);
+            }
+            return true;
+        } catch (err) {
+            if (secondaryApp && typeof fbAppMod.deleteApp === 'function') {
+                try { await fbAppMod.deleteApp(secondaryApp); } catch (e) {}
+            }
+            return false;
+        }
+    }
+
+    async function sendResetPassword(email) {
+        if (!firebaseReady || !auth || !fbFns.sendPasswordResetEmail) return false;
+        try {
+            await fbFns.sendPasswordResetEmail(auth, email);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    // Mostek globalny dla planner.js oraz accounts.js
     window.WTB_HQ = {
+        getLoggedInEmail: () => getLoggedInEmail(),
         getCurrentOwner: () => getCurrentOwnerKey(),
+        getCurrentProfile: () => getCurrentUserProfile(),
         getTasks: () => workspaceCache.tasks || [],
         saveTasks: (updatedTasksArray) => {
             workspaceCache.tasks = updatedTasksArray;
             syncWorkspaceToCloud(workspaceCache);
-        }
+        },
+        getEmployees: () => workspaceCache.employees || [],
+        saveEmployees: (updatedEmployeesArray) => {
+            workspaceCache.employees = updatedEmployeesArray;
+            syncWorkspaceToCloud(workspaceCache);
+        },
+        registerEmployeeInFirebase,
+        sendResetPassword
     };
 
     // =========================================================
@@ -476,7 +579,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // =========================================================
-    // 6. LOGOWANIE ZAŁOŻYCIELI (logowanie.html)
+    // 6. LOGOWANIE ZAŁOŻYCIELI I PRACOWNIKÓW (logowanie.html)
     // =========================================================
     const loginForm = document.getElementById('loginForm');
     const forgotPassBtn = document.getElementById('forgotPassBtn');
@@ -511,8 +614,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             const password = document.getElementById('loginPassword').value;
             const loginFeedback = document.getElementById('loginFeedback');
 
-            if (!isOwnerEmail(email)) {
-                loginFeedback.innerText = '⛔ Dostęp wyłącznie dla autoryzowanych adresów Założycieli Wake The Brand.';
+            // Pobranie najświeższej listy pracowników z chmury przed sprawdzeniem dostępu
+            if (firebaseReady && db) {
+                try {
+                    const snap = await fbFns.getDoc(fbFns.doc(db, 'settings', 'hq_workspace'));
+                    if (snap.exists()) {
+                        workspaceCache = { ...defaultWorkspace, ...snap.data() };
+                        saveLocalWorkspace(workspaceCache);
+                    }
+                } catch (err) {}
+            }
+
+            const empRecord = findEmployeeByEmail(email);
+            if (empRecord && empRecord.status === 'suspended') {
+                loginFeedback.innerText = '🔒 Twoje konto pracownicze zostało zawieszone przez Administratora.';
+                return;
+            }
+
+            if (!isAuthorizedStaffEmail(email)) {
+                loginFeedback.innerText = '⛔ Brak dostępu. Konto nie znajduje się na liście autoryzowanego zespołu Wake The Brand.';
                 return;
             }
 
@@ -715,7 +835,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 7B. Renderowanie KPI (tylko Twoje + Wspólne zadania), Notatnika, Drive, Historii Wycen i Czatu
+    // 7B. Renderowanie KPI, Notatnika, Drive, Historii Wycen i Czatu
     function renderHQWorkspaceUI() {
         updateLoggedInIdentityUI();
         const me = getCurrentOwnerKey();
@@ -724,7 +844,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const savedQuotes = workspaceCache.savedQuotes || [];
         const chatMessages = workspaceCache.chatMessages || [];
 
-        // Zliczamy wyłącznie zadania zalogowanego właściciela oraz Wspólne
         const activeTasksCount = tasks.filter(t => {
             const owner = t.owner || 'Wspólnie';
             return (owner === me || owner === 'Wspólnie') && t.status !== 'done';
@@ -757,7 +876,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <small>${d.note || 'Brak opisu'} • Dodano: ${d.createdAt}</small>
                         </div>
                         <div class="cookie-actions">
-                            <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️️ Otwórz w Drive →</a>
+                            <a href="${d.url}" target="_blank" rel="noopener" class="btn-mini btn-accent">☁️ Otwórz w Drive →</a>
                             <button type="button" class="btn-mini btn-danger" data-del-drive="${d.id}">🗑️</button>
                         </div>
                     </div>
@@ -794,7 +913,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // Czat: własne wiadomości zawsze po prawej (.chat-mine), wspólnika po lewej (.chat-partner)
         if (hqInternalChatBox) {
             hqInternalChatBox.innerHTML = chatMessages.map(m => {
                 const isMine = m.senderKey === me;
@@ -811,7 +929,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 7C. Wewnętrzny Kalkulator Wyceny (10 Usług) – obliczenia na żywo
+    // 7C. Wewnętrzny Kalkulator Wyceny – obliczenia na żywo
     function recalculateInternalQuote() {
         if (!hqCalcTotal) return;
         let baseSum = 0;
@@ -922,7 +1040,7 @@ Zespół Wake The Brand`;
     }
 
     // =========================================================
-    // 7D. GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF (10 USŁUG WTB)
+    // 7D. GENERATOR DOKUMENTÓW DO DRUKU A4 / PDF
     // =========================================================
     function valOrBlankLine(val, placeholderDots = '........................................................................................') {
         const cleaned = (val || '').trim();
@@ -974,22 +1092,21 @@ Zespół Wake The Brand`;
         const rawScope = (docScopeItems?.value || '').trim();
         const scopeArr = rawScope ? rawScope.split('\n').map(s => s.trim()).filter(Boolean) : [];
 
-        // SZABLON 1: KARTA BRIEFU I INFORMACJI OD KLIENTA (1 STRONA A4 - 10 USŁUG)
         if (tpl === 'brief') {
             const scopeBlockHTML = scopeArr.length > 0
                 ? `<div class="print-notes-box">${scopeArr.map(item => `• ${item}`).join('<br>')}</div>`
                 : `
                     <div class="print-check-grid">
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 1. Audyt konta reklamowego</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 2. Optymalizacja ofert Allegro</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 3. Konfiguracja analityki (GA4 / GTM / Pixel)</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 4. Audyt SEO</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 5. Kampanie Allegro Ads</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 6. Kampanie Google Ads</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 7. Kampanie Facebook i Instagram Ads</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 8. Landing page pod kampanię</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 9. Strategia marketingowa</div>
-                        <div class="print-check-item"><span class="print-checkbox-square"></span> 10. Pozycjonowanie (SEO)</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Audyt konta reklamowego</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Optymalizacja ofert Allegro</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Konfiguracja analityki (GA4 / GTM / Pixel)</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Audyt SEO</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Kampanie Allegro Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Kampanie Google Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Kampanie Facebook i Instagram Ads</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Landing page pod kampanię</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Strategia marketingowa</div>
+                        <div class="print-check-item"><span class="print-checkbox-square"></span> Pozycjonowanie (SEO)</div>
                     </div>
                 `;
 
@@ -1025,7 +1142,7 @@ Zespół Wake The Brand`;
                     </div>
 
                     <div class="print-section-block">
-                        <div class="print-section-heading">2. Wybrane Usługi Wake The Brand (1–10)</div>
+                        <div class="print-section-heading">2. Wybrane Usługi Wake The Brand</div>
                         ${scopeBlockHTML}
                     </div>
 
@@ -1067,7 +1184,6 @@ Zespół Wake The Brand`;
             return;
         }
 
-        // SZABLON 2: KOSZTORYS, WYCENA I ZAKRES PRAC (2 STRONY A4)
         if (tpl === 'quote') {
             let tableRowsHTML = '';
             if (scopeArr.length > 0) {
@@ -1096,7 +1212,6 @@ Zespół Wake The Brand`;
             }
 
             printableDocumentArea.innerHTML = `
-                <!-- STRONA 1 Z 2: DANE KLIENTA I TABELA KOSZTORYSU -->
                 <div class="print-page-a4 page-break-after">
                     ${buildDocHeaderHTML('WTB / KOSZTORYS', '(Strona 1/2)')}
 
@@ -1159,7 +1274,6 @@ Zespół Wake The Brand`;
                     </div>
                 </div>
 
-                <!-- STRONA 2 Z 2: HARMONOGRAM, ZAŁĄCZONE DOKUMENTY (DO WPISANIA RĘCZNEGO) I PODPISY -->
                 <div class="print-page-a4">
                     ${buildDocHeaderHTML('WTB / KOSZTORYS', '(Strona 2/2)')}
 
@@ -1206,20 +1320,19 @@ Zespół Wake The Brand`;
             return;
         }
 
-        // SZABLON 3: KARTA PROJEKTU & CHECKLISTA WDROŻENIOWA (1 STRONA A4 - 10 USŁUG)
         const checklistRowsHTML = scopeArr.length > 0
             ? scopeArr.map(item => `<div class="print-check-item"><span class="print-checkbox-square"></span> ${item}</div>`).join('')
             : `
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 1. Audyt konta reklamowego (Google / Meta / Allegro Ads)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 2. Optymalizacja ofert Allegro (tytuły, parametry, opisy)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 3. Konfiguracja analityki (GA4, GTM, Meta Pixel, konwersje)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 4. Audyt SEO (weryfikacja techniczna i treściowa strony)</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 5. Uruchomienie i optymalizacja Kampanii Allegro Ads</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 6. Uruchomienie i optymalizacja Kampanii Google Ads</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 7. Uruchomienie Kampanii Facebook i Instagram Ads</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 8. Projekt i wdrożenie Landing Page'a pod kampanię</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 9. Opracowanie Strategii marketingowej</div>
-                <div class="print-check-item"><span class="print-checkbox-square"></span> 10. Działania w ramach Pozycjonowania (SEO)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Audyt konta reklamowego (Google / Meta / Allegro Ads)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Optymalizacja ofert Allegro (tytuły, parametry, opisy)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Konfiguracja analityki (GA4, GTM, Meta Pixel, konwersje)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Audyt SEO (weryfikacja techniczna i treściowa strony)</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Uruchomienie i optymalizacja Kampanii Allegro Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Uruchomienie i optymalizacja Kampanii Google Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Uruchomienie Kampanii Facebook i Instagram Ads</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Projekt i wdrożenie Landing Page'a pod kampanię</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Opracowanie Strategii marketingowej</div>
+                <div class="print-check-item"><span class="print-checkbox-square"></span> Działania w ramach Pozycjonowania (SEO)</div>
             `;
 
         printableDocumentArea.innerHTML = `
@@ -1254,7 +1367,7 @@ Zespół Wake The Brand`;
                 </div>
 
                 <div class="print-section-block">
-                    <div class="print-section-heading">2. Lista Kontrolna Etapów Wdrożenia (Checklista 1–10)</div>
+                    <div class="print-section-heading">2. Lista Kontrolna Etapów Wdrożenia</div>
                     <div class="print-notes-box">
                         ${checklistRowsHTML}
                     </div>
@@ -1271,7 +1384,7 @@ Zespół Wake The Brand`;
                 </div>
 
                 <div class="print-signatures-row">
-                    <div class="print-sign-box">Zatwierdził (Mateusz Bugajski / Bartosz Koczara)</div>
+                    <div class="print-sign-box">Zatwierdził (Zespół Wake The Brand)</div>
                     <div class="print-sign-box">Potwierdzenie odbioru</div>
                 </div>
 
@@ -1371,19 +1484,18 @@ Zespół Wake The Brand`;
         driveSearchInput.addEventListener('input', renderHQWorkspaceUI);
     }
 
-    // Wewnętrzny czat: wysyła automatycznie z konta zalogowanego założyciela
     if (hqInternalChatForm && hqInternalChatInput) {
         hqInternalChatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const text = hqInternalChatInput.value.trim();
             if (!text) return;
 
-            const senderKey = getCurrentOwnerKey();
+            const profile = getCurrentUserProfile();
             workspaceCache.chatMessages = workspaceCache.chatMessages || [];
             workspaceCache.chatMessages.push({
                 id: 'msg_' + Date.now(),
-                senderKey,
-                author: senderKey === 'Bartek' ? '🔵 Bartosz Koczara' : '🟢 Mateusz Bugajski',
+                senderKey: profile.key,
+                author: `${profile.icon} ${profile.displayName}`,
                 text,
                 time: getCurrentTimeStr()
             });
@@ -1407,6 +1519,7 @@ Zespół Wake The Brand`;
             import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')
         ]);
 
+        fbAppMod = appMod;
         const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
         auth = authMod.getAuth(app);
         db = firestoreMod.initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
@@ -1425,7 +1538,7 @@ Zespół Wake The Brand`;
             localStorage.setItem('wtb_admin_email', email);
             updateLoggedInIdentityUI();
             window.dispatchEvent(new CustomEvent('wtb:workspace-updated'));
-            if (loginForm) {
+            if (loginForm && isAuthorizedStaffEmail(email)) {
                 window.location.href = 'admin.html';
             }
         }
@@ -1435,6 +1548,16 @@ Zespół Wake The Brand`;
                 if (docSnap.exists()) {
                     workspaceCache = { ...defaultWorkspace, ...docSnap.data() };
                     saveLocalWorkspace(workspaceCache);
+
+                    // Jeśli zalogowany pracownik został właśnie zawieszony przez Mateusza – wyloguj go
+                    const currentEmail = getLoggedInEmail();
+                    const empRec = findEmployeeByEmail(currentEmail);
+                    if (empRec && empRec.status === 'suspended') {
+                        localStorage.removeItem('wtb_admin_email');
+                        window.location.href = 'logowanie.html';
+                        return;
+                    }
+
                     renderHQWorkspaceUI();
                     window.dispatchEvent(new CustomEvent('wtb:workspace-updated'));
                 } else {
