@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const calendarGrid = document.getElementById('hqCalendarGrid');
-    if (!calendarGrid) return; // Uruchamia się wyłącznie w admin.html
+    if (!calendarGrid) return; // Działa wyłącznie w admin.html
 
     // Elementy DOM Kalendarza
     const calMonthTitle = document.getElementById('calMonthTitle');
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dayTaskTime = document.getElementById('dayTaskTime');
     const dayTaskProject = document.getElementById('dayTaskProject');
     const dayTaskOwner = document.getElementById('dayTaskOwner');
-    const dayTaskOwnerMineOption = document.getElementById('dayTaskOwnerMineOption');
     const dayTaskPriority = document.getElementById('dayTaskPriority');
 
     const MONTHS_PL = [
@@ -46,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${d} ${MONTHS_PL[m - 1]} ${y}`;
     }
 
-    // Pobiera aktualnie zalogowanego założyciela ('Mateusz' lub 'Bartek')
     function getCurrentOwnerKey() {
         if (window.WTB_HQ && typeof window.WTB_HQ.getCurrentOwner === 'function') {
             return window.WTB_HQ.getCurrentOwner();
@@ -55,14 +53,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return savedEmail.includes('bkoczara') ? 'Bartek' : 'Mateusz';
     }
 
-    // Aktualizuje etykietę w formularzu modala dnia (np. "🔒 Tylko dla mnie (Mateusz)")
-    function updateMineOptionLabel() {
-        const me = getCurrentOwnerKey();
-        if (dayTaskOwnerMineOption) {
-            dayTaskOwnerMineOption.textContent = me === 'Bartek'
-                ? '🔵 Tylko dla mnie (Bartek - Prywatne)'
-                : '🟢 Tylko dla mnie (Mateusz - Prywatne)';
+    function getCurrentProfile() {
+        if (window.WTB_HQ && typeof window.WTB_HQ.getCurrentProfile === 'function') {
+            return window.WTB_HQ.getCurrentProfile();
         }
+        const key = getCurrentOwnerKey();
+        return {
+            key,
+            displayName: key,
+            isFounder: key === 'Mateusz' || key === 'Bartek'
+        };
+    }
+
+    function getEmployeesArray() {
+        if (window.WTB_HQ && typeof window.WTB_HQ.getEmployees === 'function') {
+            return window.WTB_HQ.getEmployees();
+        }
+        return [];
     }
 
     function getTasksArray() {
@@ -78,11 +85,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Zasada prywatności: widzisz TYLKO swoje zadania oraz zadania Wspólne
+    // Buduje listę opcji w polu "Dla kogo zadanie?" (Założyciele mogą zlecać zadania pracownikom)
+    function rebuildOwnerSelectOptions() {
+        if (!dayTaskOwner) return;
+        const profile = getCurrentProfile();
+        const me = profile.key;
+        const employees = getEmployeesArray().filter(e => e.status !== 'suspended');
+
+        let optionsHTML = '';
+        if (me === 'Mateusz') {
+            optionsHTML += `<option value="MINE">🟢 Tylko dla mnie (Mateusz - Prywatne)</option>`;
+        } else if (me === 'Bartek') {
+            optionsHTML += `<option value="MINE">🔵 Tylko dla mnie (Bartek - Prywatne)</option>`;
+        } else {
+            optionsHTML += `<option value="MINE">🔒 Tylko dla mnie (${profile.displayName})</option>`;
+        }
+
+        optionsHTML += `<option value="Wspólnie">⚡ Wspólne (Widoczne dla całego zespołu)</option>`;
+
+        // Jeśli zalogowany jest Założyciel, może przypisać zadanie konkretnemu pracownikowi
+        if (profile.isFounder && employees.length > 0) {
+            employees.forEach(emp => {
+                optionsHTML += `<option value="${emp.name}">👤 Zleć pracownikowi: ${emp.name} (${emp.roleTitle || 'Zespół'})</option>`;
+            });
+        }
+
+        const prevVal = dayTaskOwner.value;
+        dayTaskOwner.innerHTML = optionsHTML;
+        if (prevVal && Array.from(dayTaskOwner.options).some(o => o.value === prevVal)) {
+            dayTaskOwner.value = prevVal;
+        }
+    }
+
+    // Reguła widoczności zadań w Kalendarzu:
+    // - Mateusz nie widzi prywatnych zadań Bartka (i odwrotnie), ale Założyciele widzą zadania pracowników.
+    // - Pracownik widzi wyłącznie swoje zadania oraz zadania Wspólne.
     function isTaskVisibleForCurrentUser(task) {
-        const me = getCurrentOwnerKey();
+        const profile = getCurrentProfile();
+        const me = profile.key;
         const taskOwner = task.owner || 'Wspólnie';
-        return taskOwner === me || taskOwner === 'Wspólnie';
+
+        if (taskOwner === me || taskOwner === 'Wspólnie') return true;
+
+        // Jeśli zalogowany jest Założyciel, widzi też zadania zlecone pracownikom (ale NIE prywatne zadania drugiego Założyciela)
+        if (profile.isFounder) {
+            if (taskOwner === 'Mateusz' || taskOwner === 'Bartek') {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
     }
 
     function priorityWeight(prio) {
@@ -106,12 +159,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function ownerBadgeHTML(owner) {
         if (owner === 'Mateusz') return '<span class="hq-pill mateusz">🟢 Mateusz (Prywatne)</span>';
         if (owner === 'Bartek') return '<span class="hq-pill bartek">🔵 Bartek (Prywatne)</span>';
-        return '<span class="hq-pill wspolnie">⚡ Wspólne</span>';
+        if (!owner || owner === 'Wspólnie') return '<span class="hq-pill wspolnie">⚡ Wspólne</span>';
+
+        const emp = getEmployeesArray().find(e => e.name === owner);
+        if (emp) {
+            if (emp.color === 'lime') return `<span class="hq-pill mateusz">👤 ${emp.name}</span>`;
+            if (emp.color === 'blue') return `<span class="hq-pill bartek">👤 ${emp.name}</span>`;
+        }
+        return `<span class="hq-pill wspolnie">👤 ${owner}</span>`;
     }
 
     function ownerPillColorClass(owner) {
         if (owner === 'Mateusz') return 'pill-owner-mateusz';
         if (owner === 'Bartek') return 'pill-owner-bartek';
+        if (!owner || owner === 'Wspólnie') return 'pill-owner-wspolnie';
+
+        const emp = getEmployeesArray().find(e => e.name === owner);
+        if (emp) {
+            if (emp.color === 'lime') return 'pill-owner-mateusz';
+            if (emp.color === 'blue') return 'pill-owner-bartek';
+        }
         return 'pill-owner-wspolnie';
     }
 
@@ -120,14 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================
     function renderCalendar() {
         if (!calendarGrid) return;
-        updateMineOptionLabel();
+        rebuildOwnerSelectOptions();
         calMonthTitle.innerText = `${MONTHS_PL[currentMonth]} ${currentYear}`;
 
         const me = getCurrentOwnerKey();
         const allTasks = getTasksArray();
         const scopeVal = calFilterScope ? calFilterScope.value : 'all';
 
-        // Filtrowanie: najpierw ścisła prywatność (Moje + Wspólne), potem filtr widoku
         const visibleTasks = allTasks.filter(t => {
             if (!isTaskVisibleForCurrentUser(t)) return false;
             if (scopeVal === 'mine') return t.owner === me;
@@ -174,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const activeCount = dayTasks.filter(t => t.status !== 'done').length;
 
-            // Pigułki na kafelku dnia z kolorem właściciela (Mateusz=Limonka, Bartek=Błękit, Wspólne=Pomarańcz)
             const pillsHTML = dayTasks.slice(0, 3).map(t => {
                 const doneClass = t.status === 'done' ? 'is-done' : '';
                 const ownerClass = ownerPillColorClass(t.owner || 'Wspólnie');
@@ -225,11 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
-    // 2. KONTENER (MODAL) WYBRANEGO DNIA – TYLKO SWOJE I WSPÓLNE
+    // 2. KONTENER (MODAL) WYBRANEGO DNIA
     // =========================================================
     function openDayModal(dateKey) {
         selectedDateStr = dateKey;
-        updateMineOptionLabel();
+        rebuildOwnerSelectOptions();
         renderCalendar();
         renderDayModalTasks();
         if (dayModal) {
@@ -246,7 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const todayKey = formatDateKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
         const allTasks = getTasksArray();
 
-        // Pokazujemy tylko zadania z wybranego dnia należące do zalogowanego lub Wspólne
         const tasksForDay = allTasks
             .filter(t => (t.date || todayKey) === selectedDateStr && isTaskVisibleForCurrentUser(t))
             .sort((a, b) => {
@@ -261,14 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dayModalSubtitle) {
             const activeCount = tasksForDay.filter(t => t.status !== 'done').length;
             dayModalSubtitle.innerText = tasksForDay.length === 0
-                ? 'Brak Twoich lub wspólnych zadań na ten dzień – dodaj nowe poniżej.'
+                ? 'Brak zadań na ten dzień – dodaj nowe poniżej.'
                 : `Widoczne zadania na ten dzień: ${tasksForDay.length} (Do wykonania: ${activeCount})`;
         }
 
         if (tasksForDay.length === 0) {
             dayTasksList.innerHTML = `
                 <li class="dash-task-item">
-                    <span class="task-meta">Ten dzień jest pusty. Zaplanuj zadanie dla siebie lub wspólne dla całego zespołu.</span>
+                    <span class="task-meta">Ten dzień jest pusty. Zaplanuj zadanie dla siebie, wspólne lub zleć je pracownikowi.</span>
                 </li>
             `;
             return;
@@ -325,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Dodawanie nowego zadania (Prywatnego dla zalogowanego lub Wspólnego)
+    // Dodawanie nowego zadania
     if (dayTaskForm) {
         dayTaskForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -334,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const me = getCurrentOwnerKey();
             const selectedScope = dayTaskOwner ? dayTaskOwner.value : 'MINE';
-            const resolvedOwner = selectedScope === 'MINE' ? me : 'Wspólnie';
+            const resolvedOwner = selectedScope === 'MINE' ? me : selectedScope;
 
             const newTask = {
                 id: 'cal_' + Date.now(),
@@ -352,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveTasksArray(currentAll);
 
             dayTaskForm.reset();
-            updateMineOptionLabel();
+            rebuildOwnerSelectOptions();
             renderDayModalTasks();
             renderCalendar();
         });
@@ -402,7 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Odświeżenie kalendarza przy aktualizacji danych z Firebase lub zmianie użytkownika
     window.addEventListener('wtb:workspace-updated', () => {
         renderCalendar();
         if (dayModal && dayModal.classList.contains('open')) {
