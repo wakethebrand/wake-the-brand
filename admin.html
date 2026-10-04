@@ -9,8 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body class="dashboard-body">
 
@@ -33,7 +32,7 @@
         <!-- BOCZNY PASEK NAWIGACJI (NA TELEFONIE POZIOMY PASEK ZAKŁADEK) -->
         <aside class="dash-sidebar">
             <div class="dash-sidebar-nav-wrap">
-                <div class="sidebar-section-label">Narzędzia Założycieli</div>
+                <div class="sidebar-section-label">Narzędzia Zespołu</div>
                 <nav class="dash-nav">
                     <button type="button" class="dash-nav-btn active" data-tab="hq-tab-leads">
                         <span>📬</span> Wiadomości (<span id="sidebarLeadsCount">0</span>)
@@ -53,11 +52,15 @@
                     <button type="button" class="dash-nav-btn" data-tab="hq-tab-chat">
                         <span>💬</span> Czat HQ
                     </button>
+                    <!-- ZAKŁADKA WIDOCZNA WYŁĄCZNIE DLA MATEUSZA BUGAJSKIEGO (ROOT ADMIN) -->
+                    <button type="button" class="dash-nav-btn hidden" id="navBtnAccounts" data-tab="hq-tab-accounts">
+                        <span>👥</span> Konta & Zespół
+                    </button>
                 </nav>
             </div>
 
             <div class="sidebar-help-box glass-card">
-                <strong>☁️ Synchronizacja HQ</strong>
+                <strong>☁️️ Synchronizacja HQ</strong>
                 <p id="firebaseStatusText">Łączenie z bazą Firebase...</p>
                 <a href="https://mail.google.com/" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-full">
                     ✉️ Otwórz Gmaila WTB →
@@ -113,8 +116,8 @@
             <section class="dash-tab-content hidden" id="hq-tab-planner">
                 <div class="dash-section-title">
                     <span class="section-tag">Harmonogram Zespołu</span>
-                    <h2>📅 Twój Kalendarz & Zadania Wspólne</h2>
-                    <p>W kalendarzu widzisz wyłącznie <strong>swoje prywatne zadania</strong> oraz <strong>zadania wspólne</strong>. Kliknij dowolny dzień, aby zaplanować działania.</p>
+                    <h2>📅 Twój Kalendarz & Zadania Zespołu</h2>
+                    <p>W kalendarzu widzisz <strong>swoje zadania</strong> oraz <strong>zadania wspólne</strong> (jako założyciel możesz także zlecać zadania wybranemu pracownikowi). Kliknij dowolny dzień, aby zaplanować działania.</p>
                 </div>
 
                 <!-- GŁÓWNY KONTENER KALENDARZA -->
@@ -131,7 +134,7 @@
                             <div class="cal-color-legend">
                                 <span class="hq-pill mateusz">🟢 Mateusz</span>
                                 <span class="hq-pill bartek">🔵 Bartek</span>
-                                <span class="hq-pill wspolnie">⚡ Wspólne</span>
+                                <span class="hq-pill wspolnie">⚡ Wspólne / Zespół</span>
                             </div>
                             <select id="calFilterScope" class="admin-select cal-scope-select">
                                 <option value="all">Wszystkie dostępne (Moje + Wspólne)</option>
@@ -163,7 +166,7 @@
                         <span id="scratchpadSavedInfo" class="hq-pill wspolnie">Wspólny Notatnik</span>
                     </div>
                     <div class="form-group">
-                        <textarea id="hqScratchpadInput" rows="4" placeholder="Wpisz luźne notatki, szybkie linki i ustalenia dla Was dwóch..."></textarea>
+                        <textarea id="hqScratchpadInput" rows="4" placeholder="Wpisz luźne notatki, szybkie linki i ustalenia dla zespołu..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-outline btn-sm">💾 Zapisz zmiany w notatniku</button>
                 </form>
@@ -176,7 +179,7 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Repozytorium Chmurowe Zespołu</span>
                     <h2>📁 Nasze Pliki i Foldery na Dysku Google</h2>
-                    <p>Dodawajcie tutaj linki do Waszych folderów na Google Drive (raporty z audytów, arkusze słów kluczowych Allegro/SEO, kreacje Ads, umowy), abyście obaj mieli do nich natychmiastowy dostęp.</p>
+                    <p>Dodawajcie tutaj linki do Waszych folderów na Google Drive (raporty z audytów, arkusze słów kluczowych Allegro/SEO, kreacje Ads, umowy), aby mieć do nich natychmiastowy dostęp.</p>
                 </div>
 
                 <div class="dash-two-cols">
@@ -239,13 +242,13 @@
                 <div class="dash-section-title">
                     <span class="section-tag">Wewnętrzny System Kosztorysowania</span>
                     <h2>🧮 Kalkulator Wyceny dla Klienta (10 Naszych Usług)</h2>
-                    <p>Zaznacz wybrane usługi z naszej listy 1–10. System automatycznie wylicza kwotę dla klienta, podział 50/50 dla Mateusza i Bartka oraz pozwala przenieść kosztorys prosto do druku A4.</p>
+                    <p>Zaznacz wybrane usługi z naszej listy. System automatycznie wylicza kwotę dla klienta, podział 50/50 dla Mateusza i Bartka oraz pozwala przenieść kosztorys prosto do druku A4.</p>
                 </div>
 
                 <div class="dash-two-cols">
                     <div class="glass-card">
                         <div class="card-header-between">
-                            <h3>1. Wybierz usługi z katalogu (1–10)</h3>
+                            <h3>1. Wybierz usługi z katalogu</h3>
                         </div>
 
                         <div class="form-group">
@@ -255,80 +258,80 @@
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="700" data-name="1. Audyt konta reklamowego (Google / Meta / Allegro Ads)">
-                                <strong>1. 🔍 Audyt konta reklamowego</strong>
+                                <input type="checkbox" class="hq-calc-check" value="700" data-name="Audyt konta reklamowego (Google / Meta / Allegro Ads)">
+                                <strong>🔍 Audyt konta reklamowego</strong>
                             </span>
                             <span class="hq-pill mateusz">700 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="2. Optymalizacja ofert Allegro (Tytuły, parametry, opisy sprzedażowe)">
-                                <strong>2. 📦 Optymalizacja ofert Allegro</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="Optymalizacja ofert Allegro (Tytuły, parametry, opisy sprzedażowe)">
+                                <strong>📦 Optymalizacja ofert Allegro</strong>
                             </span>
                             <span class="hq-pill mateusz">1 200 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="900" data-name="3. Konfiguracja analityki (GA4, GTM, Meta Pixel, śledzenie e-commerce)">
-                                <strong>3. 📊 Konfiguracja analityki</strong>
+                                <input type="checkbox" class="hq-calc-check" value="900" data-name="Konfiguracja analityki (GA4, GTM, Meta Pixel, śledzenie e-commerce)">
+                                <strong>📊 Konfiguracja analityki</strong>
                             </span>
                             <span class="hq-pill mateusz">900 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1100" data-name="4. Audyt SEO (Analiza techniczna, treściowa i słowa kluczowe)">
-                                <strong>4. 🛠️ Audyt SEO</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1100" data-name="Audyt SEO (Analiza techniczna, treściowa i słowa kluczowe)">
+                                <strong>🛠️ Audyt SEO</strong>
                             </span>
                             <span class="hq-pill mateusz">1 100 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="5. Kampanie Allegro Ads (Konfiguracja i prowadzenie)">
-                                <strong>5. 🛒 Kampanie Allegro Ads</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1200" data-name="Kampanie Allegro Ads (Konfiguracja i prowadzenie)">
+                                <strong>🛒 Kampanie Allegro Ads</strong>
                             </span>
                             <span class="hq-pill mateusz">1 200 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1400" data-name="6. Kampanie Google Ads (Shopping, Performance Max, Search)">
-                                <strong>6. 🎯 Kampanie Google Ads</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1400" data-name="Kampanie Google Ads (Shopping, Performance Max, Search)">
+                                <strong>🎯 Kampanie Google Ads</strong>
                             </span>
                             <span class="hq-pill mateusz">1 400 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1300" data-name="7. Kampanie Facebook i Instagram Ads (Meta Ads & Remarketing)">
-                                <strong>7. 📱 Kampanie Facebook i Instagram Ads</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1300" data-name="Kampanie Facebook i Instagram Ads (Meta Ads & Remarketing)">
+                                <strong>📱 Kampanie Facebook i Instagram Ads</strong>
                             </span>
                             <span class="hq-pill mateusz">1 300 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1800" data-name="8. Landing page pod kampanię (Projekt UX/UI + wdrożenie pod konwersję)">
-                                <strong>8. 🚀 Landing page pod kampanię</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1800" data-name="Landing page pod kampanię (Projekt UX/UI + wdrożenie pod konwersję)">
+                                <strong>🚀 Landing page pod kampanię</strong>
                             </span>
                             <span class="hq-pill mateusz">1 800 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1500" data-name="9. Strategia marketingowa (Lejek sprzedażowy, grupy docelowe, plan działań)">
-                                <strong>9. 🧭 Strategia marketingowa</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1500" data-name="Strategia marketingowa (Lejek sprzedażowy, grupy docelowe, plan działań)">
+                                <strong>🧭 Strategia marketingowa</strong>
                             </span>
                             <span class="hq-pill mateusz">1 500 zł</span>
                         </label>
 
                         <label class="calc-service-row">
                             <span>
-                                <input type="checkbox" class="hq-calc-check" value="1600" data-name="10. Pozycjonowanie (SEO) (Optymalizacja, content i budowa widoczności)">
-                                <strong>10. 📈 Pozycjonowanie (SEO)</strong>
+                                <input type="checkbox" class="hq-calc-check" value="1600" data-name="Pozycjonowanie (SEO) (Optymalizacja, content i budowa widoczności)">
+                                <strong>📈 Pozycjonowanie (SEO)</strong>
                             </span>
                             <span class="hq-pill mateusz">1 600 zł</span>
                         </label>
@@ -395,7 +398,7 @@
             <section class="dash-tab-content hidden" id="hq-tab-docs">
                 <div class="dash-section-title">
                     <span class="section-tag">System Dokumentacji Wake The Brand</span>
-                    <h2>🖨️ Generator Dokumentów do Druku / PDF</h2>
+                    <h2>🖨 Generator Dokumentów do Druku / PDF</h2>
                     <p>Wypełnij wybrane pola poniżej – pojawią się one od razu na dokumencie. Pola, które zostawisz <strong>puste</strong>, automatycznie zamienią się w wykropkowane linie do ręcznego wpisania długopisem po wydruku.</p>
                 </div>
 
@@ -418,7 +421,7 @@
                         <div class="two-inputs-grid">
                             <div class="form-group">
                                 <label for="docDateInput">Data dokumentu (puste = wykropkowane)</label>
-                                <input type="text" id="docDateInput" placeholder="np. 03.10.2026">
+                                <input type="text" id="docDateInput" placeholder="np. 04.10.2026">
                             </div>
                             <div class="form-group">
                                 <label for="docOwnerInput">Opiekun / Sporządził (puste = wykropkowane)</label>
@@ -455,7 +458,7 @@
 
                         <div class="form-group">
                             <label for="docScopeItems">Zakres prac / Pozycje kosztorysu (każda pozycja w nowej linii)</label>
-                            <textarea id="docScopeItems" rows="4" placeholder="np. Audyt konta reklamowego - 700 zł&#10;Kampanie Google Ads - 1400 zł&#10;(Zostaw puste, aby mieć kafelki 1-10 lub pustą tabelę do wypełnienia długopisem)"></textarea>
+                            <textarea id="docScopeItems" rows="4" placeholder="np. Audyt konta reklamowego - 700 zł&#10;Kampanie Google Ads - 1400 zł&#10;(Zostaw puste, aby mieć kafelki lub pustą tabelę do wypełnienia długopisem)"></textarea>
                         </div>
 
                         <div class="two-inputs-grid">
@@ -487,13 +490,13 @@
             </section>
 
             <!-- ==========================================
-                 MODUŁ 6: WEWNĘTRZNY CZAT ZAŁOŻYCIELI (AUTOMATYCZNA TOŻSAMOŚĆ)
+                 MODUŁ 6: WEWNĘTRZNY CZAT ZESPOŁU (AUTOMATYCZNA TOŻSAMOŚĆ)
                  ========================================== -->
             <section class="dash-tab-content hidden" id="hq-tab-chat">
                 <div class="dash-section-title">
-                    <span class="section-tag">Prywatny Komunikator Właścicieli</span>
-                    <h2>💬 Wewnętrzny Czat Założycieli (Mateusz & Bartek)</h2>
-                    <p>Każdy pisze automatycznie ze swojego zalogowanego konta. Twoje wiadomości są po prawej stronie, a wiadomości wspólnika po lewej.</p>
+                    <span class="section-tag">Wewnętrzny Komunikator HQ</span>
+                    <h2>💬 Wewnętrzny Czat Zespołu Wake The Brand</h2>
+                    <p>Każdy pisze automatycznie ze swojego zalogowanego konta. Twoje wiadomości są po prawej stronie, a wiadomości pozostałych członków zespołu po lewej.</p>
                 </div>
 
                 <div class="chat-container glass-card">
@@ -501,9 +504,96 @@
 
                     <form class="chat-input-row" id="hqInternalChatForm">
                         <span class="hq-pill mateusz" id="hqChatActiveUserBadge">🟢 Piszesz jako: Mateusz Bugajski</span>
-                        <input type="text" id="hqInternalChatInput" required placeholder="Napisz wiadomość do wspólnika...">
+                        <input type="text" id="hqInternalChatInput" required placeholder="Napisz wiadomość na czacie zespołu...">
                         <button type="submit" class="btn btn-primary">Wyślij ⚡</button>
                     </form>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 MODUŁ 7: ZARZĄDZANIE KONTAMI PRACOWNIKÓW (TYLKO MATEUSZ BUGAJSKI)
+                 ========================================== -->
+            <section class="dash-tab-content hidden" id="hq-tab-accounts">
+                <div class="dash-section-title">
+                    <span class="section-tag">👑 Panel Głównego Administratora (Tylko Mateusz Bugajski)</span>
+                    <h2>👥 Zarządzanie Kontami Pracowników & Uprawnieniami</h2>
+                    <p>Jako właściciel infrastruktury strony możesz tutaj tworzyć konta dla pracowników, nadawać im uprawnienia do wybranych zakładek, zawieszać dostęp lub resetować hasła. Ta sekcja jest całkowicie niewidoczna dla drugiego współzałożyciela oraz pracowników.</p>
+                </div>
+
+                <div class="dash-two-cols">
+                    <!-- LEWA KOLUMNA: TWORZENIE NOWEGO KONTA PRACOWNIKA -->
+                    <form class="glass-card" id="hqCreateAccountForm">
+                        <div class="card-header-between">
+                            <h3>➕ Utwórz nowe konto pracownika</h3>
+                            <span class="hq-pill mateusz">Tylko Root Admin</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="empFullName">Imię i nazwisko pracownika</label>
+                            <input type="text" id="empFullName" required placeholder="np. Kamil Nowak">
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="empEmail">Służbowy adres e-mail (Login)</label>
+                                <input type="email" id="empEmail" required placeholder="np. knowak@wakethebrand.pl">
+                            </div>
+                            <div class="form-group">
+                                <label for="empPassword">Hasło startowe (min. 6 znaków)</label>
+                                <input type="text" id="empPassword" required minlength="6" placeholder="np. WTB2026!start">
+                            </div>
+                        </div>
+
+                        <div class="two-inputs-grid">
+                            <div class="form-group">
+                                <label for="empRoleTitle">Stanowisko / Dział</label>
+                                <input type="text" id="empRoleTitle" placeholder="np. Specjalista Google Ads / Copywriter SEO">
+                            </div>
+                            <div class="form-group">
+                                <label for="empColorSelect">Kolor identyfikatora w panelu</label>
+                                <select id="empColorSelect" class="admin-select">
+                                    <option value="orange">🟠 Pomarańczowy (Zespół)</option>
+                                    <option value="lime">🟢 Limonkowy (Dział Tech/SEO)</option>
+                                    <option value="blue">🔵 Błękitny (Dział Ads/Allegro)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dostęp pracownika do wrażliwych modułów (Kalendarz, Dysk i Czat są aktywne zawsze):</label>
+                            <label class="calc-service-row">
+                                <span>
+                                    <input type="checkbox" id="empAccessLeads" checked>
+                                    <strong>📬 Dostęp do Wiadomości i Zapytań od Klientów</strong>
+                                </span>
+                            </label>
+                            <label class="calc-service-row">
+                                <span>
+                                    <input type="checkbox" id="empAccessPricing">
+                                    <strong>🧮 Dostęp do Wewnętrznego Kalkulatora Wyceny</strong>
+                                </span>
+                            </label>
+                            <label class="calc-service-row">
+                                <span>
+                                    <input type="checkbox" id="empAccessDocs" checked>
+                                    <strong>🖨️ Dostęp do Generatora Dokumentów A4</strong>
+                                </span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">
+                            Utwórz konto pracownika w systemie ⚡
+                        </button>
+                        <div id="accountFormFeedback" class="form-feedback"></div>
+                    </form>
+
+                    <!-- PRAWA KOLUMNA: LISTA AKTYWNYCH KONT W SYSTEMIE -->
+                    <div class="glass-card">
+                        <div class="card-header-between">
+                            <h3>🛡️ Lista kont i uprawnień w Wake The Brand</h3>
+                        </div>
+                        <ul class="dash-task-list" id="hqAccountsList"></ul>
+                    </div>
                 </div>
             </section>
 
@@ -548,11 +638,10 @@
 
                     <div class="two-inputs-grid">
                         <div class="form-group">
-                            <label for="dayTaskOwner">Dla kogo widoczne?</label>
-                            <!-- Opcje ustawiane automatycznie pod zalogowanego założyciela w planner.js -->
+                            <label for="dayTaskOwner">Dla kogo zadanie?</label>
                             <select id="dayTaskOwner" class="admin-select">
                                 <option value="MINE" id="dayTaskOwnerMineOption">🔒 Tylko dla mnie (Prywatne)</option>
-                                <option value="Wspólnie">⚡ Wspólne (Widoczne dla obu)</option>
+                                <option value="Wspólnie">⚡ Wspólne (Widoczne dla zespołu)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -577,5 +666,6 @@
 
     <script src="script.js"></script>
     <script src="planner.js"></script>
+    <script src="accounts.js"></script>
 </body>
 </html>
